@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="es"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Secadoras de cacao</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#2a1b14;--brown:#5a3523;--bean:#7a4a30;--leaf:#1f6f5b;--sand:#d9d2c3;--floor:#e6e7e1;--panel:#f8f8f5;--amber:#a8651a;--red:#b0382c;--mut:#6f675f;--line:#d4d2c9}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--floor);color:var(--ink);font-family:'Barlow',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;font-size:16px;line-height:1.4;-webkit-tap-highlight-color:transparent}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer;border:0;background:none}
+:focus-visible{outline:3px solid #2b7fff;outline-offset:2px}
+.top{background:var(--brown);color:#fff;padding:calc(12px + env(safe-area-inset-top)) 16px 0}
+.top-in{max-width:980px;margin:0 auto}
+.top h1{margin:0;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:28px;letter-spacing:.01em}
+.userbar{display:flex;align-items:center;gap:10px;font-size:13px;color:#e8d9cc;margin:2px 0 10px;flex-wrap:wrap}
+.userbar button{background:#ffffff22;color:#fff;border-radius:8px;padding:4px 10px;font-size:13px}
+.userbar .st{margin-left:auto}
+.tabs{display:flex;gap:4px}
+.tabs button{flex:1;max-width:200px;padding:11px 8px;border-radius:12px 12px 0 0;color:#e8d9cc;font-weight:600;background:#ffffff14}
+.tabs button.on{background:var(--floor);color:var(--ink)}
+main{max-width:980px;margin:0 auto;padding:16px 12px calc(40px + env(safe-area-inset-bottom))}
+.card{background:var(--panel);border-radius:16px;padding:16px;margin-bottom:14px;border:1px solid var(--line)}
+.card h2{margin:0 0 10px;font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:700}
+.btn{padding:10px 14px;border-radius:10px;background:#ebe8df;font-weight:600}
+.btn.primary{background:var(--brown);color:#fff}
+.btn.leaf{background:var(--leaf);color:#fff}
+.btn.red{background:#f5dcd8;color:var(--red)}
+.btn.sm{padding:6px 10px;font-size:14px}
+.mut{color:var(--mut);font-size:14px}
+/* barra de fecha */
+.datebar{display:flex;gap:8px;align-items:center;margin-bottom:12px;flex-wrap:wrap}
+.datebar input{flex:1;min-width:150px;padding:10px;border:1px solid var(--line);border-radius:10px;background:#fff}
+.datebar button{padding:10px 14px;border-radius:10px;background:#fff;border:1px solid var(--line);font-weight:600}
+.daysum{display:flex;gap:18px;align-items:baseline;flex-wrap:wrap;margin-bottom:14px}
+.daysum .dt{font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:600;text-transform:capitalize;flex-basis:100%}
+.daysum .dn b{font-family:'Barlow Condensed',sans-serif;font-size:30px;font-weight:700;margin-right:4px}
+/* planta */
+.floor{background:#f2f2ee;border-radius:20px;border:2px solid var(--line);padding:22px 8px;display:flex;flex-direction:column;align-items:center;gap:18px;background-image:linear-gradient(#0000000a 1px,transparent 1px),linear-gradient(90deg,#0000000a 1px,transparent 1px);background-size:32px 32px}
+.row{display:flex;justify-content:center;align-items:flex-end;gap:clamp(12px,4vw,36px)}
+.dry{--d:min(28vw,128px);display:flex;flex-direction:column;align-items:center;gap:5px;width:var(--d);padding:0}
+.dry.small{--d:min(21vw,96px)}
+.disc{position:relative;width:var(--d);height:var(--d);border-radius:50%;background:conic-gradient(var(--leaf) calc(var(--p,0)*1%),var(--sand) 0);display:grid;place-items:center;box-shadow:0 3px 8px #2a1b1426;transition:transform .12s}
+.dry:active .disc{transform:scale(.95)}
+.hub{width:82%;height:82%;border-radius:50%;background:radial-gradient(circle at 35% 30%,#8c5a3c,var(--brown) 70%);color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1;box-shadow:inset 0 0 0 3px #ffffff30}
+.hub b{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:calc(var(--d)*.36)}
+.hub i{font-style:normal;font-size:calc(var(--d)*.115);margin-top:2px;opacity:.9}
+.dry.on .hub{background:radial-gradient(circle at 35% 30%,#2f9079,var(--leaf) 70%)}
+.dkg{font-size:13px;font-weight:600;min-height:18px;color:var(--ink)}
+/* calendario */
+.calhead{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.calhead h2{margin:0;text-transform:capitalize}
+.calhead button{width:42px;height:42px;border-radius:10px;background:#fff;border:1px solid var(--line);font-size:18px}
+.calgrid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+.wd{text-align:center;font-size:13px;color:var(--mut);font-weight:600;padding:4px 0}
+.cd{min-height:68px;border-radius:10px;background:#fff;border:1px solid var(--line);padding:4px;text-align:left;display:flex;flex-direction:column;gap:1px;font-size:11px;line-height:1.2;overflow:hidden}
+.cd.empty{background:transparent;border:0}
+.cd .n{font-weight:700;font-size:13px}
+.cd .p{color:var(--leaf);font-weight:600}
+.cd .d{color:var(--amber);font-weight:600}
+.cd.today{border:2px solid var(--brown)}
+.cd.sel{background:#e7f1ed}
+/* resumen */
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin-bottom:14px}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:14px}
+.stat .l{font-size:14px;color:var(--mut)}
+.stat .v{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:34px;line-height:1.1}
+.stat .s{font-size:14px;color:var(--mut)}
+.stat.main{background:var(--brown);color:#fff;border-color:var(--brown)}
+.stat.main .l,.stat.main .s{color:#e8d9cc}
+.lote{border:1px solid var(--line);border-radius:14px;padding:12px;margin-bottom:10px;background:#fff}
+.lote .lh{display:flex;justify-content:space-between;gap:10px;align-items:baseline}
+.lote .lh b{font-size:18px}
+.lote .big{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:26px;color:var(--leaf);white-space:nowrap}
+.lote .acts{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+.item{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;padding:10px 0;border-bottom:1px solid var(--line)}
+.item:last-child{border-bottom:0}
+.item .acts{display:flex;gap:6px;flex-shrink:0}
+table.t{width:100%;border-collapse:collapse;font-size:15px}
+table.t th{text-align:left;font-weight:600;color:var(--mut);padding:6px 4px;border-bottom:1px solid var(--line)}
+table.t td{padding:7px 4px;border-bottom:1px solid var(--line)}
+table.t td.r,table.t th.r{text-align:right}
+details summary{cursor:pointer;font-weight:600;padding:6px 0}
+.cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px}
+/* modales */
+.modal{position:fixed;inset:0;background:#2a1b1488;display:none;align-items:flex-end;justify-content:center;z-index:50}
+.modal.show{display:flex}
+.sheet{background:var(--panel);width:100%;max-width:560px;max-height:92vh;overflow:auto;border-radius:22px 22px 0 0;padding:20px 18px calc(20px + env(safe-area-inset-bottom))}
+@media(min-width:640px){.modal{align-items:center}.sheet{border-radius:22px}}
+.sheet h2{margin:0;font-family:'Barlow Condensed',sans-serif;font-size:28px;font-weight:700}
+.sheet .sub{color:var(--mut);margin:2px 0 12px;font-size:14px}
+.sech{font-family:'Barlow Condensed',sans-serif;font-size:19px;font-weight:700;margin:14px 0 4px}
+.fg{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.field{display:flex;flex-direction:column;gap:4px}
+.field.full{grid-column:1/-1}
+.field label{font-size:14px;font-weight:600}
+.field input,.field select{padding:12px;border:1px solid var(--line);border-radius:10px;background:#fff;width:100%}
+.prev{background:#e7f1ed;color:#14503f;border-radius:10px;padding:10px 12px;font-weight:600}
+.err{color:var(--red);font-weight:600;min-height:20px;margin:8px 0 0;font-size:14px}
+.ma{display:flex;gap:8px;justify-content:flex-end;margin-top:12px;flex-wrap:wrap}
+/* acceso */
+#auth{position:fixed;inset:0;z-index:100;background:var(--brown);display:none;align-items:center;justify-content:center;padding:18px}
+#auth.show{display:flex}
+.authbox{background:var(--panel);border-radius:20px;padding:24px;width:100%;max-width:380px}
+.authbox h2{margin:0 0 4px;font-family:'Barlow Condensed',sans-serif;font-size:30px}
+.authbox p{margin:0 0 14px;color:var(--mut);font-size:14px}
+.authbox input{width:100%;padding:12px;border:1px solid var(--line);border-radius:10px;margin-bottom:10px;background:#fff}
+.authbox .row2{display:flex;gap:8px}.authbox .row2 button{flex:1}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style></head>
+<body>
+<div id="auth"><div class="authbox"><h2>Secadoras de cacao</h2><p id="authmsg">Inicia sesión para ver tus datos.</p>
+<input id="aem" type="email" placeholder="Correo" autocomplete="username">
+<input id="apw" type="password" placeholder="Contraseña (mínimo 6 caracteres)" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()">
+<div id="autherr" class="err"></div>
+<div class="row2"><button class="btn primary" onclick="doLogin()">Entrar</button><button class="btn" onclick="doRegister()">Crear cuenta</button></div></div></div>
+
+<header class="top"><div class="top-in">
+<h1>Secadoras de cacao</h1>
+<div class="userbar"><span id="uemail"></span><button onclick="doLogout()">Cerrar sesión</button><span class="st" id="sst"></span></div>
+<nav class="tabs">
+<button id="tb-sec" class="on" onclick="setTab('sec')">Secadoras</button>
+<button id="tb-cal" onclick="setTab('cal')">Calendario</button>
+<button id="tb-res" onclick="setTab('res')">Resumen</button>
+</nav></div></header>
+
+<main>
+<section id="t-sec">
+<div class="datebar"><button onclick="shiftDay(-1)" aria-label="Día anterior">◀</button><input type="date" id="selDate" onchange="pickDate(this.value)"><button onclick="shiftDay(1)" aria-label="Día siguiente">▶</button><button onclick="goToday()">Hoy</button></div>
+<div class="daysum" id="daySum"></div>
+<div class="floor" id="floor"></div>
+<p class="mut" style="margin-top:10px">Toca una secadora para registrar el cacao que salió. El anillo verde compara la salida de cada secadora con la mayor del día.</p>
+</section>
+
+<section id="t-cal" hidden>
+<div class="card">
+<div class="calhead"><button onclick="shiftMonth(-1)" aria-label="Mes anterior">◀</button><h2 id="calTitle"></h2><button onclick="shiftMonth(1)" aria-label="Mes siguiente">▶</button></div>
+<div class="calgrid" id="calGrid"></div>
+<p class="mut" style="margin:10px 0 0"><span style="color:var(--leaf);font-weight:600">Verde:</span> cacao que salió de las secadoras. <span style="color:var(--amber);font-weight:600">Ámbar:</span> cacao despachado.</p>
+</div>
+<div class="stats" id="calStats"></div>
+</section>
+
+<section id="t-res" hidden>
+<div class="stats" id="resStats"></div>
+<div class="card"><h2>En almacenamiento</h2><div id="resLotes"></div>
+<div class="ma" style="justify-content:flex-start"><button class="btn leaf" onclick="openDisp()">Despachar cacao</button></div>
+<details id="closedBox" style="margin-top:10px"><summary>Lotes ya despachados por completo</summary><div id="resClosed"></div></details></div>
+<div class="card"><h2>Despachos</h2><div id="resDesp"></div></div>
+<div class="cols">
+<div class="card"><h2>Por procedencia</h2><div id="resOrig"></div></div>
+<div class="card"><h2>Por secadora</h2><div id="resDry"></div></div>
+</div>
+</section>
+</main>
+
+<!-- Modal secadora -->
+<div id="dryerM" class="modal"><div class="sheet">
+<h2 id="dmT"></h2><div class="sub" id="dmSub"></div>
+<div class="sech" id="dmListT"></div><div id="dmList"></div>
+<div class="sech" id="dmFormT">Registrar cacao que salió</div>
+<div class="fg">
+<div class="field"><label for="fd">Fecha</label><input type="date" id="fd"></div>
+<div class="field"><label for="fs">Sacos (69,10 kg cada uno)</label><input type="number" id="fs" min="1" step="1" inputmode="numeric" oninput="calcPrev()"></div>
+<div class="field full"><div class="prev" id="fprev"></div></div>
+<div class="field full"><label for="fo">Procedencia del cacao</label><input id="fo" list="origList" placeholder="Finca, zona o productor" autocomplete="off"></div>
+<div class="field full"><label for="fl">Destinatario o lote</label><select id="fl" onchange="onLote()"></select>
+<input id="fn" placeholder="Nombre del nuevo destinatario o lote (ej. Exportación lote 50)" style="display:none;margin-top:8px"></div>
+</div>
+<div id="fHint" class="mut" style="margin-top:6px"></div>
+<div class="err" id="fErr"></div>
+<div class="ma"><button class="btn" onclick="closeM('dryerM')">Cerrar</button><button class="btn" id="fCancel" onclick="cancelEdit()" hidden>Cancelar edición</button><button class="btn primary" id="fSave" onclick="saveEnt()">Guardar</button></div>
+</div></div>
+<datalist id="origList"></datalist>
+
+<!-- Modal día -->
+<div id="dayM" class="modal"><div class="sheet">
+<h2 id="dayT" style="text-transform:capitalize"></h2><div id="dayB"></div>
+<div class="ma"><button class="btn" onclick="closeM('dayM')">Cerrar</button><button class="btn primary" id="dayOpen">Abrir en secadoras</button></div>
+</div></div>
+
+<!-- Modal despacho -->
+<div id="dispM" class="modal"><div class="sheet">
+<h2 id="dpT">Despachar cacao</h2><div class="sub">Lo despachado se descuenta del lote en almacenamiento.</div>
+<div class="fg">
+<div class="field"><label for="dd">Fecha</label><input type="date" id="dd"></div>
+<div class="field"><label for="dl">Destinatario o lote</label><select id="dl" onchange="onDispLote()"></select></div>
+<div class="field full"><div class="prev" id="dAvail"></div></div>
+<div class="field"><label for="dq">Cantidad</label><input type="number" id="dq" min="0" step="any" inputmode="decimal" oninput="calcDisp()"></div>
+<div class="field"><label for="du">Unidad</label><select id="du" onchange="calcDisp()"><option value="t">Toneladas</option><option value="kg">Kilogramos</option><option value="s">Sacos</option></select></div>
+<div class="field full"><div class="prev" id="dPrev" style="background:#f3e8d8;color:#6b3f0d"></div></div>
+<div class="field full"><label for="dn">Observación (a quién, placa, guía)</label><input id="dn" placeholder="Opcional"></div>
+</div>
+<div class="err" id="dErr"></div>
+<div class="ma"><button class="btn" onclick="closeM('dispM')">Cancelar</button><button class="btn" onclick="fillAll()">Todo el lote</button><button class="btn leaf" id="dSave" onclick="saveDisp()">Despachar</button></div>
+</div></div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script>
+/* ====== Firebase (mismo proyecto que Control de Jornada) ====== */
+const firebaseConfig={
+  apiKey:"AIzaSyAeEnTAgGIWuvIjc_g-ZzeuvKF3uyPiNjE",
+  authDomain:"horario-a5b9a.firebaseapp.com",
+  projectId:"horario-a5b9a",
+  storageBucket:"horario-a5b9a.firebasestorage.app",
+  messagingSenderId:"418662389391",
+  appId:"1:418662389391:web:f24ceb003956cc91c402fa",
+  measurementId:"G-FN2WYH5MG8"
+};
+/* ============================================================== */
+const SACO=69.10;
+const LAYOUT=[[1,2],[3,4,5],[6,7,8],[9,10,11],[12,13]];
+const SMALL=[3];
+const $=id=>document.getElementById(id);
+const r2=x=>Math.round((x+Number.EPSILON)*100)/100;
+const nf=new Intl.NumberFormat('es-EC',{minimumFractionDigits:2,maximumFractionDigits:2});
+const fk=kg=>nf.format(r2(kg))+' kg';
+const ft=kg=>nf.format(r2(kg/1000))+' t';
+const fc=kg=>kg>=1000?(kg/1000).toLocaleString('es-EC',{maximumFractionDigits:1})+' t':Math.round(kg)+' kg';
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const nid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+const iso=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+const parse=s=>{const [y,m,d]=s.split('-').map(Number);return new Date(y,m-1,d)};
+const fdate=s=>parse(s).toLocaleDateString('es-EC',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+const fshort=s=>parse(s).toLocaleDateString('es-EC',{day:'2-digit',month:'short',year:'numeric'});
+
+let db={lotes:[],entradas:[],despachos:[]},LI={},uid=null,fdb=null,fauth=null,unsubs=[],ready={};
+let tab='sec',selDate=iso(new Date()),calMonth=selDate.slice(0,7);
+let curDryer=null,editEnt=null,formLote='',editDisp=null;
+
+/* ---------- Firestore ---------- */
+function col(n){return fdb.collection('users').doc(uid).collection(n)}
+function fail(e){console.error(e);alert('No se pudo guardar en la nube: '+(e&&(e.code||e.message)||e))}
+function netStatus(){$('sst').textContent=navigator.onLine?'Sincronizado':'Sin conexión: se guardará al reconectar'}
+window.addEventListener('online',netStatus);window.addEventListener('offline',netStatus);
+function startSync(){
+  stopSync();ready={};$('sst').textContent='Cargando…';
+  const names={sec_lotes:'lotes',sec_entradas:'entradas',sec_despachos:'despachos'};
+  Object.keys(names).forEach(c=>{
+    unsubs.push(col(c).onSnapshot(sn=>{
+      db[names[c]]=sn.docs.map(d=>({id:d.id,...d.data()}));
+      ready[c]=true;if(Object.keys(names).every(k=>ready[k]))netStatus();render()
+    },e=>{$('sst').textContent='Error de sincronización';console.error(e)}))
+  })
+}
+function stopSync(){unsubs.forEach(u=>u());unsubs=[]}
+
+/* ---------- Acceso ---------- */
+function authErr(e){const m={'auth/invalid-credential':'Correo o contraseña incorrectos.','auth/wrong-password':'Contraseña incorrecta.','auth/user-not-found':'No existe una cuenta con ese correo.','auth/email-already-in-use':'Ese correo ya tiene cuenta. Usa “Entrar”.','auth/weak-password':'La contraseña debe tener al menos 6 caracteres.','auth/invalid-email':'Correo no válido.','auth/too-many-requests':'Demasiados intentos. Espera unos minutos.','auth/network-request-failed':'Sin conexión a internet.','auth/unauthorized-domain':'Dominio no autorizado: agrégalo en Firebase → Authentication → Settings → Authorized domains.'};$('autherr').textContent=m[e.code]||(e.code||e.message)}
+function doLogin(){$('autherr').textContent='';fauth.signInWithEmailAndPassword($('aem').value.trim(),$('apw').value).catch(authErr)}
+function doRegister(){$('autherr').textContent='';fauth.createUserWithEmailAndPassword($('aem').value.trim(),$('apw').value).catch(authErr)}
+function doLogout(){if(confirm('¿Cerrar sesión?'))fauth.signOut()}
+function initFirebase(){
+  firebase.initializeApp(firebaseConfig);fauth=firebase.auth();fdb=firebase.firestore();
+  fdb.enablePersistence({synchronizeTabs:true}).catch(()=>{});
+  fauth.onAuthStateChanged(u=>{
+    if(u){uid=u.uid;$('uemail').textContent=u.email;$('auth').classList.remove('show');$('apw').value='';startSync()}
+    else{uid=null;stopSync();db={lotes:[],entradas:[],despachos:[]};$('uemail').textContent='';$('sst').textContent='';$('auth').classList.add('show');render()}
+  })
+}
+
+/* ---------- Cálculos ---------- */
+function recalc(){
+  const m={};db.lotes.forEach(l=>m[l.id]={l,ing:0,desp:0,orig:{}});
+  db.entradas.forEach(e=>{const x=m[e.loteId];if(!x)return;x.ing+=e.kg;const o=e.origin||'Sin procedencia';x.orig[o]=(x.orig[o]||0)+e.kg});
+  db.despachos.forEach(d=>{const x=m[d.loteId];if(x)x.desp+=d.kg});
+  Object.values(m).forEach(x=>{x.ing=r2(x.ing);x.desp=r2(x.desp);x.stock=r2(x.ing-x.desp)});
+  LI=m
+}
+const stockOf=id=>LI[id]?LI[id].stock:0;
+const lname=id=>LI[id]?LI[id].l.name:'(lote eliminado)';
+function inStock(extraId){return Object.values(LI).filter(x=>x.stock>0.005||x.l.id===extraId).sort((a,b)=>a.l.name.localeCompare(b.l.name))}
+const sum=(arr,f)=>r2(arr.reduce((a,x)=>a+f(x),0));
+
+/* ---------- Pestañas y fecha ---------- */
+function setTab(t){tab=t;['sec','cal','res'].forEach(x=>{$('t-'+x).hidden=x!==t;$('tb-'+x).classList.toggle('on',x===t)});render()}
+function pickDate(v){if(v){selDate=v;calMonth=v.slice(0,7);render()}}
+function shiftDay(n){const d=parse(selDate);d.setDate(d.getDate()+n);pickDate(iso(d))}
+function goToday(){pickDate(iso(new Date()))}
+function shiftMonth(n){const [y,m]=calMonth.split('-').map(Number);calMonth=iso(new Date(y,m-1+n,1)).slice(0,7);renderCal()}
+function openM(id){$(id).classList.add('show')}
+function closeM(id){$(id).classList.remove('show')}
+
+function render(){
+  recalc();
+  if(tab==='sec')renderSec();else if(tab==='cal')renderCal();else renderRes();
+  if($('dryerM').classList.contains('show'))refreshDryerModal()
+}
+
+/* ---------- Secadoras ---------- */
+function renderSec(){
+  $('selDate').value=selDate;
+  const de=db.entradas.filter(e=>e.date===selDate),per={};
+  de.forEach(e=>{const p=per[e.dryer]||(per[e.dryer]={s:0,kg:0});p.s+=e.sacks;p.kg+=e.kg});
+  const mx=Math.max(1,...Object.values(per).map(p=>p.s));
+  const ts=de.reduce((a,e)=>a+e.sacks,0),tk=sum(de,e=>e.kg);
+  $('daySum').innerHTML=`<div class="dt">${esc(fdate(selDate))}</div><div class="dn"><b>${ts}</b>sacos</div><div class="dn"><b>${nf.format(tk)}</b>kg</div><div class="dn"><b>${nf.format(r2(tk/1000))}</b>toneladas</div>`;
+  $('floor').innerHTML=LAYOUT.map(row=>'<div class="row">'+row.map(n=>{
+    const p=per[n],pct=p?Math.round(p.s/mx*100):0,sm=SMALL.includes(n);
+    return `<button class="dry${sm?' small':''}${p?' on':''}" style="--p:${pct}" onclick="openDryer(${n})" aria-label="Secadora ${n}${p?', '+p.s+' sacos':''}"><span class="disc"><span class="hub"><b>${n}</b><i>${p?p.s+' sacos':'sin salida'}</i></span></span><span class="dkg">${p?nf.format(r2(p.kg))+' kg':'&nbsp;'}</span></button>`
+  }).join('')+'</div>').join('')
+}
+
+function openDryer(n,date,editId){
+  curDryer=n;if(date)selDate=date;
+  editEnt=editId?db.entradas.find(x=>x.id===editId)||null:null;
+  resetForm();
+  if(editEnt)loadEdit(editEnt);
+  refreshDryerModal();openM('dryerM')
+}
+function lastOrigin(n){const l=db.entradas.filter(e=>e.dryer===n&&e.origin).sort((a,b)=>b.date.localeCompare(a.date)||b.id.localeCompare(a.id))[0];return l?l.origin:''}
+function resetForm(){
+  $('fd').value=selDate;$('fs').value='';$('fo').value=lastOrigin(curDryer);$('fn').value='';$('fErr').textContent='';
+  $('fSave').textContent='Guardar';$('fCancel').hidden=true;$('dmFormT').textContent='Registrar cacao que salió';
+  calcPrev()
+}
+function loadEdit(e){
+  $('fd').value=e.date;$('fs').value=e.sacks;$('fo').value=e.origin||'';formLote=e.loteId;$('fn').value='';
+  $('fSave').textContent='Guardar cambios';$('fCancel').hidden=false;$('dmFormT').textContent='Editar registro';calcPrev()
+}
+function cancelEdit(){editEnt=null;resetForm();fillLote();renderDmList()}
+function calcPrev(){const s=Math.round(Number($('fs').value))||0,kg=r2(s*SACO);$('fprev').textContent='Total: '+fk(kg)+' = '+ft(kg)}
+function onLote(){formLote=$('fl').value;$('fn').style.display=formLote==='__new'?'block':'none'}
+function fillLote(){
+  const s=$('fl'),list=inStock(editEnt&&editEnt.loteId);
+  let h='';
+  if(list.length)h='<option value="">Selecciona…</option>'+list.map(x=>`<option value="${x.l.id}">${esc(x.l.name)} (${ft(x.stock)} almacenadas)</option>`).join('')+'<option value="__new">➕ Crear nuevo destinatario o lote</option>';
+  else h='<option value="__new">➕ Crear nuevo destinatario o lote</option>';
+  s.innerHTML=h;
+  const ok=[...s.options].some(o=>o.value===formLote);
+  s.value=ok?formLote:(list.length?'':'__new');
+  $('fHint').textContent=list.length?'Solo aparecen los lotes que todavía tienen cacao almacenado.':'No hay cacao almacenado: crea un destinatario o lote nuevo.';
+  onLote()
+}
+function renderDmList(){
+  const l=db.entradas.filter(e=>e.dryer===curDryer&&e.date===selDate).sort((a,b)=>a.id.localeCompare(b.id));
+  $('dmListT').textContent='Registros del '+fshort(selDate);
+  $('dmList').innerHTML=l.length?l.map(e=>`<div class="item"><div><b>${e.sacks} sacos</b> — ${fk(e.kg)} (${ft(e.kg)})<div class="mut">Procedencia: ${esc(e.origin||'sin indicar')}</div><div class="mut">Destino: ${esc(lname(e.loteId))}</div></div><div class="acts"><button class="btn sm" onclick="editEntry('${e.id}')" aria-label="Editar">Editar</button><button class="btn sm red" onclick="delEnt('${e.id}')" aria-label="Eliminar">✕</button></div></div>`).join(''):'<div class="mut">Esta secadora no tiene registros ese día.</div>'
+}
+function refreshDryerModal(){
+  const mine=db.entradas.filter(e=>e.dryer===curDryer),ym=selDate.slice(0,7);
+  $('dmT').textContent='Secadora '+curDryer+(SMALL.includes(curDryer)?' (pequeña)':'');
+  $('dmSub').textContent='Total acumulado: '+fk(sum(mine,e=>e.kg))+' ('+ft(sum(mine,e=>e.kg))+'). Este mes: '+fk(sum(mine.filter(e=>e.date.startsWith(ym)),e=>e.kg))+'.';
+  renderDmList();
+  const cnt={};db.entradas.forEach(e=>{if(e.origin)cnt[e.origin]=(cnt[e.origin]||0)+1});
+  $('origList').innerHTML=Object.keys(cnt).sort((a,b)=>cnt[b]-cnt[a]).map(o=>`<option value="${esc(o)}">`).join('');
+  fillLote()
+}
+function editEntry(id){editEnt=db.entradas.find(x=>x.id===id);if(!editEnt)return;loadEdit(editEnt);fillLote();$('fs').focus()}
+function saveEnt(){
+  const err=m=>{$('fErr').textContent=m};err('');
+  const date=$('fd').value,sacks=Math.round(Number($('fs').value)),origin=$('fo').value.trim(),lv=$('fl').value,nn=$('fn').value.trim();
+  if(!date)return err('Selecciona la fecha.');
+  if(!(sacks>=1))return err('Ingresa cuántos sacos salieron.');
+  if(!lv)return err('Elige un destinatario o lote, o crea uno nuevo.');
+  let loteId=lv,newLote=null;
+  if(lv==='__new'){
+    if(!nn)return err('Escribe el nombre del nuevo destinatario o lote.');
+    const ex=Object.values(LI).find(x=>x.stock>0.005&&x.l.name.toLowerCase()===nn.toLowerCase());
+    if(ex)loteId=ex.l.id;else{loteId=nid();newLote={name:nn,created:date}}
+  }
+  const kg=r2(sacks*SACO);
+  if(editEnt){
+    const after=stockOf(editEnt.loteId)-editEnt.kg+(editEnt.loteId===loteId?kg:0);
+    if(after<-0.005)return err('No se puede aplicar el cambio: parte de ese cacao ya se despachó y el lote quedaría en negativo.')
+  }
+  const data={date,dryer:curDryer,sacks,kgSaco:SACO,kg,origin,loteId};
+  const b=fdb.batch();
+  if(newLote)b.set(col('sec_lotes').doc(loteId),newLote);
+  b.set(col('sec_entradas').doc(editEnt?editEnt.id:nid()),data);
+  b.commit().catch(fail);
+  formLote=loteId;editEnt=null;selDate=date;
+  $('fs').value='';$('fn').value='';$('fSave').textContent='Guardar';$('fCancel').hidden=true;$('dmFormT').textContent='Registrar cacao que salió';calcPrev();
+  render()
+}
+function delEnt(id){
+  const e=db.entradas.find(x=>x.id===id);if(!e)return;
+  if(stockOf(e.loteId)-e.kg<-0.005)return alert('No se puede eliminar: ese cacao ya fue despachado (el lote quedaría en negativo). Edita o elimina primero el despacho.');
+  if(!confirm('¿Eliminar este registro de '+e.sacks+' sacos?'))return;
+  const b=fdb.batch();b.delete(col('sec_entradas').doc(id));
+  const otros=db.entradas.some(x=>x.loteId===e.loteId&&x.id!==id),desp=db.despachos.some(x=>x.loteId===e.loteId);
+  if(!otros&&!desp)b.delete(col('sec_lotes').doc(e.loteId));
+  b.commit().catch(fail);
+  if(editEnt&&editEnt.id===id){editEnt=null;resetForm()}
+}
+
+/* ---------- Calendario ---------- */
+function renderCal(){
+  const [y,m]=calMonth.split('-').map(Number),days=new Date(y,m,0).getDate(),off=(new Date(y,m-1,1).getDay()+6)%7,today=iso(new Date());
+  $('calTitle').textContent=new Date(y,m-1,1).toLocaleDateString('es-EC',{month:'long',year:'numeric'});
+  const P={},D={};
+  db.entradas.forEach(e=>{if(e.date.startsWith(calMonth)){const p=P[e.date]||(P[e.date]={kg:0,s:0});p.kg+=e.kg;p.s+=e.sacks}});
+  db.despachos.forEach(d=>{if(d.date.startsWith(calMonth))D[d.date]=(D[d.date]||0)+d.kg});
+  let h=['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'].map(w=>`<div class="wd">${w}</div>`).join('');
+  for(let i=0;i<off;i++)h+='<div class="cd empty"></div>';
+  for(let d=1;d<=days;d++){
+    const ds=calMonth+'-'+String(d).padStart(2,'0'),p=P[ds],x=D[ds];
+    h+=`<button class="cd${ds===today?' today':''}${ds===selDate?' sel':''}" onclick="openDay('${ds}')"><span class="n">${d}</span>${p?`<span class="p">+${fc(p.kg)}</span><span class="p">${p.s} sacos</span>`:''}${x?`<span class="d">−${fc(x)}</span>`:''}</button>`
+  }
+  $('calGrid').innerHTML=h;
+  const me=db.entradas.filter(e=>e.date.startsWith(calMonth)),md=db.despachos.filter(d=>d.date.startsWith(calMonth));
+  $('calStats').innerHTML=stat('Salió de las secadoras este mes',fk(sum(me,e=>e.kg)),ft(sum(me,e=>e.kg))+' · '+me.reduce((a,e)=>a+e.sacks,0)+' sacos')+stat('Despachado este mes',fk(sum(md,d=>d.kg)),ft(sum(md,d=>d.kg)))
+}
+function stat(l,v,s,main){return `<div class="stat${main?' main':''}"><div class="l">${l}</div><div class="v">${v}</div><div class="s">${s||''}</div></div>`}
+function openDay(d){
+  const en=db.entradas.filter(e=>e.date===d).sort((a,b)=>a.dryer-b.dryer||a.id.localeCompare(b.id)),ds=db.despachos.filter(x=>x.date===d);
+  $('dayT').textContent=fdate(d);
+  let h=`<div class="sech">Salió de las secadoras: ${fk(sum(en,e=>e.kg))}</div>`;
+  h+=en.length?en.map(e=>`<div class="item"><div><b>Secadora ${e.dryer}</b>: ${e.sacks} sacos, ${fk(e.kg)}<div class="mut">Procedencia: ${esc(e.origin||'sin indicar')}</div><div class="mut">Destino: ${esc(lname(e.loteId))}</div></div><div class="acts"><button class="btn sm" onclick="closeM('dayM');openDryer(${e.dryer},'${d}','${e.id}')">Editar</button></div></div>`).join(''):'<div class="mut">Sin salidas este día.</div>';
+  h+=`<div class="sech">Despachado: ${fk(sum(ds,x=>x.kg))}</div>`;
+  h+=ds.length?ds.map(x=>`<div class="item"><div><b>${esc(lname(x.loteId))}</b>: ${fk(x.kg)} (${ft(x.kg)})${x.note?`<div class="mut">${esc(x.note)}</div>`:''}</div></div>`).join(''):'<div class="mut">Sin despachos este día.</div>';
+  $('dayB').innerHTML=h;
+  $('dayOpen').onclick=()=>{selDate=d;calMonth=d.slice(0,7);closeM('dayM');setTab('sec')};
+  openM('dayM')
+}
+
+/* ---------- Resumen ---------- */
+function groupSum(arr,keyf,valf){const o={};arr.forEach(x=>{const k=keyf(x);o[k]=(o[k]||0)+valf(x)});return Object.entries(o).sort((a,b)=>b[1]-a[1])}
+function renderRes(){
+  const L=Object.values(LI),open=L.filter(x=>x.stock>0.005).sort((a,b)=>a.l.name.localeCompare(b.l.name)),closed=L.filter(x=>x.stock<=0.005&&x.ing>0).sort((a,b)=>a.l.name.localeCompare(b.l.name));
+  const prod=sum(db.entradas,e=>e.kg),desp=sum(db.despachos,d=>d.kg),stock=sum(open,x=>x.stock),ym=iso(new Date()).slice(0,7),mProd=sum(db.entradas.filter(e=>e.date.startsWith(ym)),e=>e.kg);
+  $('resStats').innerHTML=
+    stat('Cacao que debe haber en almacenamiento',ft(stock),fk(stock)+' · ≈ '+Math.round(stock/SACO)+' sacos',true)+
+    stat('Total que salió de las secadoras',ft(prod),fk(prod)+' · '+db.entradas.reduce((a,e)=>a+e.sacks,0)+' sacos')+
+    stat('Total despachado',ft(desp),fk(desp))+
+    stat('Salió este mes',ft(mProd),fk(mProd));
+  $('resLotes').innerHTML=open.length?open.map(x=>{
+    const orig=Object.entries(x.orig).sort((a,b)=>b[1]-a[1]).map(([o,k])=>esc(o)+' '+ft(k)).join(', ');
+    return `<div class="lote"><div class="lh"><b>${esc(x.l.name)}</b><span class="big">${ft(x.stock)}</span></div><div class="mut">En almacén: ${fk(x.stock)} (≈ ${Math.round(x.stock/SACO)} sacos)</div><div class="mut">Ingresó ${fk(x.ing)}. Despachado ${fk(x.desp)}.</div><div class="mut">Procedencia: ${orig}</div><div class="acts"><button class="btn leaf sm" onclick="openDisp('${x.l.id}')">Despachar</button><button class="btn sm" onclick="renameLote('${x.l.id}')">Renombrar</button></div></div>`}).join(''):'<div class="mut">No hay cacao en almacenamiento. Se llena cuando registras sacos en una secadora.</div>';
+  $('resClosed').innerHTML=closed.length?closed.map(x=>`<div class="item"><div><b>${esc(x.l.name)}</b><div class="mut">Ingresó ${fk(x.ing)}, despachado por completo.</div></div></div>`).join(''):'<div class="mut">Ninguno todavía.</div>';
+  const ds=[...db.despachos].sort((a,b)=>b.date.localeCompare(a.date)||b.id.localeCompare(a.id)).slice(0,40);
+  $('resDesp').innerHTML=ds.length?ds.map(d=>`<div class="item"><div><b>${esc(lname(d.loteId))}</b>: ${fk(d.kg)} (${ft(d.kg)})<div class="mut">${esc(fshort(d.date))}${d.note?' — '+esc(d.note):''}</div></div><div class="acts"><button class="btn sm" onclick="openDisp(null,'${d.id}')">Editar</button><button class="btn sm red" onclick="delDisp('${d.id}')" aria-label="Eliminar">✕</button></div></div>`).join(''):'<div class="mut">Aún no hay despachos.</div>';
+  const go=groupSum(db.entradas,e=>e.origin||'Sin procedencia',e=>e.kg);
+  $('resOrig').innerHTML=go.length?'<table class="t"><tr><th>Procedencia</th><th class="r">Toneladas</th></tr>'+go.map(([o,k])=>`<tr><td>${esc(o)}</td><td class="r">${nf.format(r2(k/1000))}</td></tr>`).join('')+'</table>':'<div class="mut">Sin datos.</div>';
+  const gd=groupSum(db.entradas,e=>e.dryer,e=>e.kg).sort((a,b)=>a[0]-b[0]);
+  $('resDry').innerHTML=gd.length?'<table class="t"><tr><th>Secadora</th><th class="r">Sacos</th><th class="r">Toneladas</th></tr>'+gd.map(([d,k])=>`<tr><td>Secadora ${d}</td><td class="r">${db.entradas.filter(e=>String(e.dryer)===String(d)).reduce((a,e)=>a+e.sacks,0)}</td><td class="r">${nf.format(r2(k/1000))}</td></tr>`).join('')+'</table>':'<div class="mut">Sin datos.</div>'
+}
+function renameLote(id){const l=db.lotes.find(x=>x.id===id);if(!l)return;const n=prompt('Nuevo nombre del destinatario o lote:',l.name);if(n&&n.trim())col('sec_lotes').doc(id).update({name:n.trim()}).catch(fail)}
+
+/* ---------- Despachos ---------- */
+function availFor(id){return r2(stockOf(id)+(editDisp&&editDisp.loteId===id?editDisp.kg:0))}
+function openDisp(loteId,editId){
+  editDisp=editId?db.despachos.find(x=>x.id===editId)||null:null;
+  const list=inStock(editDisp&&editDisp.loteId);
+  if(!list.length)return alert('No hay cacao en almacenamiento para despachar.');
+  $('dpT').textContent=editDisp?'Editar despacho':'Despachar cacao';$('dSave').textContent=editDisp?'Guardar cambios':'Despachar';
+  $('dl').innerHTML=(editDisp||loteId?'':'<option value="">Selecciona…</option>')+list.map(x=>`<option value="${x.l.id}">${esc(x.l.name)}</option>`).join('');
+  $('dl').value=editDisp?editDisp.loteId:(loteId||'');
+  $('dd').value=editDisp?editDisp.date:iso(new Date());
+  $('dn').value=editDisp?editDisp.note||'':'';
+  if(editDisp){$('du').value='kg';$('dq').value=editDisp.kg}else{$('du').value='t';$('dq').value=''}
+  $('dErr').textContent='';onDispLote();openM('dispM')
+}
+function onDispLote(){const id=$('dl').value;$('dAvail').textContent=id?'Disponible en almacén: '+fk(availFor(id))+' ('+ft(availFor(id))+')':'Elige el lote del que sale el cacao.';calcDisp()}
+function dispKg(){const q=Number($('dq').value)||0,u=$('du').value;return r2(u==='t'?q*1000:u==='s'?q*SACO:q)}
+function calcDisp(){const id=$('dl').value,kg=dispKg();$('dPrev').textContent=kg>0?'Se despachan '+fk(kg)+' ('+ft(kg)+', ≈ '+Math.round(kg/SACO)+' sacos)'+(id?'. Quedarían '+fk(availFor(id)-kg)+'.':'.'):'Ingresa la cantidad a despachar.'}
+function fillAll(){const id=$('dl').value;if(!id)return;$('du').value='kg';$('dq').value=availFor(id);calcDisp()}
+function saveDisp(){
+  const err=m=>{$('dErr').textContent=m};err('');
+  const date=$('dd').value,id=$('dl').value,kg=dispKg();
+  if(!date)return err('Selecciona la fecha.');
+  if(!id)return err('Elige el destinatario o lote.');
+  if(!(kg>0))return err('Ingresa la cantidad a despachar.');
+  if(kg>availFor(id)+0.005)return err('Solo hay '+fk(availFor(id))+' ('+ft(availFor(id))+') disponibles en ese lote.');
+  const data={date,loteId:id,kg,note:$('dn').value.trim()};
+  col('sec_despachos').doc(editDisp?editDisp.id:nid()).set(data).catch(fail);
+  editDisp=null;closeM('dispM')
+}
+function delDisp(id){const d=db.despachos.find(x=>x.id===id);if(!d)return;if(confirm('¿Eliminar este despacho de '+fk(d.kg)+'? El cacao vuelve al almacenamiento.'))col('sec_despachos').doc(id).delete().catch(fail)}
+
+document.addEventListener('keydown',e=>{if(e.key==='Escape')['dryerM','dayM','dispM'].forEach(closeM)});
+['dryerM','dayM','dispM'].forEach(id=>$(id).addEventListener('click',e=>{if(e.target.id===id)closeM(id)}));
+initFirebase();render();
+</script>
+</body></html>
