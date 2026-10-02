@@ -217,6 +217,11 @@ const firebaseConfig={
 const SACO=69.10;
 const LAYOUT=[[1,2],[3,4,5],[6,7,8],[9,10,11],[12,13]];
 const SMALL=[3];
+/* Nombre visible de cada secadora según su posición en el plano (la pequeña es la de orgánico) */
+const NOMBRES={1:'2',2:'1',3:'orgánico',4:'4',5:'3',6:'7',7:'6',8:'5',9:'10',10:'9',11:'8',12:'12',13:'11'};
+const dlabel=n=>(n=Number(n))===3?'Secadora de orgánico':'Secadora '+NOMBRES[n];
+const dshort=n=>(n=Number(n))===3?'Org':NOMBRES[n];
+const dord=n=>(n=Number(n))===3?99:Number(NOMBRES[n]);
 const $=id=>document.getElementById(id);
 const r2=x=>Math.round((x+Number.EPSILON)*100)/100;
 const nf=new Intl.NumberFormat('es-EC',{minimumFractionDigits:2,maximumFractionDigits:2});
@@ -303,7 +308,7 @@ function renderSec(){
   $('daySum').innerHTML=`<div class="dt">${esc(fdate(selDate))}</div><div class="dn"><b>${ts}</b>sacos</div><div class="dn"><b>${nf.format(tk)}</b>kg</div><div class="dn"><b>${nf.format(r2(tk/1000))}</b>toneladas</div>`;
   $('floor').innerHTML=LAYOUT.map(row=>'<div class="row">'+row.map(n=>{
     const p=per[n],pct=p?Math.round(p.s/mx*100):0,sm=SMALL.includes(n);
-    return `<button class="dry${sm?' small':''}${p?' on':''}" style="--p:${pct}" onclick="openDryer(${n})" aria-label="Secadora ${n}${p?', '+p.s+' sacos':''}"><span class="disc"><span class="hub"><b>${n}</b><i>${p?p.s+' sacos':'sin salida'}</i></span></span><span class="dkg">${p?nf.format(r2(p.kg))+' kg':'&nbsp;'}</span></button>`
+    return `<button class="dry${sm?' small':''}${p?' on':''}" style="--p:${pct}" onclick="openDryer(${n})" aria-label="${dlabel(n)}${p?', '+p.s+' sacos':''}"><span class="disc"><span class="hub"><b>${dshort(n)}</b><i>${p?p.s+' sacos':'sin salida'}</i></span></span><span class="dkg">${p?nf.format(r2(p.kg))+' kg':'&nbsp;'}</span></button>`
   }).join('')+'</div>').join('')
 }
 
@@ -345,7 +350,7 @@ function renderDmList(){
 }
 function refreshDryerModal(){
   const mine=db.entradas.filter(e=>e.dryer===curDryer),ym=selDate.slice(0,7);
-  $('dmT').textContent='Secadora '+curDryer+(SMALL.includes(curDryer)?' (pequeña)':'');
+  $('dmT').textContent=dlabel(curDryer);
   $('dmSub').textContent='Total acumulado: '+fk(sum(mine,e=>e.kg))+' ('+ft(sum(mine,e=>e.kg))+'). Este mes: '+fk(sum(mine.filter(e=>e.date.startsWith(ym)),e=>e.kg))+'.';
   renderDmList();
   const cnt={};db.entradas.forEach(e=>{if(e.origin)cnt[e.origin]=(cnt[e.origin]||0)+1});
@@ -409,10 +414,10 @@ function renderCal(){
 }
 function stat(l,v,s,main){return `<div class="stat${main?' main':''}"><div class="l">${l}</div><div class="v">${v}</div><div class="s">${s||''}</div></div>`}
 function openDay(d){
-  const en=db.entradas.filter(e=>e.date===d).sort((a,b)=>a.dryer-b.dryer||a.id.localeCompare(b.id)),ds=db.despachos.filter(x=>x.date===d);
+  const en=db.entradas.filter(e=>e.date===d).sort((a,b)=>dord(a.dryer)-dord(b.dryer)||a.id.localeCompare(b.id)),ds=db.despachos.filter(x=>x.date===d);
   $('dayT').textContent=fdate(d);
   let h=`<div class="sech">Salió de las secadoras: ${fk(sum(en,e=>e.kg))}</div>`;
-  h+=en.length?en.map(e=>`<div class="item"><div><b>Secadora ${e.dryer}</b>: ${e.sacks} sacos, ${fk(e.kg)}<div class="mut">Procedencia: ${esc(e.origin||'sin indicar')}</div><div class="mut">Destino: ${esc(lname(e.loteId))}</div></div><div class="acts"><button class="btn sm" onclick="closeM('dayM');openDryer(${e.dryer},'${d}','${e.id}')">Editar</button></div></div>`).join(''):'<div class="mut">Sin salidas este día.</div>';
+  h+=en.length?en.map(e=>`<div class="item"><div><b>${dlabel(e.dryer)}</b>: ${e.sacks} sacos, ${fk(e.kg)}<div class="mut">Procedencia: ${esc(e.origin||'sin indicar')}</div><div class="mut">Destino: ${esc(lname(e.loteId))}</div></div><div class="acts"><button class="btn sm" onclick="closeM('dayM');openDryer(${e.dryer},'${d}','${e.id}')">Editar</button></div></div>`).join(''):'<div class="mut">Sin salidas este día.</div>';
   h+=`<div class="sech">Despachado: ${fk(sum(ds,x=>x.kg))}</div>`;
   h+=ds.length?ds.map(x=>`<div class="item"><div><b>${esc(lname(x.loteId))}</b>: ${fk(x.kg)} (${ft(x.kg)})${x.note?`<div class="mut">${esc(x.note)}</div>`:''}</div></div>`).join(''):'<div class="mut">Sin despachos este día.</div>';
   $('dayB').innerHTML=h;
@@ -438,8 +443,8 @@ function renderRes(){
   $('resDesp').innerHTML=ds.length?ds.map(d=>`<div class="item"><div><b>${esc(lname(d.loteId))}</b>: ${fk(d.kg)} (${ft(d.kg)})<div class="mut">${esc(fshort(d.date))}${d.note?' — '+esc(d.note):''}</div></div><div class="acts"><button class="btn sm" onclick="openDisp(null,'${d.id}')">Editar</button><button class="btn sm red" onclick="delDisp('${d.id}')" aria-label="Eliminar">✕</button></div></div>`).join(''):'<div class="mut">Aún no hay despachos.</div>';
   const go=groupSum(db.entradas,e=>e.origin||'Sin procedencia',e=>e.kg);
   $('resOrig').innerHTML=go.length?'<table class="t"><tr><th>Procedencia</th><th class="r">Toneladas</th></tr>'+go.map(([o,k])=>`<tr><td>${esc(o)}</td><td class="r">${nf.format(r2(k/1000))}</td></tr>`).join('')+'</table>':'<div class="mut">Sin datos.</div>';
-  const gd=groupSum(db.entradas,e=>e.dryer,e=>e.kg).sort((a,b)=>a[0]-b[0]);
-  $('resDry').innerHTML=gd.length?'<table class="t"><tr><th>Secadora</th><th class="r">Sacos</th><th class="r">Toneladas</th></tr>'+gd.map(([d,k])=>`<tr><td>Secadora ${d}</td><td class="r">${db.entradas.filter(e=>String(e.dryer)===String(d)).reduce((a,e)=>a+e.sacks,0)}</td><td class="r">${nf.format(r2(k/1000))}</td></tr>`).join('')+'</table>':'<div class="mut">Sin datos.</div>'
+  const gd=groupSum(db.entradas,e=>e.dryer,e=>e.kg).sort((a,b)=>dord(a[0])-dord(b[0]));
+  $('resDry').innerHTML=gd.length?'<table class="t"><tr><th>Secadora</th><th class="r">Sacos</th><th class="r">Toneladas</th></tr>'+gd.map(([d,k])=>`<tr><td>${dlabel(d)}</td><td class="r">${db.entradas.filter(e=>String(e.dryer)===String(d)).reduce((a,e)=>a+e.sacks,0)}</td><td class="r">${nf.format(r2(k/1000))}</td></tr>`).join('')+'</table>':'<div class="mut">Sin datos.</div>'
 }
 function renameLote(id){const l=db.lotes.find(x=>x.id===id);if(!l)return;const n=prompt('Nuevo nombre del destinatario o lote:',l.name);if(n&&n.trim())col('sec_lotes').doc(id).update({name:n.trim()}).catch(fail)}
 
