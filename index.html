@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="es"><head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,interactive-widget=resizes-content">
 <title>Secadoras de cacao</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
@@ -21,7 +21,7 @@ button{cursor:pointer;border:0;background:none}
 .userbar button{background:#ffffff22;color:#fff;border-radius:8px;padding:4px 10px;font-size:13px}
 .userbar .st{margin-left:auto}
 .tabs{display:flex;gap:4px}
-.tabs button{flex:1;max-width:200px;padding:11px 8px;border-radius:12px 12px 0 0;color:#e8d9cc;font-weight:600;background:#ffffff14}
+.tabs button{flex:1;min-width:0;max-width:200px;padding:11px 4px;white-space:nowrap;border-radius:12px 12px 0 0;color:#e8d9cc;font-weight:600;background:#ffffff14}
 .tabs button.on{background:var(--floor);color:var(--ink)}
 main{max-width:980px;margin:0 auto;padding:16px 12px calc(40px + env(safe-area-inset-bottom))}
 .card{background:var(--panel);border-radius:16px;padding:16px;margin-bottom:14px;border:1px solid var(--line)}
@@ -30,25 +30,27 @@ main{max-width:980px;margin:0 auto;padding:16px 12px calc(40px + env(safe-area-i
 .btn.primary{background:var(--brown);color:#fff}
 .btn.leaf{background:var(--leaf);color:#fff}
 .btn.red{background:#f5dcd8;color:var(--red)}
-.btn.sm{padding:6px 10px;font-size:14px}
+.btn.sm{padding:8px 12px;font-size:14px;min-height:40px}
 .mut{color:var(--mut);font-size:14px}
 /* barra de fecha */
 .datebar{display:flex;gap:8px;align-items:center;margin-bottom:12px;flex-wrap:wrap}
 .datebar input{flex:1;min-width:150px;padding:10px;border:1px solid var(--line);border-radius:10px;background:#fff}
 .datebar button{padding:10px 14px;border-radius:10px;background:#fff;border:1px solid var(--line);font-weight:600}
 .daysum{display:flex;gap:18px;align-items:baseline;flex-wrap:wrap;margin-bottom:14px}
-.daysum .dt{font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:600;text-transform:capitalize;flex-basis:100%}
+.daysum .dt{font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:600;flex-basis:100%}
 .daysum .dn b{font-family:'Barlow Condensed',sans-serif;font-size:30px;font-weight:700;margin-right:4px}
 /* planta */
 .floor{background:#f2f2ee;border-radius:20px;border:2px solid var(--line);padding:22px 8px;display:flex;flex-direction:column;align-items:center;gap:18px;background-image:linear-gradient(#0000000a 1px,transparent 1px),linear-gradient(90deg,#0000000a 1px,transparent 1px);background-size:32px 32px}
 .row{display:flex;justify-content:center;align-items:flex-end;gap:clamp(12px,4vw,36px)}
-.dry{--d:min(28vw,128px);display:flex;flex-direction:column;align-items:center;gap:5px;width:var(--d);padding:0}
-.dry.small{--d:min(21vw,96px)}
+.dry{--d:min(25vw,128px);display:flex;flex-direction:column;align-items:center;gap:5px;width:var(--d);padding:0}
+.dry.small{--d:min(19vw,96px)}
 .disc{position:relative;width:var(--d);height:var(--d);border-radius:50%;background:conic-gradient(var(--leaf) calc(var(--p,0)*1%),var(--sand) 0);display:grid;place-items:center;box-shadow:0 3px 8px #2a1b1426;transition:transform .12s}
 .dry:active .disc{transform:scale(.95)}
 .hub{width:82%;height:82%;border-radius:50%;background:radial-gradient(circle at 35% 30%,#8c5a3c,var(--brown) 70%);color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1;box-shadow:inset 0 0 0 3px #ffffff30}
 .hub b{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:calc(var(--d)*.36)}
 .hub i{font-style:normal;font-size:calc(var(--d)*.115);margin-top:2px;opacity:.9}
+.dry.small .hub b{font-size:calc(var(--d)*.28)}
+.dry.small .hub i{font-size:calc(var(--d)*.13)}
 .dry.st-sec .hub{background:radial-gradient(circle at 35% 30%,#d79a3a,var(--amber) 70%)}
 .dry.st-seco .hub{background:radial-gradient(circle at 35% 30%,#2f9079,var(--leaf) 70%)}
 .dkg small{display:block;font-size:12px;color:var(--amber);font-weight:700}
@@ -61,9 +63,9 @@ main{max-width:980px;margin:0 auto;padding:16px 12px calc(40px + env(safe-area-i
 .dkg{font-size:13px;font-weight:600;min-height:18px;color:var(--ink)}
 /* calendario */
 .calhead{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
-.calhead h2{margin:0;text-transform:capitalize}
+.calhead h2{margin:0}
 .calhead button{width:42px;height:42px;border-radius:10px;background:#fff;border:1px solid var(--line);font-size:18px}
-.calgrid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+.calgrid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px}
 .wd{text-align:center;font-size:13px;color:var(--mut);font-weight:600;padding:4px 0}
 .cd{min-height:68px;border-radius:10px;background:#fff;border:1px solid var(--line);padding:4px;text-align:left;display:flex;flex-direction:column;gap:1px;font-size:11px;line-height:1.2;overflow:hidden}
 .cd.empty{background:transparent;border:0}
@@ -95,18 +97,22 @@ table.t td.r,table.t th.r{text-align:right}
 details summary{cursor:pointer;font-weight:600;padding:6px 0}
 .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px}
 /* modales */
-.modal{position:fixed;inset:0;background:#2a1b1488;display:none;align-items:flex-end;justify-content:center;z-index:50}
+.modal{position:fixed;inset:0;height:100vh;height:100dvh;background:#2a1b1488;display:none;align-items:flex-end;justify-content:center;z-index:50}
 .modal.show{display:flex}
-.sheet{background:var(--panel);width:100%;max-width:560px;max-height:92vh;overflow:auto;border-radius:22px 22px 0 0;padding:20px 18px calc(20px + env(safe-area-inset-bottom))}
+.sheet{background:var(--panel);width:100%;max-width:560px;max-height:92vh;max-height:92dvh;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;border-radius:22px 22px 0 0;padding:20px 18px calc(20px + env(safe-area-inset-bottom))}
 @media(min-width:640px){.modal{align-items:center}.sheet{border-radius:22px}}
 .sheet h2{margin:0;font-family:'Barlow Condensed',sans-serif;font-size:28px;font-weight:700}
 .sheet .sub{color:var(--mut);margin:2px 0 12px;font-size:14px}
 .sech{font-family:'Barlow Condensed',sans-serif;font-size:19px;font-weight:700;margin:14px 0 4px}
-.fg{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.field{display:flex;flex-direction:column;gap:4px}
+.fg{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.field{display:flex;flex-direction:column;gap:4px;min-width:0}
 .field.full{grid-column:1/-1}
 .field label{font-size:14px;font-weight:600}
-.field input,.field select{padding:12px;border:1px solid var(--line);border-radius:10px;background:#fff;width:100%}
+.field input,.field select{padding:12px;border:1px solid var(--line);border-radius:10px;background:#fff;width:100%;min-width:0;max-width:100%;min-height:48px;font-size:16px;text-overflow:ellipsis}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:2px}
+.chip-b{padding:8px 14px;border-radius:999px;background:#fff;border:1px solid var(--line);font-weight:600;font-size:15px;min-height:40px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.chip-b.on{background:var(--brown);color:#fff;border-color:var(--brown)}
+body.lock{overflow:hidden}
 .prev{background:#e7f1ed;color:#14503f;border-radius:10px;padding:10px 12px;font-weight:600}
 .err{color:var(--red);font-weight:600;min-height:20px;margin:8px 0 0;font-size:14px}
 .ma{display:flex;gap:8px;justify-content:flex-end;margin-top:12px;flex-wrap:wrap}
@@ -118,6 +124,17 @@ details summary{cursor:pointer;font-weight:600;padding:6px 0}
 .authbox p{margin:0 0 14px;color:var(--mut);font-size:14px}
 .authbox input{width:100%;padding:12px;border:1px solid var(--line);border-radius:10px;margin-bottom:10px;background:#fff}
 .authbox .row2{display:flex;gap:8px}.authbox .row2 button{flex:1}
+@media(max-width:360px){.tabs button{font-size:14px}}
+.kvs{margin:6px 0}
+.kv{display:flex;justify-content:space-between;gap:12px;padding:7px 0;border-bottom:1px solid var(--line);font-size:15px}
+.kv span{color:var(--mut)}.kv b{text-align:right;font-weight:600}
+.tchart{width:100%;height:auto;display:block;margin:8px 0;background:#fff;border:1px solid var(--line);border-radius:12px}
+.tchart .gl{stroke:var(--line);stroke-width:1}.tchart .ln{fill:none;stroke:var(--amber);stroke-width:2.5;stroke-linejoin:round}
+.tchart .dt{fill:var(--amber);stroke:#fff;stroke-width:1.5}.tchart text{font-size:10px;fill:var(--mut)}
+.hf{display:flex;gap:8px;margin-bottom:10px}
+.hf select{flex:1;min-width:0;min-height:46px;padding:10px;border:1px solid var(--line);border-radius:10px;background:#fff;font-size:16px;text-overflow:ellipsis}
+#cycM{z-index:60}
+@media(max-width:420px){.cd{font-size:10px;padding:3px;min-height:60px}.cd .n{font-size:12px}.top h1{font-size:25px}.item{flex-direction:column}.item .acts{width:100%}}
 @media(prefers-reduced-motion:reduce){*{transition:none!important}}
 </style></head>
 <body>
@@ -160,7 +177,12 @@ details summary{cursor:pointer;font-weight:600;padding:6px 0}
 <div class="ma" style="justify-content:flex-start"><button class="btn leaf" onclick="openDisp()">Despachar cacao</button></div>
 <details id="closedBox" style="margin-top:10px"><summary>Lotes ya despachados por completo</summary><div id="resClosed"></div></details></div>
 <div class="card"><h2>Despachos</h2><div id="resDesp"></div></div>
-<div class="card"><h2>Historial de cargas</h2><div id="resCiclos"></div></div>
+<div class="card" id="histCard"><h2>Historial de cargas</h2>
+<div class="hf"><select id="hfDry" aria-label="Filtrar por secadora" onchange="setHist('d',this.value)"></select><select id="hfMes" aria-label="Filtrar por mes" onchange="setHist('m',this.value)"></select></div>
+<div id="resCiclos"></div>
+<details style="margin-top:10px"><summary>Descargar datos (Excel / CSV)</summary>
+<div class="ma" style="justify-content:flex-start"><button class="btn sm" onclick="exportCiclos()">Resumen de cargas</button><button class="btn sm" onclick="exportEventos()">Temperaturas y calificaciones</button><button class="btn sm" onclick="exportSacos()">Sacos secos</button></div>
+<div class="mut">Se descargan con el filtro de secadora y mes que tengas elegido.</div></details></div>
 <div class="cols">
 <div class="card"><h2>Por procedencia</h2><div id="resOrig"></div></div>
 <div class="card"><h2>Por secadora</h2><div id="resDry"></div></div>
@@ -178,11 +200,12 @@ details summary{cursor:pointer;font-weight:600;padding:6px 0}
 <div class="sech">Ingresar cacao por secar</div>
 <div class="fg">
 <div class="field full"><label for="sd">Fecha y hora de ingreso</label><input type="datetime-local" id="sd"></div>
-<div class="field"><label for="st">Tipo de cacao</label><input id="st" list="tipoList" placeholder="Ej. CCN-51" autocomplete="off"></div>
-<div class="field"><label for="so">Procedencia</label><input id="so" list="origList" placeholder="Finca, zona o productor" autocomplete="off"></div>
+<div class="field full"><label for="st">Tipo de cacao</label><div class="chips" id="tipoChips"></div><input id="st" placeholder="Elige uno arriba o escribe otro" autocomplete="off" oninput="syncChips('st')"></div>
+<div class="field full"><label for="so">Procedencia</label><div class="chips" id="origChips"></div><input id="so" placeholder="Elige una arriba o escribe finca, zona o productor" autocomplete="off" oninput="syncChips('so')"></div>
 <div class="field"><label for="sq">Cantidad por secar</label><input id="sq" inputmode="decimal" placeholder="0"></div>
-<div class="field"><label for="su">Unidad</label><select id="su"><option value="kg">Kilogramos</option><option value="qq">Quintales (45,36 kg)</option><option value="t">Toneladas</option></select></div>
+<div class="field"><label for="su">Unidad</label><select id="su"><option value="kg">Kilogramos</option><option value="qq">Quintales</option><option value="t">Toneladas</option></select></div>
 </div>
+<div class="mut" style="margin-top:6px">1 quintal = 45,36 kg</div>
 <div class="err" id="sErr"></div>
 <div class="ma"><button class="btn primary" onclick="startCiclo()">Iniciar secado</button></div>
 <div class="mut">Los sacos secos se podrán registrar cuando marques esta carga como seca.</div>
@@ -209,9 +232,9 @@ details summary{cursor:pointer;font-weight:600;padding:6px 0}
 <div class="sech" id="dmFormT">Registrar sacos secos que salieron</div>
 <div class="fg">
 <div class="field"><label for="fd">Fecha</label><input type="date" id="fd"></div>
-<div class="field"><label for="fs">Sacos (69,10 kg cada uno)</label><input type="number" id="fs" min="1" step="1" inputmode="numeric" oninput="calcPrev()"></div>
+<div class="field"><label for="fs">Sacos secos</label><input type="number" id="fs" min="1" step="1" inputmode="numeric" oninput="calcPrev()"></div>
 <div class="field full"><div class="prev" id="fprev"></div></div>
-<div class="field full" id="foW" hidden><label for="fo">Procedencia del cacao</label><input id="fo" list="origList" placeholder="Finca, zona o productor" autocomplete="off"></div>
+<div class="field full" id="foW" hidden><label for="fo">Procedencia del cacao</label><div class="chips" id="foChips"></div><input id="fo" placeholder="Elige una arriba o escribe otra" autocomplete="off" oninput="syncChips('fo')"></div>
 <div class="field full"><label for="fl">Destinatario o lote</label><select id="fl" onchange="onLote()"></select>
 <input id="fn" placeholder="Nombre del nuevo destinatario o lote (ej. Exportación lote 50)" style="display:none;margin-top:8px"></div>
 </div>
@@ -224,13 +247,15 @@ details summary{cursor:pointer;font-weight:600;padding:6px 0}
 
 <div id="blkDone" hidden><div class="ma" style="justify-content:flex-start"><button class="btn" id="btnReopen" onclick="reopenCiclo()">Volver a secando</button><button class="btn leaf" onclick="finishCiclo()">Finalizar descarga y liberar secadora</button></div></div>
 
+<div id="pastBox" hidden><div class="sech">Cargas anteriores de esta secadora</div><div id="pastList"></div></div>
+
 <div class="ma"><button class="btn" onclick="closeM('dryerM')">Cerrar</button></div>
 </div></div>
-<datalist id="origList"></datalist><datalist id="tipoList"></datalist>
+
 
 <!-- Modal día -->
 <div id="dayM" class="modal"><div class="sheet">
-<h2 id="dayT" style="text-transform:capitalize"></h2><div id="dayB"></div>
+<h2 id="dayT"></h2><div id="dayB"></div>
 <div class="ma"><button class="btn" onclick="closeM('dayM')">Cerrar</button><button class="btn primary" id="dayOpen">Abrir en secadoras</button></div>
 </div></div>
 
@@ -248,6 +273,12 @@ details summary{cursor:pointer;font-weight:600;padding:6px 0}
 </div>
 <div class="err" id="dErr"></div>
 <div class="ma"><button class="btn" onclick="closeM('dispM')">Cancelar</button><button class="btn" onclick="fillAll()">Todo el lote</button><button class="btn leaf" id="dSave" onclick="saveDisp()">Despachar</button></div>
+</div></div>
+
+<!-- Modal detalle de una carga -->
+<div id="cycM" class="modal"><div class="sheet">
+<h2 id="cyT"></h2><div id="cyB"></div>
+<div class="ma"><button class="btn" onclick="closeM('cycM')">Cerrar</button></div>
 </div></div>
 
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
@@ -283,7 +314,8 @@ const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;'
 const nid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,6);
 const iso=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
 const parse=s=>{const [y,m,d]=s.split('-').map(Number);return new Date(y,m-1,d)};
-const fdate=s=>parse(s).toLocaleDateString('es-EC',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+const cap=t=>t.charAt(0).toUpperCase()+t.slice(1);
+const fdate=s=>cap(parse(s).toLocaleDateString('es-EC',{weekday:'long',day:'numeric',month:'long',year:'numeric'}));
 const fshort=s=>parse(s).toLocaleDateString('es-EC',{day:'2-digit',month:'short',year:'numeric'});
 
 let db={lotes:[],entradas:[],despachos:[],ciclos:[],eventos:[]},LI={},uid=null,fdb=null,fauth=null,unsubs=[],ready={};
@@ -340,8 +372,8 @@ function pickDate(v){if(v){selDate=v;calMonth=v.slice(0,7);render()}}
 function shiftDay(n){const d=parse(selDate);d.setDate(d.getDate()+n);pickDate(iso(d))}
 function goToday(){pickDate(iso(new Date()))}
 function shiftMonth(n){const [y,m]=calMonth.split('-').map(Number);calMonth=iso(new Date(y,m-1+n,1)).slice(0,7);renderCal()}
-function openM(id){$(id).classList.add('show')}
-function closeM(id){$(id).classList.remove('show')}
+function openM(id){$(id).classList.add('show');document.body.classList.add('lock')}
+function closeM(id){$(id).classList.remove('show');if(!document.querySelector('.modal.show'))document.body.classList.remove('lock')}
 
 function render(){
   recalc();
@@ -362,6 +394,15 @@ let rateSel=0;
 function activeOf(n){return db.ciclos.filter(c=>Number(c.dryer)===Number(n)&&c.status!=='finalizada').sort((a,b)=>b.startAt-a.startAt)[0]||null}
 function evsOf(id,type){return db.eventos.filter(e=>e.cycleId===id&&(!type||e.type===type)).sort((a,b)=>a.ts-b.ts)}
 function cycEntries(id){return db.entradas.filter(e=>e.cycleId===id)}
+function setChips(boxId,inputId,vals){
+  const box=$(boxId),cur=$(inputId).value.trim().toLowerCase();
+  box.innerHTML=vals.map(v=>`<button type="button" class="chip-b${v.toLowerCase()===cur?' on':''}" data-v="${esc(v)}">${esc(v)}</button>`).join('');
+  box.onclick=e=>{const b=e.target.closest('.chip-b');if(!b)return;$(inputId).value=b.dataset.v;syncChips(inputId)}
+}
+function syncChips(inputId){
+  const box=$({st:'tipoChips',so:'origChips',fo:'foChips'}[inputId]),cur=$(inputId).value.trim().toLowerCase();
+  box.querySelectorAll('.chip-b').forEach(b=>b.classList.toggle('on',b.dataset.v.toLowerCase()===cur))
+}
 function pickRate(v){rateSel=v;document.querySelectorAll('#rate .rt').forEach(b=>b.classList.toggle('on',Number(b.dataset.v)===v))}
 
 /* ---------- Secadoras ---------- */
@@ -397,7 +438,7 @@ function loadEdit(e){
   $('fSave').textContent='Guardar cambios';$('fCancel').hidden=false;$('dmFormT').textContent='Editar registro';calcPrev()
 }
 function cancelEdit(){editEnt=null;resetForm();refreshDryerModal()}
-function calcPrev(){const s=Math.round(Number($('fs').value))||0,kg=r2(s*SACO);$('fprev').textContent='Total: '+fk(kg)+' = '+ft(kg)}
+function calcPrev(){const s=Math.round(Number($('fs').value))||0,kg=r2(s*SACO);$('fprev').textContent='Total: '+fk(kg)+' = '+ft(kg)+' (69,10 kg por saco)'}
 function onLote(){formLote=$('fl').value;$('fn').style.display=formLote==='__new'?'block':'none'}
 function fillLote(){
   const s=$('fl'),list=inStock(editEnt&&editEnt.loteId);
@@ -427,8 +468,8 @@ function refreshDryerModal(){
   const co=(arr,f)=>{const c={};arr.forEach(x=>{const v=f(x);if(v)c[v]=(c[v]||0)+1});return c};
   const oc=co(db.ciclos.concat(db.entradas),x=>x.origin),tc=co(db.ciclos,x=>x.tipo);
   TIPOS_BASE.forEach(t=>{if(!tc[t])tc[t]=0});
-  $('origList').innerHTML=Object.keys(oc).sort((a,b)=>oc[b]-oc[a]).map(o=>`<option value="${esc(o)}">`).join('');
-  $('tipoList').innerHTML=Object.keys(tc).sort((a,b)=>tc[b]-tc[a]).map(o=>`<option value="${esc(o)}">`).join('');
+  const ol=Object.keys(oc).sort((a,b)=>oc[b]-oc[a]).slice(0,8),tl=Object.keys(tc).sort((a,b)=>tc[b]-tc[a]);
+  setChips('tipoChips','st',tl);setChips('origChips','so',ol);setChips('foChips','fo',ol);
   $('blkStatus').hidden=!ac;if(ac)$('blkStatus').innerHTML=cycleSummary(ac);
   $('blkStart').hidden=state!=='libre';
   $('blkDrying').hidden=state!=='secando';
@@ -438,7 +479,10 @@ function refreshDryerModal(){
   $('blkBag').hidden=!(state==='seco'||editEnt);
   $('blkDone').hidden=state!=='seco';
   if(ac)$('btnReopen').hidden=cycEntries(ac.id).length>0;
-  renderDmList(ac,state);fillLote()
+  renderDmList(ac,state);fillLote();
+  const past=db.ciclos.filter(c=>Number(c.dryer)===Number(n)&&(!ac||c.id!==ac.id)).sort((a,b)=>b.startAt-a.startAt);
+  $('pastBox').hidden=!past.length;
+  $('pastList').innerHTML=past.slice(0,5).map(c=>{const t=cycStats(c);return `<div class="item"><div><b>${esc(c.tipo||'Sin tipo')}</b> de ${esc(c.origin||'sin procedencia')}<div class="mut">${tfmt(c.startAt)}. ${fk(c.kgHumedo)}${t.ent.length?' → '+fk(t.kgS)+' secos':''}</div></div><div class="acts"><button class="btn sm" onclick="openCiclo('${c.id}')">Ver detalle</button></div></div>`}).join('')+(past.length>5?`<div class="ma" style="justify-content:flex-start"><button class="btn sm" onclick="goHist(${n})">Ver las ${past.length} cargas</button></div>`:'')
 }
 /* --- flujo de la carga --- */
 function startCiclo(){
@@ -535,7 +579,7 @@ function goDryer(n){setTab('sec');openDryer(n)}
 /* ---------- Calendario ---------- */
 function renderCal(){
   const [y,m]=calMonth.split('-').map(Number),days=new Date(y,m,0).getDate(),off=(new Date(y,m-1,1).getDay()+6)%7,today=iso(new Date());
-  $('calTitle').textContent=new Date(y,m-1,1).toLocaleDateString('es-EC',{month:'long',year:'numeric'});
+  $('calTitle').textContent=cap(new Date(y,m-1,1).toLocaleDateString('es-EC',{month:'long',year:'numeric'}));
   const P={},D={};
   db.entradas.forEach(e=>{if(e.date.startsWith(calMonth)){const p=P[e.date]||(P[e.date]={kg:0,s:0});p.kg+=e.kg;p.s+=e.sacks}});
   db.despachos.forEach(d=>{if(d.date.startsWith(calMonth))D[d.date]=(D[d.date]||0)+d.kg});
@@ -587,19 +631,92 @@ function renderRes(){
 }
 function renameLote(id){const l=db.lotes.find(x=>x.id===id);if(!l)return;const n=prompt('Nuevo nombre del destinatario o lote:',l.name);if(n&&n.trim())col('sec_lotes').doc(id).update({name:n.trim()}).catch(fail)}
 
+/* ---------- Historial de cargas ---------- */
+let histDry='all',histMes='all';
+function cycStats(c){
+  const ent=cycEntries(c.id),kgS=sum(ent,e=>e.kg),tm=evsOf(c.id,'temp').map(e=>e.value),cl=evsOf(c.id,'cal').map(e=>e.value);
+  return {ent,kgS,sacos:ent.reduce((a,e)=>a+e.sacks,0),tm,cl,
+    tmin:tm.length?Math.min(...tm):null,tmax:tm.length?Math.max(...tm):null,tavg:tm.length?r2(tm.reduce((a,x)=>a+x,0)/tm.length):null,
+    cavg:cl.length?r2(cl.reduce((a,x)=>a+x,0)/cl.length):null,rend:c.kgHumedo>0&&ent.length?r2(kgS/c.kgHumedo*100):null}
+}
+const stLabel=c=>c.status==='secando'?'Secando':c.status==='seco'?'Seco, descargando':'Finalizada';
+const stChip=c=>`<span class="chip ${c.status==='finalizada'?'':c.status==='secando'?'a':'g'}">${stLabel(c)}</span>`;
+function filteredCiclos(){return db.ciclos.filter(c=>(histDry==='all'||String(c.dryer)===histDry)&&(histMes==='all'||(c.startDate||'').startsWith(histMes))).sort((a,b)=>b.startAt-a.startAt)}
+function setHist(k,v){if(k==='d')histDry=v;else histMes=v;render()}
+function goHist(n){histDry=String(n);histMes='all';closeM('dryerM');setTab('res');setTimeout(()=>{const e=$('histCard');if(e)e.scrollIntoView({behavior:'smooth'})},80)}
+function tempChart(tm){
+  if(tm.length<2)return '';
+  const W=320,H=150,pl=36,pr=10,pt=10,pb=24,t0=tm[0].ts,t1=tm[tm.length-1].ts,vs=tm.map(e=>e.value);
+  let lo=Math.min(...vs),hi=Math.max(...vs);if(hi-lo<5){lo-=2.5;hi+=2.5}lo=Math.floor(lo);hi=Math.ceil(hi);
+  const x=t=>pl+(t1===t0?0:(t-t0)/(t1-t0))*(W-pl-pr),y=v=>pt+(hi-v)/(hi-lo)*(H-pt-pb);
+  const mid=(lo+hi)/2,tl=t=>(t1-t0>864e5?tfmt(t):hfmt(t));
+  const grid=[lo,mid,hi].map(v=>`<line class="gl" x1="${pl}" x2="${W-pr}" y1="${y(v).toFixed(1)}" y2="${y(v).toFixed(1)}"/><text x="${pl-4}" y="${(y(v)+3).toFixed(1)}" text-anchor="end">${fnum(r2(v))}</text>`).join('');
+  const pts=tm.map(e=>x(e.ts).toFixed(1)+','+y(e.value).toFixed(1)).join(' ');
+  const dots=tm.map(e=>`<circle class="dt" cx="${x(e.ts).toFixed(1)}" cy="${y(e.value).toFixed(1)}" r="3.5"><title>${hfmt(e.ts)}: ${fnum(e.value)} °C</title></circle>`).join('');
+  return `<svg class="tchart" viewBox="0 0 ${W} ${H}" role="img" aria-label="Gráfico de temperaturas en °C durante el secado">${grid}<polyline class="ln" points="${pts}"/>${dots}<text x="${pl}" y="${H-6}" text-anchor="start">${tl(t0)}</text><text x="${W-pr}" y="${H-6}" text-anchor="end">${tl(t1)}</text></svg>`
+}
+function openCiclo(id){
+  const c=db.ciclos.find(x=>x.id===id);if(!c)return;
+  const s=cycStats(c),tm=evsOf(id,'temp'),cl=evsOf(id,'cal'),ent=[...s.ent].sort((a,b)=>a.date.localeCompare(b.date)||a.id.localeCompare(b.id));
+  const kv=(l,v)=>`<div class="kv"><span>${l}</span><b>${v}</b></div>`;
+  $('cyT').textContent=dlabel(c.dryer);
+  let h=`<div class="sub">${esc(c.tipo||'Sin tipo')} de ${esc(c.origin||'procedencia sin indicar')} ${stChip(c)}</div><div class="kvs">`+
+    kv('Ingresó',tfmt(c.startAt))+kv('Cacao por secar',fk(c.kgHumedo)+' ('+ft(c.kgHumedo)+')')+
+    kv('Marcado como seco',c.dryAt?tfmt(c.dryAt)+' ('+dur(c.dryAt-c.startAt)+' de secado)':'Todavía secando')+
+    kv('Descarga finalizada',c.endAt?tfmt(c.endAt):'En curso')+
+    kv('Sacos secos',ent.length?s.sacos+' sacos, '+fk(s.kgS)+' ('+ft(s.kgS)+')':'Sin registrar')+
+    (s.rend!=null?kv('Rendimiento',nf.format(s.rend)+' % del peso ingresado'):'')+'</div>';
+  h+=`<div class="sech">Temperaturas (${tm.length})</div>`;
+  if(tm.length){
+    h+=`<div class="kvs">${kv('Mínima',fnum(s.tmin)+' °C')}${kv('Máxima',fnum(s.tmax)+' °C')}${kv('Promedio',fnum(s.tavg)+' °C')}</div>`+tempChart(tm);
+    h+=tm.map(e=>`<div class="item"><div><b>${hfmt(e.ts)}</b> ${fnum(e.value)} °C<div class="mut">${tfmt(e.ts)}</div></div></div>`).join('')
+  }else h+='<div class="mut">No se registraron temperaturas.</div>';
+  h+=`<div class="sech">Calificaciones (${cl.length})</div>`;
+  h+=cl.length?(`<div class="mut">Promedio: ${fnum(s.cavg)} de 10</div>`+cl.map(e=>`<div class="item"><div><b>${hfmt(e.ts)}</b> ${e.value} de 10${e.note?': '+esc(e.note):''}<div class="mut">${tfmt(e.ts)}</div></div></div>`).join('')):'<div class="mut">No se registraron calificaciones.</div>';
+  h+=`<div class="sech">Sacos secos (${ent.length} registro${ent.length===1?'':'s'})</div>`;
+  h+=ent.length?ent.map(e=>`<div class="item"><div><b>${e.sacks} sacos</b>: ${fk(e.kg)} (${ft(e.kg)})<div class="mut">${esc(fshort(e.date))}. Destino: ${esc(lname(e.loteId))}</div></div><div class="acts"><button class="btn sm" onclick="closeM('cycM');openDryer(${e.dryer},'${e.date}','${e.id}')">Editar</button></div></div>`).join(''):'<div class="mut">No se han registrado sacos de esta carga.</div>';
+  $('cyB').innerHTML=h;$('cyB').scrollTop=0;openM('cycM');$('cycM').querySelector('.sheet').scrollTop=0
+}
 function renderResExtra(){
   const act=db.ciclos.filter(c=>c.status!=='finalizada').sort((a,b)=>dord(a.dryer)-dord(b.dryer));
   const hum=sum(act,c=>c.kgHumedo);
   $('resStats').insertAdjacentHTML('beforeend',stat('Por secar en las secadoras ahora',ft(hum),fk(hum)+' en '+act.length+' secadora'+(act.length===1?'':'s')));
   $('resProc').innerHTML=act.length?act.map(c=>{const t=evsOf(c.id,'temp').pop(),cal=evsOf(c.id,'cal').pop();
-    return `<div class="item"><div><b>${dlabel(c.dryer)}</b>: ${esc(c.tipo||'Sin tipo')} de ${esc(c.origin||'procedencia sin indicar')}<div class="mut">${fk(c.kgHumedo)} por secar. ${c.status==='secando'?'Lleva '+dur(Date.now()-c.startAt)+' secando.':'Ya está seco, se están registrando los sacos.'}</div>${t?`<div class="mut">Última temperatura: ${fnum(t.value)} °C a las ${hfmt(t.ts)}</div>`:''}${cal?`<div class="mut">Última calificación: ${cal.value} de 10</div>`:''}</div><div class="acts"><button class="btn sm" onclick="goDryer(${c.dryer})">Abrir</button></div></div>`}).join(''):'<div class="mut">Ninguna secadora tiene carga en proceso.</div>';
-  const hs=[...db.ciclos].sort((a,b)=>b.startAt-a.startAt).slice(0,30);
-  $('resCiclos').innerHTML=hs.length?hs.map(c=>{
-    const ent=cycEntries(c.id),kgS=sum(ent,e=>e.kg),tm=evsOf(c.id,'temp').map(e=>e.value),cl=evsOf(c.id,'cal').map(e=>e.value);
-    const st=c.status==='secando'?'Secando':c.status==='seco'?'Seco, descargando':'Finalizada';
-    return `<div class="item"><div><b>${dlabel(c.dryer)}</b>: ${esc(c.tipo||'Sin tipo')} de ${esc(c.origin||'procedencia sin indicar')} <span class="chip ${c.status==='finalizada'?'':c.status==='secando'?'a':'g'}">${st}</span><div class="mut">Ingresó ${tfmt(c.startAt)}${c.dryAt?'. Seco en '+dur(c.dryAt-c.startAt):''}.</div><div class="mut">${fk(c.kgHumedo)} por secar${ent.length?' → '+fk(kgS)+' secos ('+nf.format(r2(kgS/c.kgHumedo*100))+' %)':''}.</div>${tm.length?`<div class="mut">${tm.length} temperatura${tm.length===1?'':'s'}: de ${fnum(Math.min(...tm))} a ${fnum(Math.max(...tm))} °C.</div>`:''}${cl.length?`<div class="mut">Calificación promedio: ${fnum(r2(cl.reduce((a,x)=>a+x,0)/cl.length))} de 10.</div>`:''}</div></div>`}).join(''):'<div class="mut">Aún no hay cargas.</div>';
+    return `<div class="item"><div><b>${dlabel(c.dryer)}</b>: ${esc(c.tipo||'Sin tipo')} de ${esc(c.origin||'procedencia sin indicar')}<div class="mut">${fk(c.kgHumedo)} por secar. ${c.status==='secando'?'Lleva '+dur(Date.now()-c.startAt)+' secando.':'Ya está seco, se están registrando los sacos.'}</div>${t?`<div class="mut">Última temperatura: ${fnum(t.value)} °C a las ${hfmt(t.ts)}</div>`:''}${cal?`<div class="mut">Última calificación: ${cal.value} de 10</div>`:''}</div><div class="acts"><button class="btn sm" onclick="goDryer(${c.dryer})">Abrir</button><button class="btn sm" onclick="openCiclo('${c.id}')">Detalle</button></div></div>`}).join(''):'<div class="mut">Ninguna secadora tiene carga en proceso.</div>';
+  /* filtros del historial */
+  const dryers=LAYOUT.flat().sort((a,b)=>dord(a)-dord(b));
+  const meses=[...new Set(db.ciclos.map(c=>(c.startDate||'').slice(0,7)).filter(Boolean))].sort().reverse();
+  if(histMes!=='all'&&!meses.includes(histMes))histMes='all';
+  $('hfDry').innerHTML='<option value="all">Todas las secadoras</option>'+dryers.map(n=>`<option value="${n}">${esc(dlabel(n))}</option>`).join('');$('hfDry').value=histDry;
+  $('hfMes').innerHTML='<option value="all">Todos los meses</option>'+meses.map(m=>{const [y,mm]=m.split('-').map(Number);return `<option value="${m}">${esc(cap(new Date(y,mm-1,1).toLocaleDateString('es-EC',{month:'long',year:'numeric'})))}</option>`}).join('');$('hfMes').value=histMes;
+  const hs=filteredCiclos();
+  $('resCiclos').innerHTML=hs.length?`<div class="mut" style="margin-bottom:4px">${hs.length} carga${hs.length===1?'':'s'}</div>`+hs.map(c=>{
+    const s=cycStats(c);
+    return `<div class="item"><div><b>${dlabel(c.dryer)}</b>: ${esc(c.tipo||'Sin tipo')} de ${esc(c.origin||'procedencia sin indicar')} ${stChip(c)}<div class="mut">Ingresó ${tfmt(c.startAt)}${c.dryAt?'. Seco en '+dur(c.dryAt-c.startAt):''}.</div><div class="mut">${fk(c.kgHumedo)} por secar${s.rend!=null?' → '+fk(s.kgS)+' secos ('+nf.format(s.rend)+' %)':''}.</div>${s.tm.length?`<div class="mut">${s.tm.length} temperatura${s.tm.length===1?'':'s'}: de ${fnum(s.tmin)} a ${fnum(s.tmax)} °C.</div>`:''}${s.cl.length?`<div class="mut">Calificación promedio: ${fnum(s.cavg)} de 10.</div>`:''}</div><div class="acts"><button class="btn sm primary" onclick="openCiclo('${c.id}')">Ver detalle</button></div></div>`}).join(''):'<div class="mut">No hay cargas con ese filtro.</div>';
   const gt=groupSum(db.entradas,e=>e.tipo||'Sin tipo',e=>e.kg);
   $('resTipo').innerHTML=gt.length?'<table class="t"><tr><th>Tipo</th><th class="r">Toneladas secas</th></tr>'+gt.map(([o,k])=>`<tr><td>${esc(o)}</td><td class="r">${nf.format(r2(k/1000))}</td></tr>`).join('')+'</table>':'<div class="mut">Sin datos.</div>'
+}
+/* ---------- Descargas CSV ---------- */
+const cn=v=>v==null?'':String(v).replace('.',',');
+const fdt=ms=>ms?new Date(ms).toLocaleString('es-EC',{hour12:false}):'';
+function dlCSV(name,rows){
+  const txt='\ufeff'+rows.map(r=>r.map(v=>{v=v==null?'':String(v);return /[";\r\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v}).join(';')).join('\r\n');
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([txt],{type:'text/csv;charset=utf-8'}));a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),3000)
+}
+function exportCiclos(){
+  const rows=[['Secadora','Tipo de cacao','Procedencia','Ingreso','Cacao por secar (kg)','Marcado seco','Descarga finalizada','Estado','Sacos secos','Kg secos','Rendimiento (%)','Temp. mínima (°C)','Temp. máxima (°C)','Temp. promedio (°C)','N.º de temperaturas','Calificación promedio (de 10)']];
+  filteredCiclos().forEach(c=>{const s=cycStats(c);rows.push([dlabel(c.dryer),c.tipo,c.origin,fdt(c.startAt),cn(c.kgHumedo),fdt(c.dryAt),fdt(c.endAt),stLabel(c),s.sacos,cn(s.kgS),cn(s.rend),cn(s.tmin),cn(s.tmax),cn(s.tavg),s.tm.length,cn(s.cavg)])});
+  dlCSV('cargas_de_secado.csv',rows)
+}
+function exportEventos(){
+  const rows=[['Secadora','Tipo de cacao','Procedencia','Ingreso de la carga','Registro','Valor','Observación','Fecha y hora']];
+  filteredCiclos().forEach(c=>evsOf(c.id).forEach(e=>rows.push([dlabel(c.dryer),c.tipo,c.origin,fdt(c.startAt),e.type==='temp'?'Temperatura (°C)':'Calificación (de 10)',cn(e.value),e.note||'',fdt(e.ts)])));
+  dlCSV('temperaturas_y_calificaciones.csv',rows)
+}
+function exportSacos(){
+  const rows=[['Fecha','Secadora','Tipo de cacao','Procedencia','Sacos','Kg','Destinatario o lote']];
+  db.entradas.filter(e=>(histDry==='all'||String(e.dryer)===histDry)&&(histMes==='all'||e.date.startsWith(histMes))).sort((a,b)=>a.date.localeCompare(b.date)).forEach(e=>rows.push([e.date,dlabel(e.dryer),e.tipo||'',e.origin||'',e.sacks,cn(e.kg),lname(e.loteId)]));
+  dlCSV('sacos_secos.csv',rows)
 }
 
 /* ---------- Despachos ---------- */
@@ -633,8 +750,9 @@ function saveDisp(){
 }
 function delDisp(id){const d=db.despachos.find(x=>x.id===id);if(!d)return;if(confirm('¿Eliminar este despacho de '+fk(d.kg)+'? El cacao vuelve al almacenamiento.'))col('sec_despachos').doc(id).delete().catch(fail)}
 
-document.addEventListener('keydown',e=>{if(e.key==='Escape')['dryerM','dayM','dispM'].forEach(closeM)});
-['dryerM','dayM','dispM'].forEach(id=>$(id).addEventListener('click',e=>{if(e.target.id===id)closeM(id)}));
+document.addEventListener('focusin',e=>{if(e.target.matches&&e.target.matches('.sheet input,.sheet select'))setTimeout(()=>{try{e.target.scrollIntoView({block:'center',behavior:'smooth'})}catch(x){}},350)});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')['dryerM','dayM','dispM','cycM'].forEach(closeM)});
+['dryerM','dayM','dispM','cycM'].forEach(id=>$(id).addEventListener('click',e=>{if(e.target.id===id)closeM(id)}));
 $('rate').innerHTML=[1,2,3,4,5,6,7,8,9,10].map(i=>`<button type="button" class="rt" data-v="${i}" onclick="pickRate(${i})">${i}</button>`).join('');
 setInterval(()=>{const c=$('nowClock');if(c)c.textContent=new Date().toLocaleTimeString('es-EC',{hour12:false})},1000);
 initFirebase();render();
