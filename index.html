@@ -217,9 +217,32 @@ body.ro [onclick*="delEnt("],body.ro [onclick*="editEntry("],body.ro [onclick*="
 #spaceBanner button{background:#422006;color:#fff;border-radius:10px;padding:8px 12px;font-size:13px;font-weight:700}
 @media print{#spaceBanner{display:none!important}}
 .btn.small{padding:8px 12px;font-size:14px;min-height:40px}
+
+/* v1.3: barra inferior y aviso */
+.top{padding-bottom:12px}body .userbar select{flex:1 1 100%;max-width:100%}
+body{padding-bottom:calc(84px + env(safe-area-inset-bottom))}
+nav.tabs{position:fixed;left:0;right:0;bottom:0;z-index:40;display:flex;gap:6px;padding:8px 10px calc(8px + env(safe-area-inset-bottom));background:var(--panel);border-top:1px solid var(--line);box-shadow:0 -4px 18px #0002;transition:transform .28s ease}
+nav.tabs.hide{transform:translateY(115%)}
+nav.tabs button{max-width:none;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-height:56px;padding:6px 4px;border-radius:14px;background:none;color:var(--mut);font-size:12px;font-weight:700}
+nav.tabs button .ic{width:24px;height:24px;margin:0}
+nav.tabs button.on{background:var(--btn);color:var(--brown)}
+html[data-t=dark] nav.tabs button.on{color:#ff9a90}
+body #toast{bottom:calc(92px + env(safe-area-inset-bottom))}
+body #spaceBanner{display:flex;align-items:center;justify-content:space-between;flex-wrap:nowrap;gap:12px;margin:12px 12px 0;padding:12px 14px;background:var(--card);color:var(--ink);border:1px solid var(--line);border-left:5px solid #e6a516;border-radius:14px;box-shadow:0 2px 10px #0002;text-align:left;font-weight:500}
+body #spaceBanner[hidden]{display:none}
+body #spaceBanner::before{content:"";flex:none;width:36px;height:36px;border-radius:50%;background:#e6a51626 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23d99a0b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z'/%3E%3Ccircle cx='12' cy='12' r='3'/%3E%3C/svg%3E") center/20px no-repeat}
+#spaceBanner .bt{flex:1;min-width:0;display:flex;flex-direction:column;line-height:1.25}
+#spaceBanner small{font-size:12px;color:var(--mut)}#spaceBanner b{font-size:14px;overflow:hidden;text-overflow:ellipsis}#spaceBanner em{font-style:normal;font-size:12px;font-weight:700;color:#b97d00}
+html[data-t=dark] #spaceBanner em{color:#f0b429}
+body #spaceBanner button{flex:none;min-height:40px;padding:6px 14px;background:none;color:var(--ink);border:1.5px solid #e6a516;border-radius:999px;font-size:13px;font-weight:700}
+@media(max-width:380px){body #spaceBanner{flex-wrap:wrap}body #spaceBanner button{width:100%}}
 </style></head>
 <body class="loading">
-<div id="toast" role="status" aria-live="polite"></div>
+<nav class="tabs">
+<button id="tb-sec" class="on" onclick="setTab('sec')">Secadoras</button>
+<button id="tb-cal" onclick="setTab('cal')">Calendario</button>
+<button id="tb-res" onclick="setTab('res')">Resumen</button>
+</nav><div id="toast" role="status" aria-live="polite"></div>
 <div id="dlg" class="modal" onclick="if(event.target===this)closeM('dlg')"><div class="sheet"><div id="dlgBody"></div><div class="ma" id="dlgBtns"></div></div></div>
 <div id="loadMsg" class="show" role="status" aria-live="polite">
 <div class="ld-top"></div>
@@ -242,11 +265,7 @@ body.ro [onclick*="delEnt("],body.ro [onclick*="editEntry("],body.ro [onclick*="
 <button id="btnMenu" onclick="toggleMenu(event)" aria-label="Menú" aria-expanded="false"></button>
 <div class="userbar"><span id="uemail"></span><span class="roletag" id="roleTag"></span><span class="st" id="sst"></span><select id="spaceSel" onchange="switchSpace(this.value)" aria-label="Espacio de datos" hidden></select></div>
 <div id="menuPanel" hidden><button id="btnShare" onclick="openShare()" hidden>Compartir</button><button id="btnUsers" onclick="openUsers()" hidden>Usuarios</button><button id="btnVer" onclick="doVerify()" hidden>Verificar correo</button><button onclick="refreshAccess()">Actualizar accesos</button><button onclick="openAbout()">Acerca de</button><button onclick="doLogout()">Cerrar sesión</button></div>
-<nav class="tabs">
-<button id="tb-sec" class="on" onclick="setTab('sec')">Secadoras</button>
-<button id="tb-cal" onclick="setTab('cal')">Calendario</button>
-<button id="tb-res" onclick="setTab('res')">Resumen</button>
-</nav></div></header>
+</div></header>
 <div id="spaceBanner" hidden></div>
 <main>
 <div id="skel"><div class="sk b"></div><div class="skd"><i class="sk"></i><i class="sk"></i><i class="sk"></i><i class="sk"></i><i class="sk"></i><i class="sk"></i></div><div class="sk"></div><div class="sk"></div></div>
@@ -477,7 +496,7 @@ function renderAccessUI(){
   $('roleTag').textContent=(spaceRole==='owner'&&spaces.length<2)?'':ROLE_TXT[spaceRole];
   $('btnShare').hidden=!canShare();$('btnUsers').hidden=!isAdm;
   const bn=$('spaceBanner'),cur=spaces.find(s=>s.uid===spaceUid)||{};
-  if(spaceUid&&spaceUid!==uid){bn.hidden=false;bn.innerHTML='Estás viendo los datos de <b>'+esc(cur.email||cur.label)+'</b> ('+esc(ROLE_TXT[spaceRole])+') <button onclick="setSpace(\''+esc(uid)+'\')">Volver a mi espacio</button>'}else{bn.hidden=true}
+  if(spaceUid&&spaceUid!==uid){bn.hidden=false;bn.innerHTML='<span class="bt"><small>Estás viendo los datos de</small><b>'+esc(cur.email||cur.label)+'</b><em>'+esc(ROLE_TXT[spaceRole])+'</em></span><button onclick="setSpace(\''+esc(uid)+'\')">Volver a mi espacio</button>'}else{bn.hidden=true}
   $('btnVer').hidden=!u||u.emailVerified;
   document.body.classList.toggle('ro',!canEdit())
 }
@@ -498,7 +517,8 @@ function closeMenu(){$('menuPanel').hidden=true;$('btnMenu').setAttribute('aria-
 function toggleMenu(e){e.stopPropagation();const p=$('menuPanel'),o=p.hidden;p.hidden=!o;$('btnMenu').setAttribute('aria-expanded',String(o))}
 document.addEventListener('click',e=>{const p=$('menuPanel');if(p&&!p.hidden&&!p.contains(e.target))closeMenu()});
 document.getElementById('menuPanel').addEventListener('click',e=>{if(e.target.closest('button'))closeMenu()});
-const APP_VER='1.2';let loadT0=0,loadT=null;
+let lastY=0;addEventListener('scroll',()=>{const y=Math.max(0,scrollY);if(Math.abs(y-lastY)<8)return;const n=document.querySelector('nav.tabs');if(n)n.classList.toggle('hide',y>lastY&&y>80);lastY=y},{passive:true});
+const APP_VER='1.3';let loadT0=0,loadT=null;
 function showLoadMsg(){const m=$('loadMsg');if(m.classList.contains('show')&&!m.classList.contains('out'))return;clearTimeout(loadT);loadT0=Date.now();m.classList.remove('out');m.classList.add('show');loadT=setTimeout(()=>hideLoadMsg(true),5000)}
 loadT0=Date.now();loadT=setTimeout(()=>hideLoadMsg(true),5000);
 function hideLoadMsg(force){const m=$('loadMsg');if(!m.classList.contains('show')||m.classList.contains('out'))return;clearTimeout(loadT);const w=force?0:Math.max(0,2500-(Date.now()-loadT0));loadT=setTimeout(()=>{m.classList.add('out');setTimeout(()=>m.classList.remove('show','out'),250)},w)}
