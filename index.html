@@ -117,6 +117,16 @@ body.lock{overflow:hidden}
 .prev{background:#e7f1ed;color:#14503f;border-radius:10px;padding:10px 12px;font-weight:600}
 .err{color:var(--red);font-weight:600;min-height:20px;margin:8px 0 0;font-size:14px}
 .ma{display:flex;gap:8px;justify-content:flex-end;margin-top:12px;flex-wrap:wrap}
+/* encabezado compacto */
+.top-in{position:relative}.top h1{padding-right:56px;font-size:26px}
+#btnMenu{position:absolute;right:0;top:-4px;width:46px;height:46px;min-height:46px;padding:0;border-radius:12px;background:#ffffff22;color:#fff;display:grid;place-items:center}#btnMenu .ic{width:24px;height:24px}
+.userbar{gap:4px 10px;margin:4px 0 10px}#uemail{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:46vw}.roletag{font-size:12px}
+.userbar select{flex:1 1 100%;max-width:100%;min-height:40px;font-size:13px;padding:6px 8px}
+#menuPanel{position:absolute;right:0;top:46px;z-index:60;min-width:240px;background:var(--panel);color:var(--ink);border-radius:14px;box-shadow:0 12px 32px #0007;padding:6px;flex-direction:column;animation:sheetup .18s ease}
+#menuPanel:not([hidden]){display:flex}
+#menuPanel button{background:none;color:var(--ink);width:100%;text-align:left;border-radius:10px;padding:10px 12px;font-size:15px;min-height:48px;align-items:center}
+#menuPanel button:not([hidden]){display:flex}#menuPanel button:active{background:var(--btn)}
+#spaceBanner{padding:8px 12px;font-size:13px;gap:6px 10px}#spaceBanner button{min-height:40px;padding:6px 14px;font-size:13px}
 /* v1.2 */
 button,.btn,.chip-b{min-height:48px}.userbar button{min-height:40px;padding:6px 12px}.rt{min-height:52px}.eye{min-height:36px}
 .datebar button,.calhead button{min-width:48px;min-height:48px}
@@ -229,7 +239,9 @@ body.ro [onclick*="delEnt("],body.ro [onclick*="editEntry("],body.ro [onclick*="
 
 <header class="top"><div class="top-in">
 <h1>Secadoras de cacao</h1>
-<div class="userbar"><span id="uemail"></span><select id="spaceSel" onchange="switchSpace(this.value)" aria-label="Espacio de datos" hidden></select><span class="roletag" id="roleTag"></span><button id="btnShare" onclick="openShare()" hidden>Compartir</button><button id="btnUsers" onclick="openUsers()" hidden>Usuarios</button><button id="btnVer" onclick="doVerify()" hidden>Verificar correo</button><button onclick="refreshAccess()">Actualizar accesos</button><button onclick="openAbout()">Acerca de</button><button onclick="doLogout()">Cerrar sesión</button><span class="st" id="sst"></span></div>
+<button id="btnMenu" onclick="toggleMenu(event)" aria-label="Menú" aria-expanded="false"></button>
+<div class="userbar"><span id="uemail"></span><span class="roletag" id="roleTag"></span><span class="st" id="sst"></span><select id="spaceSel" onchange="switchSpace(this.value)" aria-label="Espacio de datos" hidden></select></div>
+<div id="menuPanel" hidden><button id="btnShare" onclick="openShare()" hidden>Compartir</button><button id="btnUsers" onclick="openUsers()" hidden>Usuarios</button><button id="btnVer" onclick="doVerify()" hidden>Verificar correo</button><button onclick="refreshAccess()">Actualizar accesos</button><button onclick="openAbout()">Acerca de</button><button onclick="doLogout()">Cerrar sesión</button></div>
 <nav class="tabs">
 <button id="tb-sec" class="on" onclick="setTab('sec')">Secadoras</button>
 <button id="tb-cal" onclick="setTab('cal')">Calendario</button>
@@ -469,11 +481,11 @@ function renderAccessUI(){
   $('btnVer').hidden=!u||u.emailVerified;
   document.body.classList.toggle('ro',!canEdit())
 }
-const IC={grid:'M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z',cal:'M4 6h16v14H4zM4 10h16M8 3v4M16 3v4',chart:'M5 20V10M12 20V4M19 20v-7',l:'M15 5l-7 7 7 7',r:'M9 5l7 7-7 7',share:'M12 4v11M8 8l4-4 4 4M5 14v6h14v-6',users:'M9 11a3 3 0 100-6 3 3 0 000 6zM3 20c0-3.3 2.7-6 6-6s6 2.7 6 6M17 8a3 3 0 010 6M21 20c0-2.5-1.5-4.5-4-5.5',mail:'M3 6h18v12H3zM3 7l9 7 9-7',refresh:'M20 11a8 8 0 10-2.3 5.7M20 4v7h-7',info:'M12 21a9 9 0 100-18 9 9 0 000 18zM12 11v6M12 7.5v.01',out:'M10 4H5v16h5M15 8l4 4-4 4M19 12H9',box:'M3 8l9-5 9 5v8l-9 5-9-5zM3 8l9 5 9-5M12 13v8'};
+const IC={menu:'M4 7h16M4 12h16M4 17h16',grid:'M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z',cal:'M4 6h16v14H4zM4 10h16M8 3v4M16 3v4',chart:'M5 20V10M12 20V4M19 20v-7',l:'M15 5l-7 7 7 7',r:'M9 5l7 7-7 7',share:'M12 4v11M8 8l4-4 4 4M5 14v6h14v-6',users:'M9 11a3 3 0 100-6 3 3 0 000 6zM3 20c0-3.3 2.7-6 6-6s6 2.7 6 6M17 8a3 3 0 010 6M21 20c0-2.5-1.5-4.5-4-5.5',mail:'M3 6h18v12H3zM3 7l9 7 9-7',refresh:'M20 11a8 8 0 10-2.3 5.7M20 4v7h-7',info:'M12 21a9 9 0 100-18 9 9 0 000 18zM12 11v6M12 7.5v.01',out:'M10 4H5v16h5M15 8l4 4-4 4M19 12H9',box:'M3 8l9-5 9 5v8l-9 5-9-5zM3 8l9 5 9-5M12 13v8'};
 function ic(n,solo){return '<svg class="ic'+(solo?' n':'')+'" viewBox="0 0 24 24" aria-hidden="true"><path d="'+IC[n]+'"/></svg>'}
 function EMP(i,t,h){return '<div class="empty">'+ic(i,1)+'<b>'+t+'</b><span>'+h+'</span></div>'}
 function decorate(){const P=(sel,n)=>{const b=document.querySelector(sel);if(b)b.insertAdjacentHTML('afterbegin',ic(n))},S=(sel,n)=>{const b=document.querySelector(sel);if(b)b.innerHTML=ic(n,1)};
-P('#tb-sec','grid');P('#tb-cal','cal');P('#tb-res','chart');S('[onclick="shiftDay(-1)"]','l');S('[onclick="shiftDay(1)"]','r');S('[onclick="shiftMonth(-1)"]','l');S('[onclick="shiftMonth(1)"]','r');
+S('#btnMenu','menu');P('#tb-sec','grid');P('#tb-cal','cal');P('#tb-res','chart');S('[onclick="shiftDay(-1)"]','l');S('[onclick="shiftDay(1)"]','r');S('[onclick="shiftMonth(-1)"]','l');S('[onclick="shiftMonth(1)"]','r');
 P('#btnShare','share');P('#btnUsers','users');P('#btnVer','mail');P('[onclick="refreshAccess()"]','refresh');P('[onclick="openAbout()"]','info');P('[onclick="doLogout()"]','out')}
 let THEME='auto';try{THEME=localStorage.getItem('theme')||'auto'}catch(e){}
 const mq=window.matchMedia?matchMedia('(prefers-color-scheme: dark)'):null;
@@ -482,6 +494,10 @@ if(mq&&mq.addEventListener)mq.addEventListener('change',applyTheme);
 function cycleTheme(b){THEME={auto:'dark',dark:'light',light:'auto'}[THEME];try{localStorage.setItem('theme',THEME)}catch(e){}applyTheme();b.textContent='Tema: '+{auto:'automático',dark:'oscuro',light:'claro'}[THEME]}
 window.addEventListener('offline',()=>toast('Sin conexión: tus cambios se guardarán al reconectar',true));
 window.addEventListener('online',()=>{toast('Conexión restablecida, sincronizando…');try{fdb.waitForPendingWrites().then(()=>toast('Datos sincronizados'))}catch(e){}});
+function closeMenu(){$('menuPanel').hidden=true;$('btnMenu').setAttribute('aria-expanded','false')}
+function toggleMenu(e){e.stopPropagation();const p=$('menuPanel'),o=p.hidden;p.hidden=!o;$('btnMenu').setAttribute('aria-expanded',String(o))}
+document.addEventListener('click',e=>{const p=$('menuPanel');if(p&&!p.hidden&&!p.contains(e.target))closeMenu()});
+document.getElementById('menuPanel').addEventListener('click',e=>{if(e.target.closest('button'))closeMenu()});
 const APP_VER='1.2';let loadT0=0,loadT=null;
 function showLoadMsg(){const m=$('loadMsg');if(m.classList.contains('show')&&!m.classList.contains('out'))return;clearTimeout(loadT);loadT0=Date.now();m.classList.remove('out');m.classList.add('show');loadT=setTimeout(()=>hideLoadMsg(true),5000)}
 loadT0=Date.now();loadT=setTimeout(()=>hideLoadMsg(true),5000);
