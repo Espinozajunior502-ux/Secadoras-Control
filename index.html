@@ -136,17 +136,26 @@ body.lock{overflow:hidden}
 #cycM{z-index:60}
 @media(max-width:420px){.cd{font-size:10px;padding:3px;min-height:60px}.cd .n{font-size:12px}.top h1{font-size:25px}.item{flex-direction:column}.item .acts{width:100%}}
 @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+.userbar select{background:#ffffff22;color:#fff;border:0;border-radius:8px;padding:5px 6px;font-size:12px;max-width:52vw}
+.userbar select option{color:#111}.roletag{font-weight:700;color:#fde68a}
+.shi{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid #e5e7eb}
+.shi .shm{flex:1;min-width:0;overflow-wrap:anywhere;font-size:14px}
+.shi select{padding:8px;border:1px solid #d4d4d8;border-radius:10px;background:#fff;font-size:14px;min-height:40px}
+.shmut{color:#6b7280;font-size:14px}
+@media print{.roletag{display:none}}
+body.ro #blkStart,body.ro #blkDrying,body.ro #blkBag,body.ro #blkDone{display:none!important}
+body.ro [onclick*="delEnt("],body.ro [onclick*="editEntry("],body.ro [onclick*="delEv("],body.ro [onclick*="openDisp("],body.ro [onclick*="delDisp("],body.ro [onclick*="renameLote("],body.ro [onclick*="openDryer("][onclick*=",'"]{display:none!important}
 </style></head>
 <body>
 <div id="auth"><div class="authbox"><h2>Secadoras de cacao</h2><p id="authmsg">Inicia sesión para ver tus datos.</p>
 <input id="aem" type="email" placeholder="Correo" autocomplete="username">
 <input id="apw" type="password" placeholder="Contraseña (mínimo 6 caracteres)" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()">
-<div id="autherr" class="err"></div>
+<div id="autherr" class="err"></div><div id="authok" style="color:#1c7a4f;font-size:13px;font-weight:600;min-height:0;margin-bottom:6px"></div><button type="button" onclick="doReset()" style="background:none;border:0;color:#2b6cb0;text-decoration:underline;font-size:14px;padding:8px 0;margin-bottom:6px;cursor:pointer">¿Olvidaste tu contraseña?</button>
 <div class="row2"><button class="btn primary" onclick="doLogin()">Entrar</button><button class="btn" onclick="doRegister()">Crear cuenta</button></div></div></div>
 
 <header class="top"><div class="top-in">
 <h1>Secadoras de cacao</h1>
-<div class="userbar"><span id="uemail"></span><button onclick="doLogout()">Cerrar sesión</button><span class="st" id="sst"></span></div>
+<div class="userbar"><span id="uemail"></span><select id="spaceSel" onchange="switchSpace(this.value)" aria-label="Espacio de datos" hidden></select><span class="roletag" id="roleTag"></span><button id="btnShare" onclick="openShare()" hidden>Compartir</button><button id="btnVer" onclick="doVerify()" hidden>Verificar correo</button><button onclick="refreshAccess()">Actualizar accesos</button><button onclick="doLogout()">Cerrar sesión</button><span class="st" id="sst"></span></div>
 <nav class="tabs">
 <button id="tb-sec" class="on" onclick="setTab('sec')">Secadoras</button>
 <button id="tb-cal" onclick="setTab('cal')">Calendario</button>
@@ -281,6 +290,15 @@ body.lock{overflow:hidden}
 <div class="ma"><button class="btn" onclick="closeM('cycM')">Cerrar</button></div>
 </div></div>
 
+<div id="shareM" class="modal"><div class="sheet"><h2 id="shT">Compartir</h2>
+<div class="sub">Da acceso a otras personas. Deben crear su cuenta con ese mismo correo y verificarlo. El permiso vale para todas las apps que usen este espacio.</div>
+<div class="fg"><div class="field full"><label for="shEmail">Correo de la persona</label><input id="shEmail" type="email" inputmode="email" autocomplete="off" placeholder="nombre@correo.com"></div>
+<div class="field"><label for="shRole">Permiso</label><select id="shRole"><option value="lector">Solo lectura</option><option value="editor">Editor</option></select></div>
+<div class="field"><label>&nbsp;</label><button class="btn primary" onclick="addMember()">Agregar</button></div></div>
+<div id="shErr" style="color:#b91c1c;font-weight:600;font-size:13px;min-height:18px;margin-top:6px"></div>
+<div style="margin:10px 0 4px;font-weight:700">Personas con acceso</div><div id="shList"></div>
+<div class="ma"><button class="btn" onclick="closeShare()">Cerrar</button></div></div></div>
+
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
@@ -323,8 +341,93 @@ let tab='sec',selDate=iso(new Date()),calMonth=selDate.slice(0,7);
 let curDryer=null,editEnt=null,formLote='',editDisp=null;
 
 /* ---------- Firestore ---------- */
-function col(n){return fdb.collection('users').doc(uid).collection(n)}
-function fail(e){console.error(e);alert('No se pudo guardar en la nube: '+(e&&(e.code||e.message)||e))}
+/* ====== Espacios compartidos y permisos ====== */
+let spaceUid=null,spaceRole='owner',spaces=[],isAdm=false,myEmail='',shareUnsub=null;
+function col(n){return fdb.collection('users').doc(spaceUid||uid).collection(n)}
+const ROLE_TXT={owner:'Administrador de este espacio',admin:'Administrador general',editor:'Editor',lector:'Solo lectura'};
+const canEdit=()=>spaceRole!=='lector';
+const canShare=()=>spaceRole==='owner'||spaceRole==='admin';
+function clearDB(){db={lotes:[],entradas:[],despachos:[],ciclos:[],eventos:[]}}
+async function loadSpaces(){
+  const u=fauth.currentUser;
+  spaces=[{uid:uid,label:'Mi espacio',role:'owner',email:myEmail}];isAdm=false;
+  try{const a=await fdb.collection('admins').doc(uid).get();isAdm=a.exists}catch(e){}
+  if(u&&u.emailVerified){
+    try{const sn=await fdb.collection('acceso').doc(myEmail).collection('concesiones').get();
+      sn.docs.forEach(d=>{const x=d.data();if(d.id!==uid)spaces.push({uid:d.id,label:'Datos de '+(x.ownerEmail||d.id),role:x.role==='editor'?'editor':'lector',email:x.ownerEmail||''})})
+    }catch(e){console.error(e)}
+  }
+  if(isAdm){
+    try{const ps=await fdb.collection('perfiles').get();
+      ps.docs.forEach(d=>{if(d.id!==uid&&!spaces.some(s=>s.uid===d.id))spaces.push({uid:d.id,label:'Datos de '+(d.data().email||d.id),role:'admin',email:d.data().email||''})})
+    }catch(e){console.error(e)}
+    spaces.forEach(s=>{if(s.uid!==uid)s.role='admin'})
+  }
+}
+function pickSpace(){const saved=localStorage.getItem('espacio_'+uid);setSpace((spaces.find(x=>x.uid===saved)||spaces[0]).uid)}
+function setSpace(id){
+  const s=spaces.find(x=>x.uid===id)||spaces[0];
+  stopSync();clearDB();spaceUid=s.uid;spaceRole=s.role;
+  try{localStorage.setItem('espacio_'+uid,spaceUid)}catch(e){}
+  renderAccessUI();startSync();render()
+}
+function switchSpace(id){setSpace(id)}
+function renderAccessUI(){
+  const sel=$('spaceSel'),u=fauth.currentUser;
+  sel.hidden=spaces.length<2;
+  sel.innerHTML=spaces.map(s=>`<option value="${esc(s.uid)}">${esc(s.label)}</option>`).join('');sel.value=spaceUid;
+  $('roleTag').textContent=(spaceRole==='owner'&&spaces.length<2)?'':ROLE_TXT[spaceRole];
+  $('btnShare').hidden=!canShare();
+  $('btnVer').hidden=!u||u.emailVerified;
+  document.body.classList.toggle('ro',!canEdit())
+}
+async function onUser(u){
+  uid=u.uid;myEmail=(u.email||'').toLowerCase();
+  $('uemail').textContent=u.email;$('auth').classList.remove('show');$('apw').value='';
+  try{await fdb.collection('perfiles').doc(uid).set({email:myEmail,ult:Date.now()},{merge:true})}catch(e){console.error(e)}
+  await loadSpaces();pickSpace()
+}
+function doVerify(){
+  const u=fauth.currentUser;if(!u)return;fauth.languageCode='es';
+  u.sendEmailVerification().then(()=>alert('Te enviamos un enlace de verificación a '+u.email+'. Ábrelo y luego toca “Actualizar accesos”.')).catch(e=>alert('No se pudo enviar el correo: '+(e.code||e.message)))
+}
+async function refreshAccess(){
+  const u=fauth.currentUser;if(!u)return;
+  try{await u.reload();await u.getIdToken(true)}catch(e){}
+  const keep=spaceUid;await loadSpaces();setSpace(spaces.some(s=>s.uid===keep)?keep:uid)
+}
+/* ---- Compartir ---- */
+function accDoc(email){return fdb.collection('acceso').doc(email).collection('concesiones').doc(spaceUid)}
+function openShare(){
+  if(!canShare())return;
+  const sp=spaces.find(s=>s.uid===spaceUid)||{};
+  $('shT').textContent='Compartir '+(spaceUid===uid?'mi espacio':'los datos de '+(sp.email||''));
+  $('shEmail').value='';$('shErr').textContent='';
+  if(shareUnsub)shareUnsub();
+  shareUnsub=col('miembros').onSnapshot(sn=>{
+    const l=sn.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>String(a.email).localeCompare(String(b.email)));
+    $('shList').innerHTML=l.length?l.map(m=>`<div class="shi"><div class="shm">${esc(m.email)}</div><select aria-label="Permiso" onchange="setMemberRole('${esc(m.id)}',this.value)"><option value="lector"${m.role==='lector'?' selected':''}>Solo lectura</option><option value="editor"${m.role==='editor'?' selected':''}>Editor</option></select><button class="btn small red" onclick="delMember('${esc(m.id)}')" aria-label="Quitar acceso">✕</button></div>`).join(''):'<div class="shmut">Todavía no compartes este espacio con nadie.</div>'
+  },e=>{$('shErr').textContent='No se pudo leer la lista: '+(e.code||e.message)});
+  $('shareM').classList.add('show')
+}
+function closeShare(){if(shareUnsub)shareUnsub();shareUnsub=null;closeM('shareM')}
+function addMember(){
+  const e=$('shEmail').value.trim().toLowerCase(),role=$('shRole').value,sp=spaces.find(s=>s.uid===spaceUid)||{};
+  $('shErr').textContent='';
+  if(!/^[^\s@'"<>\\\/]+@[^\s@'"<>\\\/]+\.[^\s@'"<>\\\/]+$/.test(e))return $('shErr').textContent='Escribe un correo válido.';
+  if(e===myEmail&&spaceUid===uid)return $('shErr').textContent='Ese es tu propio correo.';
+  const b=fdb.batch();
+  b.set(col('miembros').doc(e),{email:e,role});
+  b.set(accDoc(e),{ownerUid:spaceUid,ownerEmail:sp.email||myEmail,role,email:e});
+  b.commit().then(()=>{$('shEmail').value=''}).catch(fail)
+}
+function setMemberRole(e,role){const b=fdb.batch();b.update(col('miembros').doc(e),{role});b.update(accDoc(e),{role});b.commit().catch(fail)}
+function delMember(e){
+  if(!confirm('¿Quitar el acceso de '+e+'?'))return;
+  const b=fdb.batch();b.delete(col('miembros').doc(e));b.delete(accDoc(e));b.commit().catch(fail)
+}
+
+function fail(e){console.error(e);if(e&&e.code==='permission-denied')alert('No tienes permiso para guardar en este espacio (solo lectura o sin acceso).');else alert('No se pudo guardar en la nube: '+(e&&(e.code||e.message)||e))}
 function netStatus(){$('sst').textContent=navigator.onLine?'Sincronizado':'Sin conexión: se guardará al reconectar'}
 window.addEventListener('online',netStatus);window.addEventListener('offline',netStatus);
 function startSync(){
@@ -340,16 +443,22 @@ function startSync(){
 function stopSync(){unsubs.forEach(u=>u());unsubs=[]}
 
 /* ---------- Acceso ---------- */
-function authErr(e){const m={'auth/invalid-credential':'Correo o contraseña incorrectos.','auth/wrong-password':'Contraseña incorrecta.','auth/user-not-found':'No existe una cuenta con ese correo.','auth/email-already-in-use':'Ese correo ya tiene cuenta. Usa “Entrar”.','auth/weak-password':'La contraseña debe tener al menos 6 caracteres.','auth/invalid-email':'Correo no válido.','auth/too-many-requests':'Demasiados intentos. Espera unos minutos.','auth/network-request-failed':'Sin conexión a internet.','auth/unauthorized-domain':'Dominio no autorizado: agrégalo en Firebase → Authentication → Settings → Authorized domains.'};$('autherr').textContent=m[e.code]||(e.code||e.message)}
+function authErr(e){const m={'auth/invalid-credential':'Correo o contraseña incorrectos.','auth/wrong-password':'Contraseña incorrecta.','auth/user-not-found':'No existe una cuenta con ese correo.','auth/email-already-in-use':'Ese correo ya tiene cuenta. Usa “Entrar”.','auth/weak-password':'La contraseña debe tener al menos 6 caracteres.','auth/invalid-email':'Correo no válido.','auth/missing-email':'Escribe tu correo.','auth/too-many-requests':'Demasiados intentos. Espera unos minutos.','auth/network-request-failed':'Sin conexión a internet.','auth/unauthorized-domain':'Dominio no autorizado: agrégalo en Firebase → Authentication → Settings → Authorized domains.'};$('autherr').textContent=m[e.code]||(e.code||e.message)}
 function doLogin(){$('autherr').textContent='';fauth.signInWithEmailAndPassword($('aem').value.trim(),$('apw').value).catch(authErr)}
-function doRegister(){$('autherr').textContent='';fauth.createUserWithEmailAndPassword($('aem').value.trim(),$('apw').value).catch(authErr)}
+function doRegister(){$('autherr').textContent='';fauth.languageCode='es';fauth.createUserWithEmailAndPassword($('aem').value.trim(),$('apw').value).then(c=>c.user.sendEmailVerification().then(()=>alert('Te enviamos un correo para verificar tu cuenta. Solo es necesario para acceder a espacios compartidos.')).catch(()=>{})).catch(authErr)}
+function doReset(){
+  const em=$('aem').value.trim();$('autherr').textContent='';$('authok').textContent='';
+  if(!em){$('autherr').textContent='Escribe tu correo arriba y vuelve a tocar “¿Olvidaste tu contraseña?”.';return}
+  fauth.languageCode='es';
+  fauth.sendPasswordResetEmail(em).then(()=>{$('authok').textContent='Listo. Si el correo tiene cuenta, te enviamos un enlace para crear una contraseña nueva (revisa también spam).'}).catch(authErr)
+}
 function doLogout(){if(confirm('¿Cerrar sesión?'))fauth.signOut()}
 function initFirebase(){
   firebase.initializeApp(firebaseConfig);fauth=firebase.auth();fdb=firebase.firestore();
   fdb.enablePersistence({synchronizeTabs:true}).catch(()=>{});
   fauth.onAuthStateChanged(u=>{
-    if(u){uid=u.uid;$('uemail').textContent=u.email;$('auth').classList.remove('show');$('apw').value='';startSync()}
-    else{uid=null;stopSync();db={lotes:[],entradas:[],despachos:[],ciclos:[],eventos:[]};$('uemail').textContent='';$('sst').textContent='';$('auth').classList.add('show');render()}
+    if(u){onUser(u)}
+    else{uid=null;spaceUid=null;stopSync();clearDB();myEmail='';spaces=[];$('uemail').textContent='';$('auth').classList.add('show');document.body.classList.remove('ro');render()}
   })
 }
 
