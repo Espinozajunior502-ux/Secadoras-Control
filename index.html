@@ -268,6 +268,12 @@ nav.tabs button{border-radius:22px;min-height:54px}nav.tabs button.on{background
 html[data-t=dark] nav.tabs button.on{background:rgba(255,154,144,.16)}
 body{padding-bottom:calc(96px + env(safe-area-inset-bottom))}body #toast{bottom:calc(104px + env(safe-area-inset-bottom))}
 @media(prefers-reduced-motion:reduce){nav.tabs{transition:none}}
+
+/* v1.4.1: barra de estado y barra inferior */
+body::before{content:"";position:fixed;top:0;left:0;right:0;height:env(safe-area-inset-top,0px);background:#b3261e;z-index:45;pointer-events:none}
+nav.tabs{bottom:max(8px,calc(env(safe-area-inset-bottom) - 14px));padding:5px;border-radius:26px}
+nav.tabs button{min-height:50px;border-radius:21px}nav.tabs button .ic{width:22px;height:22px}
+body{padding-bottom:calc(84px + env(safe-area-inset-bottom))}body #toast{bottom:calc(92px + env(safe-area-inset-bottom))}
 </style></head>
 <body class="loading">
 <nav class="tabs">
@@ -550,7 +556,7 @@ function toggleMenu(e){e.stopPropagation();const p=$('menuPanel'),o=p.hidden;p.h
 document.addEventListener('click',e=>{const p=$('menuPanel');if(p&&!p.hidden&&!p.contains(e.target))closeMenu()});
 document.getElementById('menuPanel').addEventListener('click',e=>{if(e.target.closest('button'))closeMenu()});
 let lastY=0;addEventListener('scroll',()=>{const y=Math.max(0,scrollY);if(Math.abs(y-lastY)<8)return;const n=document.querySelector('nav.tabs');if(n)n.classList.toggle('hide',y>lastY&&y>80);lastY=y},{passive:true});
-const APP_VER='1.4';let loadT0=0,loadT=null;
+const APP_VER='1.4.1';let loadT0=0,loadT=null;
 function showLoadMsg(){const m=$('loadMsg');if(m.classList.contains('show')&&!m.classList.contains('out'))return;clearTimeout(loadT);loadT0=Date.now();m.classList.remove('out');m.classList.add('show');loadT=setTimeout(()=>hideLoadMsg(true),5000)}
 loadT0=Date.now();loadT=setTimeout(()=>hideLoadMsg(true),5000);
 function hideLoadMsg(force){const m=$('loadMsg');if(!m.classList.contains('show')||m.classList.contains('out'))return;clearTimeout(loadT);const w=force?0:Math.max(0,2500-(Date.now()-loadT0));loadT=setTimeout(()=>{m.classList.add('out');setTimeout(()=>m.classList.remove('show','out'),250)},w)}
