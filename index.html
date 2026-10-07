@@ -237,7 +237,7 @@ body.ro [onclick*="delEnt("],body.ro [onclick*="editEntry("],body.ro [onclick*="
 <div class="field" style="margin-top:8px"><input id="tn" placeholder="Observación (opcional)" autocomplete="off"></div>
 <div class="ma" style="justify-content:flex-start"><button class="btn primary" onclick="addCal()">Agregar calificación</button></div>
 <div class="err" id="eErr"></div>
-<div class="ma"><button class="btn red" onclick="delCiclo()">Eliminar esta carga</button><button class="btn leaf" onclick="markDry()">Marcar como seco</button></div>
+<div class="ma"><button class="btn red" id="btnDelCiclo" onclick="delCiclo()">Eliminar esta carga</button><button class="btn leaf" onclick="markDry()">Marcar como seco</button></div>
 </div>
 
 <div id="evBox" hidden><div class="sech">Temperaturas y calificaciones</div><div id="evList"></div></div>
@@ -307,6 +307,12 @@ body.ro [onclick*="delEnt("],body.ro [onclick*="editEntry("],body.ro [onclick*="
 <div id="usersM" class="modal"><div class="sheet"><h2>Usuarios</h2>
 <div class="sub">Personas que han iniciado sesión en la app. Toca “Ver datos” para ver y editar lo que ingresó cada una. Aparecen después de su primer ingreso con la versión actual.</div>
 <div id="usList"></div>
+<details style="margin-top:12px"><summary style="font-weight:700;cursor:pointer;padding:6px 0">¿No aparece alguien? Agrégalo con su UID</summary>
+<div class="shmut" style="margin:4px 0 8px">Para quien aún no ha abierto la versión nueva. Copia su UID y su correo desde Firebase → Authentication → Users. Sus datos anteriores se conservan y aparecerán al instante.</div>
+<div class="fg"><div class="field full"><label for="usUid">UID del usuario</label><input id="usUid" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Pega aquí el UID"></div>
+<div class="field"><label for="usEmail">Correo</label><input id="usEmail" type="email" autocomplete="off" placeholder="correo@dominio.com"></div>
+<div class="field"><label>&nbsp;</label><button class="btn primary" onclick="addUserManual()">Agregar</button></div></div>
+<div id="usErr" style="color:#b91c1c;font-weight:600;font-size:13px;min-height:18px;margin-top:6px"></div></details>
 <div class="ma"><button class="btn" onclick="closeM('usersM')">Cerrar</button></div></div></div>
 
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
@@ -431,6 +437,17 @@ async function openUsers(){
     window.__users=ps.docs.map(d=>({uid:d.id,email:d.data().email||'',ult:d.data().ult||0})).sort((a,b)=>String(a.email).localeCompare(String(b.email)));
     $('usList').innerHTML=window.__users.length?window.__users.map(u=>`<div class="shi"><div class="shm"><b>${esc(u.email||u.uid)}</b>${u.uid===uid?' (tú)':''}<div class="shmut">Último acceso: ${u.ult?new Date(u.ult).toLocaleString('es-EC',{hour12:false}):'sin dato'}</div></div>${u.uid===uid?'':`<button class="btn small primary" onclick="viewUser('${esc(u.uid)}')">${u.uid===spaceUid?'Viendo':'Ver datos'}</button>`}</div>`).join(''):'<div class="shmut">Todavía no hay otros usuarios.</div>'
   }catch(e){$('usList').innerHTML='<div class="shmut">No se pudo leer la lista: '+esc(e.code||e.message)+'</div>'}
+}
+function addUserManual(){
+  const id=$('usUid').value.trim(),em=$('usEmail').value.trim().toLowerCase();$('usErr').textContent='';
+  if(!isAdm)return;
+  if(!/^[A-Za-z0-9]{20,40}$/.test(id))return $('usErr').textContent='El UID no parece válido (son 28 letras y números, sin espacios).';
+  if(!/^[^\s@'"<>]+@[^\s@'"<>]+\.[^\s@'"<>]+$/.test(em))return $('usErr').textContent='Escribe el correo de esa persona.';
+  fdb.collection('perfiles').doc(id).set({email:em,ult:0,manual:true},{merge:true}).then(()=>{
+    $('usUid').value='';$('usEmail').value='';
+    if(!spaces.some(s=>s.uid===id))spaces.push({uid:id,label:'Datos de '+em,role:'admin',email:em});
+    renderAccessUI();openUsers()
+  }).catch(e=>{$('usErr').textContent='No se pudo agregar: '+(e.code||e.message)})
 }
 function viewUser(id){
   const u=(window.__users||[]).find(x=>x.uid===id);closeM('usersM');
@@ -607,7 +624,7 @@ function refreshDryerModal(){
   setChips('tipoChips','st',tl);setChips('origChips','so',ol);setChips('foChips','fo',ol);
   $('blkStatus').hidden=!ac;if(ac)$('blkStatus').innerHTML=cycleSummary(ac);
   $('blkStart').hidden=state!=='libre';
-  $('blkDrying').hidden=state!=='secando';
+  $('blkDrying').hidden=state!=='secando';$('btnDelCiclo').hidden=!isAdm;
   const evs=ac?evsOf(ac.id):[];
   $('evBox').hidden=!ac||(!evs.length&&state!=='secando');
   $('evList').innerHTML=evs.length?[...evs].reverse().map(e=>`<div class="item"><div><b>${hfmt(e.ts)}</b> ${e.type==='temp'?fnum(e.value)+' °C':'Calificación '+e.value+' de 10'+(e.note?': '+esc(e.note):'')}<div class="mut">${tfmt(e.ts)}</div></div>${state==='secando'?`<div class="acts"><button class="btn sm red" onclick="delEv('${e.id}')" aria-label="Eliminar">✕</button></div>`:''}</div>`).join(''):'<div class="mut">Aún no hay temperaturas ni calificaciones.</div>';
@@ -663,11 +680,27 @@ function finishCiclo(){
   if(!confirm(n?'¿Finalizar la descarga? La secadora quedará libre para una nueva carga.':'No registraste sacos secos de esta carga. ¿Finalizar de todos modos?'))return;
   editEnt=null;col('sec_ciclos').doc(ac.id).update({status:'finalizada',endAt:Date.now()}).catch(fail)
 }
-function delCiclo(){
-  const ac=activeOf(curDryer);if(!ac)return;
-  if(cycEntries(ac.id).length)return alert('No se puede eliminar: ya hay sacos secos registrados de esta carga.');
-  if(!confirm('¿Eliminar esta carga y sus temperaturas y calificaciones?'))return;
-  const b=fdb.batch();b.delete(col('sec_ciclos').doc(ac.id));evsOf(ac.id).forEach(e=>b.delete(col('sec_eventos').doc(e.id)));b.commit().catch(fail)
+function delCiclo(){const ac=activeOf(curDryer);if(ac)delCicloId(ac.id)}
+function delCicloId(id){
+  if(!isAdm)return alert('Solo el administrador puede eliminar cargas.');
+  const c=db.ciclos.find(x=>x.id===id);if(!c)return;
+  const evs=evsOf(id),ent=cycEntries(id),porLote={};
+  ent.forEach(e=>{porLote[e.loteId]=r2((porLote[e.loteId]||0)+e.kg)});
+  for(const lid of Object.keys(porLote)){
+    if(stockOf(lid)-porLote[lid]<-0.005)return alert('No se puede eliminar: parte del cacao de esta carga ya se despachó (lote "'+lname(lid)+'"). Edita o elimina primero esos despachos.')
+  }
+  const kgS=sum(ent,e=>e.kg);
+  const msg='¿Eliminar esta carga de '+dlabel(c.dryer)+' ('+(c.tipo||'sin tipo')+', '+fk(c.kgHumedo)+')?\n\nTambién se eliminarán '+evs.length+' temperatura(s)/calificación(es)'+(ent.length?' y '+ent.length+' registro(s) de sacos secos ('+fk(kgS)+'), que se descontarán del almacenamiento':'')+'.\n\nNo se puede deshacer.';
+  if(!confirm(msg))return;
+  const b=fdb.batch();
+  b.delete(col('sec_ciclos').doc(id));
+  evs.forEach(e=>b.delete(col('sec_eventos').doc(e.id)));
+  ent.forEach(e=>b.delete(col('sec_entradas').doc(e.id)));
+  Object.keys(porLote).forEach(lid=>{
+    const quedan=db.entradas.some(x=>x.loteId===lid&&x.cycleId!==id),desp=db.despachos.some(x=>x.loteId===lid);
+    if(!quedan&&!desp)b.delete(col('sec_lotes').doc(lid))
+  });
+  b.commit().then(()=>closeM('cycM')).catch(fail)
 }
 function editEntry(id){editEnt=db.entradas.find(x=>x.id===id);if(!editEnt)return;loadEdit(editEnt);refreshDryerModal();$('fs').focus()}
 function saveEnt(){
@@ -810,6 +843,7 @@ function openCiclo(id){
   h+=cl.length?(`<div class="mut">Promedio: ${fnum(s.cavg)} de 10</div>`+cl.map(e=>`<div class="item"><div><b>${hfmt(e.ts)}</b> ${e.value} de 10${e.note?': '+esc(e.note):''}<div class="mut">${tfmt(e.ts)}</div></div></div>`).join('')):'<div class="mut">No se registraron calificaciones.</div>';
   h+=`<div class="sech">Sacos secos (${ent.length} registro${ent.length===1?'':'s'})</div>`;
   h+=ent.length?ent.map(e=>`<div class="item"><div><b>${e.sacks} sacos</b>: ${fk(e.kg)} (${ft(e.kg)})<div class="mut">${esc(fshort(e.date))}. Destino: ${esc(lname(e.loteId))}</div></div><div class="acts"><button class="btn sm" onclick="closeM('cycM');openDryer(${e.dryer},'${e.date}','${e.id}')">Editar</button></div></div>`).join(''):'<div class="mut">No se han registrado sacos de esta carga.</div>';
+  if(isAdm)h+=`<div class="ma" style="justify-content:flex-start"><button class="btn red" onclick="delCicloId('${c.id}')">Eliminar esta carga</button></div>`;
   $('cyB').innerHTML=h;$('cyB').scrollTop=0;openM('cycM');$('cycM').querySelector('.sheet').scrollTop=0
 }
 function renderResExtra(){
@@ -827,7 +861,7 @@ function renderResExtra(){
   const hs=filteredCiclos();
   $('resCiclos').innerHTML=hs.length?`<div class="mut" style="margin-bottom:4px">${hs.length} carga${hs.length===1?'':'s'}</div>`+hs.map(c=>{
     const s=cycStats(c);
-    return `<div class="item"><div><b>${dlabel(c.dryer)}</b>: ${esc(c.tipo||'Sin tipo')} de ${esc(c.origin||'procedencia sin indicar')} ${stChip(c)}<div class="mut">Ingresó ${tfmt(c.startAt)}${c.dryAt?'. Seco en '+dur(c.dryAt-c.startAt):''}.</div><div class="mut">${fk(c.kgHumedo)} por secar${s.rend!=null?' → '+fk(s.kgS)+' secos ('+nf.format(s.rend)+' %)':''}.</div>${s.tm.length?`<div class="mut">${s.tm.length} temperatura${s.tm.length===1?'':'s'}: de ${fnum(s.tmin)} a ${fnum(s.tmax)} °C.</div>`:''}${s.cl.length?`<div class="mut">Calificación promedio: ${fnum(s.cavg)} de 10.</div>`:''}</div><div class="acts"><button class="btn sm primary" onclick="openCiclo('${c.id}')">Ver detalle</button></div></div>`}).join(''):'<div class="mut">No hay cargas con ese filtro.</div>';
+    return `<div class="item"><div><b>${dlabel(c.dryer)}</b>: ${esc(c.tipo||'Sin tipo')} de ${esc(c.origin||'procedencia sin indicar')} ${stChip(c)}<div class="mut">Ingresó ${tfmt(c.startAt)}${c.dryAt?'. Seco en '+dur(c.dryAt-c.startAt):''}.</div><div class="mut">${fk(c.kgHumedo)} por secar${s.rend!=null?' → '+fk(s.kgS)+' secos ('+nf.format(s.rend)+' %)':''}.</div>${s.tm.length?`<div class="mut">${s.tm.length} temperatura${s.tm.length===1?'':'s'}: de ${fnum(s.tmin)} a ${fnum(s.tmax)} °C.</div>`:''}${s.cl.length?`<div class="mut">Calificación promedio: ${fnum(s.cavg)} de 10.</div>`:''}</div><div class="acts"><button class="btn sm primary" onclick="openCiclo('${c.id}')">Ver detalle</button>${isAdm?`<button class="btn sm red" onclick="delCicloId('${c.id}')">Eliminar</button>`:''}</div></div>`}).join(''):'<div class="mut">No hay cargas con ese filtro.</div>';
   const gt=groupSum(db.entradas,e=>e.tipo||'Sin tipo',e=>e.kg);
   $('resTipo').innerHTML=gt.length?'<table class="t"><tr><th>Tipo</th><th class="r">Toneladas secas</th></tr>'+gt.map(([o,k])=>`<tr><td>${esc(o)}</td><td class="r">${nf.format(r2(k/1000))}</td></tr>`).join('')+'</table>':'<div class="mut">Sin datos.</div>'
 }
