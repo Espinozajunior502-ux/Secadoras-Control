@@ -313,7 +313,7 @@ html[data-t=dark] .pr.ps .stl{color:#f5c070}html[data-t=dark] .pr.pg .stl{color:
 
 /* animaciones de secadoras */
 .hub{position:relative;overflow:hidden}.hub b,.hub i{position:relative;z-index:1}
-.dry.st-sec .hub b,.dry.st-sec .hub i,.dry.st-seco .hub b,.dry.st-seco .hub i{text-shadow:0 1px 3px rgba(0,0,0,.4)}
+.dry.st-sec .hub b,.dry.st-sec .hub i,.dry.air .hub b,.dry.air .hub i,.dry.st-seco .hub b,.dry.st-seco .hub i{text-shadow:0 1px 3px rgba(0,0,0,.4)}
 .blades{position:absolute;inset:0;pointer-events:none;animation:bspin 7s linear infinite}
 .blades::after{content:"";position:absolute;left:calc(50% - 4px);top:calc(50% - 4px);width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.7)}
 .blades i{position:absolute;left:calc(50% - 1.5px);top:50%;width:3px;border-radius:3px;background:rgba(255,255,255,.55);transform-origin:50% 0}
@@ -362,6 +362,17 @@ html[data-t=dark] .pc.a{color:#f0b429}html[data-t=dark] .pc.g{color:#4ade80}
 .bv{font-size:10px;font-weight:700;margin-bottom:3px;white-space:nowrap}.bl{font-size:10px;color:var(--mut);margin-top:5px;white-space:nowrap}
 #updBar{position:fixed;left:10px;right:10px;top:calc(env(safe-area-inset-top) + 8px);z-index:250;display:flex;justify-content:space-between;align-items:center;gap:10px;padding:8px 8px 8px 16px;border-radius:999px;background:var(--glass);-webkit-backdrop-filter:blur(24px) saturate(180%);backdrop-filter:blur(24px) saturate(180%);border:1px solid var(--glassb);box-shadow:0 10px 30px rgba(0,0,0,.3);font-weight:600;font-size:14px;animation:sheetup .3s ease}
 #updBar button{min-height:40px;padding:0 16px;border-radius:999px}
+
+/* v1.7: teclado, eventos por tipo, fase de aire */
+.rdisp{display:flex;align-items:baseline;justify-content:center;gap:8px;font-size:46px;font-weight:800;letter-spacing:-.03em;margin:2px 0 10px}.rdisp small{font-size:15px;color:var(--mut);font-weight:600}
+.rate .rt{min-height:58px;font-size:22px;font-weight:700}
+.evh{display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap;margin:16px 0 6px;padding-bottom:4px;border-bottom:1px solid var(--line)}.evh b{font-size:15px}.evh span{font-size:12px;color:var(--mut)}
+.dry.air .hub{background:radial-gradient(circle at 35% 30%,#5fb4d8,#2a7fa8 70%)}
+.fan{position:absolute;inset:8%;width:84%;height:84%;opacity:.5;pointer-events:none}.fan .fb{fill:#fff;transform-origin:30px 30px;animation:fspin .9s linear infinite}
+@keyframes fspin{to{transform:rotate(360deg)}}
+.pc.b{background:rgba(42,127,168,.18);color:#2a7fa8}html[data-t=dark] .pc.b{color:#6cc3ea}
+#btnDry:disabled{opacity:.45}
+@media(prefers-reduced-motion:reduce){.fan .fb{animation:none}}
 </style></head>
 <body class="loading">
 <nav class="tabs">
@@ -470,12 +481,12 @@ html[data-t=dark] .pc.a{color:#f0b429}html[data-t=dark] .pc.g{color:#4ade80}
 <div class="field"><label>&nbsp;</label><button class="btn primary" onclick="addVolteo()">Agregar volteo</button></div>
 </div>
 <div class="mut" style="margin-top:4px">Se guarda con la hora del teléfono. Déjalo vacío para anotar solo la hora del volteo.</div>
-<div class="sech">Calificación del cacao (0 a 40)</div>
-<div class="rate" id="rate"></div>
+<div class="sech">Calificación del cacao</div>
+<div class="rdisp"><span id="rdisp">—</span></div><div class="rate" id="rate"></div>
 <div class="field" style="margin-top:8px"><input id="tn" placeholder="Observación (opcional)" autocomplete="off"></div>
 <div class="ma" style="justify-content:flex-start"><button class="btn primary" onclick="addCal()">Agregar calificación</button></div>
 <div class="err" id="eErr"></div>
-<div class="ma"><button class="btn red" id="btnDelCiclo" onclick="delCiclo()">Eliminar esta carga</button><button class="btn leaf" onclick="markDry()">Marcar como seco</button></div>
+<div class="mut" id="airHint"></div><div class="ma"><button class="btn red" id="btnDelCiclo" onclick="delCiclo()">Eliminar esta carga</button><button class="btn" id="btnAir" onclick="startAire()">Iniciar fase de aire</button><button class="btn" id="btnAirX" onclick="cancelAire()" hidden>Cancelar fase de aire</button><button class="btn leaf" id="btnDry" onclick="markDry()">Marcar como seco</button></div>
 </div>
 
 <div id="evBox" hidden><div class="sech">Temperaturas, volteos y calificaciones</div><div id="evList"></div></div>
@@ -658,7 +669,7 @@ function toggleMenu(e){e.stopPropagation();const p=$('menuPanel'),o=p.hidden;p.h
 document.addEventListener('click',e=>{const p=$('menuPanel');if(p&&!p.hidden&&!p.contains(e.target))closeMenu()});
 document.getElementById('menuPanel').addEventListener('click',e=>{if(e.target.closest('button'))closeMenu()});
 let lastY=0;addEventListener('scroll',()=>{const y=Math.max(0,scrollY);if(Math.abs(y-lastY)<8)return;const n=document.querySelector('nav.tabs');if(n)n.classList.toggle('hide',y>lastY&&y>80);lastY=y},{passive:true});
-const APP_VER='1.6.1';
+const APP_VER='1.7.2';
 let updShown=false;
 async function checkUpdate(){if(updShown||!navigator.onLine)return;try{const r=await fetch(location.pathname+location.search,{cache:'no-store'});if(!r.ok)return;const m=(await r.text()).match(/APP_VER='([^']+)'/);if(m&&m[1]!==APP_VER){updShown=true;const ae=document.activeElement;if(!document.querySelector('.modal.show')&&!(ae&&/INPUT|TEXTAREA|SELECT/.test(ae.tagName))){location.reload();return}const b=document.createElement('div');b.id='updBar';b.innerHTML='<span>Hay una versión nueva de la app</span><button class="btn primary" onclick="location.reload()">Actualizar</button>';document.body.appendChild(b)}}catch(e){}}
 setInterval(checkUpdate,10*60*1000);document.addEventListener('visibilitychange',()=>{if(!document.hidden)checkUpdate()});setTimeout(checkUpdate,8000);let loadT0=0,loadT=null;
@@ -843,6 +854,13 @@ function renderProd(){
   const tw=sum(db.entradas.filter(e=>wk(e.date)===wk(iso(now))),e=>e.kg),tm=sum(db.entradas.filter(e=>e.date.slice(0,7)===iso(now).slice(0,7)),e=>e.kg);
   $('prodSum').innerHTML=`<span class="pc a"><b>${nf.format(r2(tw/1000))}</b> t esta semana</span><span class="pc g"><b>${nf.format(r2(tm/1000))}</b> t este mes</span>`
 }
+function evGroups(evs,fn){
+  return [['temp','Temperaturas'],['volteo','Volteos'],['cal','Calificaciones']].map(([t,T])=>{
+    const l=evs.filter(e=>e.type===t).sort((a,b)=>b.ts-a.ts);if(!l.length)return '';
+    const v=l.map(e=>e.value).filter(x=>x!=null);
+    const r=t==='temp'?'última '+fnum(l[0].value)+' °C · prom. '+fnum(r2(sum(v,x=>x)/v.length)):t==='volteo'?(v.length?fnum(sum(v,x=>x))+' min en total':'sin minutos'):'prom. '+fnum(r2(sum(v,x=>x)/v.length));
+    return `<div class="evh"><b>${T} (${l.length})</b><span>${r}</span></div>`+l.map(fn).join('')}).join('')
+}
 function toggL(d){d.open?openL.add(d.dataset.id):openL.delete(d.dataset.id)}
 const PAL=['#a31f1f','#d98a1c','#18805f','#0a84ff','#8e5ad8','#c2417a','#2b8a9e','#7a5c3a'];
 function loteDetail(x){
@@ -858,11 +876,12 @@ function loteDetail(x){
     return `<div class="ld-dry" style="--c:${g.c}"><h4><span>${dlabel(g.dryer)}</span><span>${fk(g.kg)} · ${g.s} sacos · ${Math.round(g.kg/tot*100)} %</span></h4>`+
     (c?`<div class="mut"><b>${esc(c.tipo||'Sin tipo')}</b> de ${esc(c.origin||'procedencia sin indicar')}. Ingresó ${fk(c.kgHumedo)} húmedo el ${tfmt(c.startAt)}${c.dryAt?'; secó en '+dur(c.dryAt-c.startAt):''}.</div>
     <div class="mut">Cargada por ${c.by?'<b>'+nm(c.by)+'</b>':'autor no registrado'}${c.dryAt?' · marcada seca por '+(c.dryBy?'<b>'+nm(c.dryBy)+'</b>':'autor no registrado'):''}.</div>
-    <div class="mut">${T.length?T.length+' temperatura'+(T.length===1?'':'s')+': '+fnum(mn)+' a '+fnum(mx)+' °C (prom. '+fnum(r2(av))+')'+spk:'Sin temperaturas'} · ${V.length} volteo${V.length===1?'':'s'}${vm?' ('+fnum(vm)+' min)':''}${K.length?' · calificación prom. '+fnum(r2(sum(K,v=>v)/K.length))+' de 40':''}.</div>`:'<div class="mut">Registro anterior, sin datos de la carga.</div>')+
+    <div class="mut">${T.length?T.length+' temperatura'+(T.length===1?'':'s')+': '+fnum(mn)+' a '+fnum(mx)+' °C (prom. '+fnum(r2(av))+')'+spk:'Sin temperaturas'} · ${V.length} volteo${V.length===1?'':'s'}${vm?' ('+fnum(vm)+' min)':''}${K.length?' · calificación prom. '+fnum(r2(sum(K,v=>v)/K.length)):''}.</div>`:'<div class="mut">Registro anterior, sin datos de la carga.</div>')+
     (by?`<div class="mut">Salida registrada por ${by}.</div>`:'')+'</div>'}).join('');
   const bar=gs.map(g=>`<i style="flex:${g.kg};background:${g.c}"></i>`).join(''),leg=gs.map(g=>`<span style="--c:${g.c}">${dlabel(g.dryer)} ${Math.round(g.kg/tot*100)} %</span>`).join('');
   return `<details class="ldet" data-id="${x.l.id}" ontoggle="toggL(this)"${openL.has(x.l.id)?' open':''}><summary>Detalle por secadora · ${gs.length}</summary><div class="ld-bar">${bar}</div><div class="ld-leg">${leg}</div><div class="ld-kpi"><div><b>${gs.length}</b>secadora${gs.length===1?'':'s'}</div><div><b>${sum(gs,g=>g.s)}</b>sacos</div><div><b>${allT.length?fnum(r2(sum(allT,v=>v)/allT.length))+' °C':'—'}</b>temp. prom.</div></div>${cards}</details>`
 }
+const FAN='<svg class="fan" viewBox="0 0 60 60" aria-hidden="true"><g class="fb"><path d="M30 30C28 14 36 6 43 10C48 15 40 27 30 30z"/><path d="M30 30C28 14 36 6 43 10C48 15 40 27 30 30z" transform="rotate(90 30 30)"/><path d="M30 30C28 14 36 6 43 10C48 15 40 27 30 30z" transform="rotate(180 30 30)"/><path d="M30 30C28 14 36 6 43 10C48 15 40 27 30 30z" transform="rotate(270 30 30)"/></g><circle cx="30" cy="30" r="3.5" fill="#fff"/></svg>';
 const BLD='<span class="blades" aria-hidden="true"><i></i><i></i></span>';
 const SKS='<svg class="sack" viewBox="0 0 60 60" aria-hidden="true"><rect class="sf" x="18" y="24" width="24" height="28" rx="3"/><path class="sb" d="M20 20h20l4 6v24a4 4 0 01-4 4H20a4 4 0 01-4-4V26z"/><circle class="gr" cx="30" cy="25" r="1.6"/><circle class="gr" cx="34" cy="25" r="1.6" style="animation-delay:.12s"/><circle class="gr" cx="38" cy="25" r="1.6" style="animation-delay:.24s"/><g class="sv"><line x1="8" y1="8" x2="27" y2="20"/><path d="M27 20l7-3 3 6-8 4z"/></g></svg>';
 function whoLine(o,verb){
@@ -886,13 +905,14 @@ function syncChips(inputId){
   box.querySelectorAll('.chip-b').forEach(b=>b.classList.toggle('on',b.dataset.v.toLowerCase()===cur))
 }
 const calMaxOf=e=>e.max||10;
-const calTxt=e=>e.value+' de '+calMaxOf(e);
+const calTxt=e=>e.max===10?e.value+' de 10':String(e.value);
 function evTxt(e){
   if(e.type==='temp')return fnum(e.value)+' °C';
   if(e.type==='volteo')return 'Volteo'+(e.value>0?': '+fnum(e.value)+' min':'');
   return 'Calificación '+calTxt(e)+(e.note?': '+esc(e.note):'')
 }
-function pickRate(v){rateSel=v;document.querySelectorAll('#rate .rt').forEach(b=>b.classList.toggle('on',Number(b.dataset.v)===v))}
+function pickRate(v){rateSel=v;$('rdisp').textContent=v===null?'—':v}
+function kp(k){if(k==='C')return pickRate(null);const c=rateSel===null?'':String(rateSel);if(k==='⌫')return pickRate(c.length>1?Number(c.slice(0,-1)):null);const n=c==='0'?k:c+k;if(n.length>4)return;$('eErr').textContent='';pickRate(Number(n))}
 
 /* ---------- Secadoras ---------- */
 function renderSec(){
@@ -905,7 +925,7 @@ function renderSec(){
   $('floor').innerHTML=LAYOUT.map(row=>'<div class="row">'+row.map(n=>{
     const p=per[n],pct=p?Math.round(p.s/mx*100):0,sm=SMALL.includes(n),ac=activeOf(n);
     const sec=ac&&ac.status==='secando',word=!ac?'libre':sec?'secando':'seco',lt=sec?evsOf(ac.id,'temp').pop():null;
-    return `<button class="dry${sm?' small':''}${ac?(sec?' st-sec':' st-seco'):''}" style="--p:${pct}" onclick="openDryer(${n})" aria-label="${dlabel(n)}, ${word}${p?', salieron '+p.s+' sacos':''}"><span class="disc"><span class="hub">${ac?(sec?BLD:SKS):''}<b>${dshort(n)}</b><i>${word}</i></span></span><span class="dkg">${p?nf.format(r2(p.kg))+' kg':''}${lt?`<small>${fnum(lt.value)} °C</small>`:''}</span></button>`
+    return `<button class="dry${sm?' small':''}${ac?(sec?(ac.airAt?' st-sec air':' st-sec'):' st-seco'):''}" style="--p:${pct}" onclick="openDryer(${n})" aria-label="${dlabel(n)}, ${word}${p?', salieron '+p.s+' sacos':''}"><span class="disc"><span class="hub">${ac?(sec?(ac.airAt?FAN:BLD):SKS):''}<b>${dshort(n)}</b><i>${word}</i></span></span><span class="dkg">${p?nf.format(r2(p.kg))+' kg':''}${lt?`<small>${fnum(lt.value)} °C</small>`:''}</span></button>`
   }).join('')+'</div>').join('')
 }
 
@@ -960,7 +980,7 @@ function fillLote(){
 }
 function cycleSummary(ac){
   const ent=cycEntries(ac.id),kgS=sum(ent,e=>e.kg),sacos=ent.reduce((a,e)=>a+e.sacks,0),sec=ac.status==='secando',vt=evsOf(ac.id,'volteo');
-  return `<div class="cyc"><span class="chip ${sec?'a':'g'}">${sec?'Secando':'Seco: registrando sacos'}</span><div><b>${esc(ac.tipo||'Sin tipo')}</b> de ${esc(ac.origin||'procedencia sin indicar')}</div><div>${fk(ac.kgHumedo)} por secar (${ft(ac.kgHumedo)})</div><div class="mut">Ingresó el ${tfmt(ac.startAt)}. ${sec?'Lleva '+dur(Date.now()-ac.startAt)+' secando.':'Secó en '+dur(ac.dryAt-ac.startAt)+'.'}</div><div class="who">👤 ${ac.by?'Cargada a secar por <b>'+nm(ac.by)+'</b>':'Cargada a secar: autor no registrado'}</div>${!sec&&ac.dryAt?`<div class="who">👤 ${ac.dryBy?'Marcada como seca por <b>'+nm(ac.dryBy)+'</b>':'Marcada como seca: autor no registrado'} · ${tfmt(ac.dryAt)}</div>`:''}${vt.length?`<div class="mut">${vt.length} volteo${vt.length===1?'':'s'}. Último: ${tfmt(vt[vt.length-1].ts)}.</div>`:''}${ent.length?`<div class="mut">Ya salieron ${sacos} sacos secos (${fk(kgS)}). Rendimiento: ${nf.format(r2(kgS/ac.kgHumedo*100))} % del peso ingresado.</div>`:''}</div>`
+  return `<div class="cyc"><span class="chip ${sec?'a':'g'}">${sec?(ac.airAt?'Fase de aire':'Secando'):'Seco: registrando sacos'}</span><div><b>${esc(ac.tipo||'Sin tipo')}</b> de ${esc(ac.origin||'procedencia sin indicar')}</div><div>${fk(ac.kgHumedo)} por secar (${ft(ac.kgHumedo)}) ${!ac.kgEdited?'<button class="btn sm" onclick="editPeso()">Corregir peso</button>':''}</div>${ac.kgEdited?`<div class="mut">Peso corregido una vez: antes decía ${fk(ac.kgOrig)}${ac.kgEditBy?' (por '+nm(ac.kgEditBy)+')':''}.</div>`:''}<div class="mut">Ingresó el ${tfmt(ac.startAt)}. ${sec?'Lleva '+dur(Date.now()-ac.startAt)+' secando.':'Secó en '+dur(ac.dryAt-ac.startAt)+'.'}</div>${ac.airAt?`<div class="who">💨 Fase de aire desde ${tfmt(ac.airAt)} · ${ac.dryAt?'duró '+dur(ac.dryAt-ac.airAt):'lleva '+dur(Date.now()-ac.airAt)}${ac.airBy?' · iniciada por <b>'+nm(ac.airBy)+'</b>':''}</div>`:''}<div class="who">👤 ${ac.by?'Cargada a secar por <b>'+nm(ac.by)+'</b>':'Cargada a secar: autor no registrado'}</div>${!sec&&ac.dryAt?`<div class="who">👤 ${ac.dryBy?'Marcada como seca por <b>'+nm(ac.dryBy)+'</b>':'Marcada como seca: autor no registrado'} · ${tfmt(ac.dryAt)}</div>`:''}${vt.length?`<div class="mut">${vt.length} volteo${vt.length===1?'':'s'}. Último: ${tfmt(vt[vt.length-1].ts)}.</div>`:''}${ent.length?`<div class="mut">Ya salieron ${sacos} sacos secos (${fk(kgS)}). Rendimiento: ${nf.format(r2(kgS/ac.kgHumedo*100))} % del peso ingresado.</div>`:''}</div>`
 }
 function renderDmList(ac,state){
   const cyc=state==='seco';
@@ -980,9 +1000,10 @@ function refreshDryerModal(){
   $('blkStatus').hidden=!ac;if(ac)$('blkStatus').innerHTML=cycleSummary(ac);
   $('blkStart').hidden=state!=='libre';
   $('blkDrying').hidden=state!=='secando';$('btnDelCiclo').hidden=!isAdm;
+  {const a=ac&&state==='secando'?ac.airAt:null;$('btnAir').hidden=!!a;$('btnAirX').hidden=!a;$('btnDry').disabled=!a;$('airHint').textContent=a?'En fase de aire (solo ventilación): ya puedes marcar el cacao como seco.':'Antes de marcar como seco, inicia la fase de aire (solo ventilación) y deja pasar el tiempo necesario.'}
   const evs=ac?evsOf(ac.id):[];
   $('evBox').hidden=!ac||(!evs.length&&state!=='secando');
-  $('evList').innerHTML=evs.length?[...evs].reverse().map(e=>`<div class="item"><div><b>${hfmt(e.ts)}</b> ${evTxt(e)}<div class="mut">${tfmt(e.ts)}</div>${evWho(e)}</div>${state==='secando'?`<div class="acts"><button class="btn sm red" onclick="delEv('${e.id}')" aria-label="Eliminar">✕</button></div>`:''}</div>`).join(''):EMP('box','Aún sin registros','Anota la primera temperatura, volteo o calificación de esta carga.');
+  $('evList').innerHTML=evs.length?evGroups(evs,e=>`<div class="item"><div><b>${hfmt(e.ts)}</b> ${evTxt(e)}<div class="mut">${tfmt(e.ts)}</div>${evWho(e)}</div>${state==='secando'?`<div class="acts"><button class="btn sm red" onclick="delEv('${e.id}')" aria-label="Eliminar">✕</button></div>`:''}</div>`):EMP('box','Aún sin registros','Anota la primera temperatura, volteo o calificación de esta carga.');
   $('blkBag').hidden=!(state==='seco'||editEnt);
   $('blkDone').hidden=state!=='seco';
   if(ac)$('btnReopen').hidden=cycEntries(ac.id).length>0;
@@ -1025,18 +1046,36 @@ function addVolteo(){
 }
 function addCal(){
   const ac=activeOf(curDryer);if(!ac||ac.status!=='secando')return;
-  if(rateSel===null)return $('eErr').textContent='Elige una calificación (de 0 a 40).';
+  if(rateSel===null)return $('eErr').textContent='Escribe la calificación con el teclado.';
   $('eErr').textContent='';
-  col('sec_eventos').doc(nid()).set({cycleId:ac.id,dryer:ac.dryer,ts:Date.now(),type:'cal',value:rateSel,max:40,note:$('tn').value.trim(),by:myEmail}).catch(fail);
-  logAct('registró calificación '+rateSel+' de 40 en '+dlabel(ac.dryer),ac.dryer);
+  col('sec_eventos').doc(nid()).set({cycleId:ac.id,dryer:ac.dryer,ts:Date.now(),type:'cal',value:rateSel,note:$('tn').value.trim(),by:myEmail}).catch(fail);
+  logAct('registró calificación '+rateSel+' en '+dlabel(ac.dryer),ac.dryer);
   $('tn').value='';pickRate(null)
 }
 function delEv(id){
   const e=db.eventos.find(x=>x.id===id);
   if(confirm('¿Eliminar este registro?')){col('sec_eventos').doc(id).delete().catch(fail);if(e)logAct('eliminó un registro de '+(e.type==='temp'?'temperatura':e.type==='volteo'?'volteo':'calificación')+' en '+dlabel(e.dryer),e.dryer)}
 }
+function editPeso(){
+  const ac=activeOf(curDryer);if(!ac)return;
+  if(ac.kgEdited)return toast('El peso ya se corrigió una vez y no se puede cambiar de nuevo.',true);
+  const r=prompt('Corregir el peso por secar (en kg).\nSolo se puede corregir UNA vez. Ahora dice: '+fk(ac.kgHumedo),String(ac.kgHumedo).replace('.',','));if(r===null)return;
+  const q=r2(num(r));if(!(q>0))return toast('Escribe un peso válido en kg.',true);
+  if(confirm('Cambiar el peso de '+fk(ac.kgHumedo)+' a '+fk(q)+'.\nEsta corrección solo se permite una vez. ¿Confirmas?')){
+    col('sec_ciclos').doc(ac.id).update({kgHumedo:q,kgEdited:true,kgOrig:ac.kgHumedo,kgEditBy:myEmail,kgEditAt:Date.now()}).catch(fail);
+    logAct('corrigió el peso de la carga de '+dlabel(ac.dryer)+' de '+fk(ac.kgHumedo)+' a '+fk(q),ac.dryer)}
+}
+function startAire(){
+  const ac=activeOf(curDryer);if(!ac||ac.status!=='secando'||ac.airAt)return;
+  if(confirm('¿Iniciar la fase de aire? Desde ahora se contará el tiempo con solo ventilación.')){col('sec_ciclos').doc(ac.id).update({airAt:Date.now(),airBy:myEmail}).catch(fail);logAct('inició la fase de aire en '+dlabel(ac.dryer),ac.dryer)}
+}
+function cancelAire(){
+  const ac=activeOf(curDryer);if(!ac||ac.status!=='secando'||!ac.airAt)return;
+  if(confirm('¿Cancelar la fase de aire y volver al secado normal?')){col('sec_ciclos').doc(ac.id).update({airAt:null,airBy:null}).catch(fail);logAct('canceló la fase de aire en '+dlabel(ac.dryer),ac.dryer)}
+}
 function markDry(){
   const ac=activeOf(curDryer);if(!ac||ac.status!=='secando')return;
+  if(!ac.airAt)return toast('Primero inicia la fase de aire.',true);
   if(confirm('¿Marcar este cacao como seco? Se habilitará el registro de sacos secos y ya no podrás agregar temperaturas.')){
     col('sec_ciclos').doc(ac.id).update({status:'seco',dryAt:Date.now(),dryBy:myEmail}).catch(fail);
     logAct('marcó como seco el cacao de '+dlabel(ac.dryer),ac.dryer)
@@ -1164,8 +1203,8 @@ function openDay(d){
 function groupSum(arr,keyf,valf){const o={};arr.forEach(x=>{const k=keyf(x);o[k]=(o[k]||0)+valf(x)});return Object.entries(o).sort((a,b)=>b[1]-a[1])}
 function renderRes(){
   $('actCard').hidden=!isAdm;renderProd();
-  {const ids=LAYOUT.flat();let nS=0,nK=0;ids.forEach(n=>{const a=activeOf(n);if(a){if(a.status==='secando')nS++;else nK++}});const nL=ids.length-nS-nK;
-  $('procSum').innerHTML=`<span class="pc a"><b>${nS}</b> secadora${nS===1?'':'s'} secando</span><span class="pc g"><b>${nK}</b> secadora${nK===1?'':'s'} lista${nK===1?'':'s'} para llenar sacos</span><span class="pc n"><b>${nL}</b> libre${nL===1?'':'s'}</span>`}
+  {const ids=LAYOUT.flat();let nS=0,nK=0,nA=0;ids.forEach(n=>{const a=activeOf(n);if(a){if(a.status==='secando'){if(a.airAt)nA++;else nS++}else nK++}});const nL=ids.length-nS-nA-nK;
+  $('procSum').innerHTML=`<span class="pc a"><b>${nS}</b> secadora${nS===1?'':'s'} secando</span><span class="pc b"><b>${nA}</b> en fase de aire</span><span class="pc g"><b>${nK}</b> secadora${nK===1?'':'s'} lista${nK===1?'':'s'} para llenar sacos</span><span class="pc n"><b>${nL}</b> libre${nL===1?'':'s'}</span>`}
   const L=Object.values(LI),open=L.filter(x=>x.stock>0.005).sort((a,b)=>a.l.name.localeCompare(b.l.name)),closed=L.filter(x=>x.stock<=0.005&&x.ing>0).sort((a,b)=>a.l.name.localeCompare(b.l.name));
   const prod=sum(db.entradas,e=>e.kg),desp=sum(db.despachos,d=>d.kg),stock=sum(open,x=>x.stock),ym=iso(new Date()).slice(0,7),mProd=sum(db.entradas.filter(e=>e.date.startsWith(ym)),e=>e.kg);
   $('resStats').innerHTML=
@@ -1193,7 +1232,7 @@ function renameLote(id){
 /* ---------- Historial de cargas ---------- */
 let histDry='all',histMes='all';
 function cycStats(c){
-  const ent=cycEntries(c.id),kgS=sum(ent,e=>e.kg),tm=evsOf(c.id,'temp').map(e=>e.value),clE=evsOf(c.id,'cal'),cmax=clE.some(e=>e.max===40)?40:10,cl=clE.map(e=>cmax===40?(e.max===40?e.value:e.value*4):e.value),vt=evsOf(c.id,'volteo');
+  const ent=cycEntries(c.id),kgS=sum(ent,e=>e.kg),tm=evsOf(c.id,'temp').map(e=>e.value),clE=evsOf(c.id,'cal'),cmax=clE.length&&clE.every(e=>e.max===10)?10:0,cl=clE.map(e=>cmax===10||e.max!==10?e.value:e.value*4),vt=evsOf(c.id,'volteo');
   return {ent,kgS,sacos:ent.reduce((a,e)=>a+e.sacks,0),tm,cl,cmax,vt,
     tmin:tm.length?Math.min(...tm):null,tmax:tm.length?Math.max(...tm):null,tavg:tm.length?r2(tm.reduce((a,x)=>a+x,0)/tm.length):null,
     cavg:cl.length?r2(cl.reduce((a,x)=>a+x,0)/cl.length):null,rend:c.kgHumedo>0&&ent.length?r2(kgS/c.kgHumedo*100):null}
@@ -1233,7 +1272,7 @@ function openCiclo(id){
   h+=`<div class="sech">Volteos (${vt.length})</div>`;
   h+=vt.length?vt.map(e=>`<div class="item"><div><b>${hfmt(e.ts)}</b> ${e.value>0?fnum(e.value)+' min':'volteo'}<div class="mut">${tfmt(e.ts)}</div>${evWho(e)}</div></div>`).join(''):'<div class="mut">No se registraron volteos.</div>';
   h+=`<div class="sech">Calificaciones (${cl.length})</div>`;
-  h+=cl.length?(`<div class="mut">Promedio: ${fnum(s.cavg)} de ${s.cmax}</div>`+cl.map(e=>`<div class="item"><div><b>${hfmt(e.ts)}</b> ${calTxt(e)}${e.note?': '+esc(e.note):''}<div class="mut">${tfmt(e.ts)}</div>${evWho(e)}</div></div>`).join('')):'<div class="mut">No se registraron calificaciones.</div>';
+  h+=cl.length?(`<div class="mut">Promedio: ${fnum(s.cavg)} ${s.cmax?' de '+s.cmax:''}</div>`+cl.map(e=>`<div class="item"><div><b>${hfmt(e.ts)}</b> ${calTxt(e)}${e.note?': '+esc(e.note):''}<div class="mut">${tfmt(e.ts)}</div>${evWho(e)}</div></div>`).join('')):'<div class="mut">No se registraron calificaciones.</div>';
   h+=`<div class="sech">Sacos secos (${ent.length} registro${ent.length===1?'':'s'})</div>`;
   h+=ent.length?ent.map(e=>`<div class="item"><div><b>${e.sacks} sacos</b>: ${fk(e.kg)} (${ft(e.kg)})${modoTxt(e)}<div class="mut">${esc(fshort(e.date))}. Destino: ${esc(lname(e.loteId))}</div>${whoLine(e)}</div><div class="acts"><button class="btn sm" onclick="closeM('cycM');openDryer(${e.dryer},'${e.date}','${e.id}')">Editar</button></div></div>`).join(''):'<div class="mut">No se han registrado sacos de esta carga.</div>';
   if(isAdm)h+=`<div class="ma" style="justify-content:flex-start"><button class="btn red" onclick="delCicloId('${c.id}')">Eliminar esta carga</button></div>`;
@@ -1254,7 +1293,7 @@ function renderResExtra(){
   const hs=filteredCiclos();
   $('resCiclos').innerHTML=hs.length?`<div class="mut" style="margin-bottom:4px">${hs.length} carga${hs.length===1?'':'s'}</div>`+hs.map(c=>{
     const s=cycStats(c);
-    return `<div class="item"><div><b>${dlabel(c.dryer)}</b>: ${esc(c.tipo||'Sin tipo')} de ${esc(c.origin||'procedencia sin indicar')} ${stChip(c)}<div class="mut">Ingresó ${tfmt(c.startAt)}${c.by?' (por '+nm(c.by)+')':''}${c.dryAt?'. Seco en '+dur(c.dryAt-c.startAt)+(c.dryBy?' (marcado seco por '+nm(c.dryBy)+')':''):''}.</div><div class="mut">${fk(c.kgHumedo)} por secar${s.rend!=null?' → '+fk(s.kgS)+' secos ('+nf.format(s.rend)+' %)':''}.</div>${s.tm.length?`<div class="mut">${s.tm.length} temperatura${s.tm.length===1?'':'s'}: de ${fnum(s.tmin)} a ${fnum(s.tmax)} °C.</div>`:''}${s.cl.length?`<div class="mut">Calificación promedio: ${fnum(s.cavg)} de ${s.cmax}.</div>`:''}${s.vt.length?`<div class="mut">${s.vt.length} volteo${s.vt.length===1?'':'s'}.</div>`:''}</div><div class="acts"><button class="btn sm primary" onclick="openCiclo('${c.id}')">Ver detalle</button>${isAdm?`<button class="btn sm red" onclick="delCicloId('${c.id}')">Eliminar</button>`:''}</div></div>`}).join(''):'<div class="mut">No hay cargas con ese filtro.</div>';
+    return `<div class="item"><div><b>${dlabel(c.dryer)}</b>: ${esc(c.tipo||'Sin tipo')} de ${esc(c.origin||'procedencia sin indicar')} ${stChip(c)}<div class="mut">Ingresó ${tfmt(c.startAt)}${c.by?' (por '+nm(c.by)+')':''}${c.dryAt?'. Seco en '+dur(c.dryAt-c.startAt)+(c.dryBy?' (marcado seco por '+nm(c.dryBy)+')':''):''}.</div><div class="mut">${fk(c.kgHumedo)} por secar${s.rend!=null?' → '+fk(s.kgS)+' secos ('+nf.format(s.rend)+' %)':''}.</div>${s.tm.length?`<div class="mut">${s.tm.length} temperatura${s.tm.length===1?'':'s'}: de ${fnum(s.tmin)} a ${fnum(s.tmax)} °C.</div>`:''}${s.cl.length?`<div class="mut">Calificación promedio: ${fnum(s.cavg)} ${s.cmax?' de '+s.cmax:''}.</div>`:''}${s.vt.length?`<div class="mut">${s.vt.length} volteo${s.vt.length===1?'':'s'}.</div>`:''}</div><div class="acts"><button class="btn sm primary" onclick="openCiclo('${c.id}')">Ver detalle</button>${isAdm?`<button class="btn sm red" onclick="delCicloId('${c.id}')">Eliminar</button>`:''}</div></div>`}).join(''):'<div class="mut">No hay cargas con ese filtro.</div>';
   const gt=groupSum(db.entradas,e=>e.tipo||'Sin tipo',e=>e.kg);
   $('resTipo').innerHTML=gt.length?'<table class="t"><tr><th>Tipo</th><th class="r">Toneladas secas</th></tr>'+gt.map(([o,k])=>`<tr><td>${esc(o)}</td><td class="r">${nf.format(r2(k/1000))}</td></tr>`).join('')+'</table>':EMP('box','Sin datos todavía','Se llenará cuando registres cacao en las secadoras.')
 }
@@ -1336,7 +1375,7 @@ function delDisp(id){
 document.addEventListener('focusin',e=>{if(e.target.matches&&e.target.matches('.sheet input,.sheet select'))setTimeout(()=>{try{e.target.scrollIntoView({block:'center',behavior:'smooth'})}catch(x){}},350)});
 document.addEventListener('keydown',e=>{if(e.key==='Escape')['dryerM','dayM','dispM','cycM','shareM','usersM'].forEach(id=>{if($(id).classList.contains('show'))closeModalById(id)})});
 ['dryerM','dayM','dispM','cycM'].forEach(id=>$(id).addEventListener('click',e=>{if(e.target.id===id)closeM(id)}));
-$('rate').innerHTML=[40,35,30,25,20,15,10,5,0].map(i=>`<button type="button" class="rt" data-v="${i}" onclick="pickRate(${i})">${i}</button>`).join('');
+$('rate').innerHTML=['1','2','3','4','5','6','7','8','9','C','0','⌫'].map(k=>`<button type="button" class="rt" aria-label="${k==='C'?'Borrar todo':k==='⌫'?'Borrar último dígito':k}" onclick="kp('${k}')">${k}</button>`).join('');
 setInterval(()=>{const c=$('nowClock');if(c)c.textContent=new Date().toLocaleTimeString('es-EC',{hour12:false})},1000);
 /* ---- cerrar ventanas: deslizar hacia abajo, tocar fuera y botón atrás ---- */
 function closeModalById(id,fromPop){if(id==='shareM'){if(shareUnsub)shareUnsub();shareUnsub=null}closeM(id,fromPop)}
