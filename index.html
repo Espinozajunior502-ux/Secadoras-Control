@@ -310,6 +310,24 @@ html[data-t=dark] .pr.ps .stl{color:#f5c070}html[data-t=dark] .pr.pg .stl{color:
 .who{font-size:13px;color:var(--mut);margin-top:2px}.who b{color:var(--ink)}
 .item .acts{align-self:center}
 @media(max-width:420px){.item .acts{align-self:stretch}}
+
+/* animaciones de secadoras */
+.hub{position:relative;overflow:hidden}.hub b,.hub i{position:relative;z-index:1}
+.dry.st-sec .hub b,.dry.st-sec .hub i,.dry.st-seco .hub b,.dry.st-seco .hub i{text-shadow:0 1px 3px rgba(0,0,0,.4)}
+.blades{position:absolute;inset:0;pointer-events:none;animation:bspin 7s linear infinite}
+.blades::after{content:"";position:absolute;left:calc(50% - 4px);top:calc(50% - 4px);width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.7)}
+.blades i{position:absolute;left:calc(50% - 1.5px);top:50%;width:3px;border-radius:3px;background:rgba(255,255,255,.55);transform-origin:50% 0}
+.blades i:nth-child(1){height:43%}.blades i:nth-child(2){height:31%;transform:rotate(155deg)}
+@keyframes bspin{to{transform:rotate(360deg)}}
+.sk{position:absolute;inset:8%;width:84%;height:84%;opacity:.55;pointer-events:none}
+.sk .sb{fill:none;stroke:#fff;stroke-width:2;stroke-linejoin:round}
+.sk .sf{fill:#e8c07a;transform-box:fill-box;transform-origin:50% 100%;animation:skfill 3.2s ease-in-out infinite}
+.sk .sv{stroke:#fff;fill:#fff;stroke-width:2.4;stroke-linecap:round;transform-origin:8px 8px;animation:skdig 1.6s ease-in-out infinite}
+.sk .gr{fill:#e8c07a;opacity:0;animation:skgr 1.6s ease-in infinite}
+@keyframes skfill{0%{transform:scaleY(.08)}85%,100%{transform:scaleY(1)}}
+@keyframes skdig{0%,100%{transform:rotate(-4deg)}50%{transform:rotate(14deg)}}
+@keyframes skgr{0%,40%{transform:translateY(0);opacity:0}50%{opacity:1}100%{transform:translateY(16px);opacity:0}}
+@media(prefers-reduced-motion:reduce){.blades,.sk .sv,.sk .sf,.sk .gr{animation:none}.sk .sf{transform:scaleY(.7)}}
 </style></head>
 <body class="loading">
 <nav class="tabs">
@@ -772,6 +790,8 @@ const isoLocal=d=>iso(d)+'T'+String(d.getHours()).padStart(2,'0')+':'+String(d.g
 const num=v=>Number(String(v).replace(',','.'));
 const fnum=v=>String(v).replace('.',',');
 function evWho(e){return '<div class="who">'+(e.by?'👤 Por <b>'+esc(e.by)+'</b>':'👤 Autor no registrado')+'</div>'}
+const BLD='<span class="blades" aria-hidden="true"><i></i><i></i></span>';
+const SKS='<svg class="sk" viewBox="0 0 60 60" aria-hidden="true"><rect class="sf" x="18" y="24" width="24" height="28" rx="3"/><path class="sb" d="M20 20h20l4 6v24a4 4 0 01-4 4H20a4 4 0 01-4-4V26z"/><circle class="gr" cx="30" cy="25" r="1.6"/><circle class="gr" cx="34" cy="25" r="1.6" style="animation-delay:.12s"/><circle class="gr" cx="38" cy="25" r="1.6" style="animation-delay:.24s"/><g class="sv"><line x1="8" y1="8" x2="27" y2="20"/><path d="M27 20l7-3 3 6-8 4z"/></g></svg>';
 function whoLine(o,verb){
   if(!o)return '';let t='';
   if(o.by)t+=(verb||'Registrado')+' por '+esc(o.by);
@@ -812,7 +832,7 @@ function renderSec(){
   $('floor').innerHTML=LAYOUT.map(row=>'<div class="row">'+row.map(n=>{
     const p=per[n],pct=p?Math.round(p.s/mx*100):0,sm=SMALL.includes(n),ac=activeOf(n);
     const sec=ac&&ac.status==='secando',word=!ac?'libre':sec?'secando':'seco',lt=sec?evsOf(ac.id,'temp').pop():null;
-    return `<button class="dry${sm?' small':''}${ac?(sec?' st-sec':' st-seco'):''}" style="--p:${pct}" onclick="openDryer(${n})" aria-label="${dlabel(n)}, ${word}${p?', salieron '+p.s+' sacos':''}"><span class="disc"><span class="hub"><b>${dshort(n)}</b><i>${word}</i></span></span><span class="dkg">${p?nf.format(r2(p.kg))+' kg':''}${lt?`<small>${fnum(lt.value)} °C</small>`:''}</span></button>`
+    return `<button class="dry${sm?' small':''}${ac?(sec?' st-sec':' st-seco'):''}" style="--p:${pct}" onclick="openDryer(${n})" aria-label="${dlabel(n)}, ${word}${p?', salieron '+p.s+' sacos':''}"><span class="disc"><span class="hub">${ac?(sec?BLD:SKS):''}<b>${dshort(n)}</b><i>${word}</i></span></span><span class="dkg">${p?nf.format(r2(p.kg))+' kg':''}${lt?`<small>${fnum(lt.value)} °C</small>`:''}</span></button>`
   }).join('')+'</div>').join('')
 }
 
@@ -867,7 +887,7 @@ function fillLote(){
 }
 function cycleSummary(ac){
   const ent=cycEntries(ac.id),kgS=sum(ent,e=>e.kg),sacos=ent.reduce((a,e)=>a+e.sacks,0),sec=ac.status==='secando',vt=evsOf(ac.id,'volteo');
-  return `<div class="cyc"><span class="chip ${sec?'a':'g'}">${sec?'Secando':'Seco: registrando sacos'}</span><div><b>${esc(ac.tipo||'Sin tipo')}</b> de ${esc(ac.origin||'procedencia sin indicar')}</div><div>${fk(ac.kgHumedo)} por secar (${ft(ac.kgHumedo)})</div><div class="mut">Ingresó el ${tfmt(ac.startAt)}${ac.by?' (cargada por '+esc(ac.by)+')':''}. ${sec?'Lleva '+dur(Date.now()-ac.startAt)+' secando.':'Secó en '+dur(ac.dryAt-ac.startAt)+' (marcado el '+tfmt(ac.dryAt)+(ac.dryBy?' por '+esc(ac.dryBy):'')+').'}</div>${vt.length?`<div class="mut">${vt.length} volteo${vt.length===1?'':'s'}. Último: ${tfmt(vt[vt.length-1].ts)}.</div>`:''}${ent.length?`<div class="mut">Ya salieron ${sacos} sacos secos (${fk(kgS)}). Rendimiento: ${nf.format(r2(kgS/ac.kgHumedo*100))} % del peso ingresado.</div>`:''}</div>`
+  return `<div class="cyc"><span class="chip ${sec?'a':'g'}">${sec?'Secando':'Seco: registrando sacos'}</span><div><b>${esc(ac.tipo||'Sin tipo')}</b> de ${esc(ac.origin||'procedencia sin indicar')}</div><div>${fk(ac.kgHumedo)} por secar (${ft(ac.kgHumedo)})</div><div class="mut">Ingresó el ${tfmt(ac.startAt)}. ${sec?'Lleva '+dur(Date.now()-ac.startAt)+' secando.':'Secó en '+dur(ac.dryAt-ac.startAt)+'.'}</div>${ac.by?`<div class="mut">Cargada a secar por <b>${esc(ac.by)}</b></div>`:''}${!sec&&ac.dryAt?`<div class="mut">Marcada como seca por <b>${esc(ac.dryBy||'usuario no registrado')}</b> el ${tfmt(ac.dryAt)}</div>`:''}${vt.length?`<div class="mut">${vt.length} volteo${vt.length===1?'':'s'}. Último: ${tfmt(vt[vt.length-1].ts)}.</div>`:''}${ent.length?`<div class="mut">Ya salieron ${sacos} sacos secos (${fk(kgS)}). Rendimiento: ${nf.format(r2(kgS/ac.kgHumedo*100))} % del peso ingresado.</div>`:''}</div>`
 }
 function renderDmList(ac,state){
   const cyc=state==='seco';
@@ -1158,7 +1178,7 @@ function renderResExtra(){
   const hs=filteredCiclos();
   $('resCiclos').innerHTML=hs.length?`<div class="mut" style="margin-bottom:4px">${hs.length} carga${hs.length===1?'':'s'}</div>`+hs.map(c=>{
     const s=cycStats(c);
-    return `<div class="item"><div><b>${dlabel(c.dryer)}</b>: ${esc(c.tipo||'Sin tipo')} de ${esc(c.origin||'procedencia sin indicar')} ${stChip(c)}<div class="mut">Ingresó ${tfmt(c.startAt)}${c.by?' (por '+esc(c.by)+')':''}${c.dryAt?'. Seco en '+dur(c.dryAt-c.startAt):''}.</div><div class="mut">${fk(c.kgHumedo)} por secar${s.rend!=null?' → '+fk(s.kgS)+' secos ('+nf.format(s.rend)+' %)':''}.</div>${s.tm.length?`<div class="mut">${s.tm.length} temperatura${s.tm.length===1?'':'s'}: de ${fnum(s.tmin)} a ${fnum(s.tmax)} °C.</div>`:''}${s.cl.length?`<div class="mut">Calificación promedio: ${fnum(s.cavg)} de ${s.cmax}.</div>`:''}${s.vt.length?`<div class="mut">${s.vt.length} volteo${s.vt.length===1?'':'s'}.</div>`:''}</div><div class="acts"><button class="btn sm primary" onclick="openCiclo('${c.id}')">Ver detalle</button>${isAdm?`<button class="btn sm red" onclick="delCicloId('${c.id}')">Eliminar</button>`:''}</div></div>`}).join(''):'<div class="mut">No hay cargas con ese filtro.</div>';
+    return `<div class="item"><div><b>${dlabel(c.dryer)}</b>: ${esc(c.tipo||'Sin tipo')} de ${esc(c.origin||'procedencia sin indicar')} ${stChip(c)}<div class="mut">Ingresó ${tfmt(c.startAt)}${c.by?' (por '+esc(c.by)+')':''}${c.dryAt?'. Seco en '+dur(c.dryAt-c.startAt)+(c.dryBy?' (marcado seco por '+esc(c.dryBy)+')':''):''}.</div><div class="mut">${fk(c.kgHumedo)} por secar${s.rend!=null?' → '+fk(s.kgS)+' secos ('+nf.format(s.rend)+' %)':''}.</div>${s.tm.length?`<div class="mut">${s.tm.length} temperatura${s.tm.length===1?'':'s'}: de ${fnum(s.tmin)} a ${fnum(s.tmax)} °C.</div>`:''}${s.cl.length?`<div class="mut">Calificación promedio: ${fnum(s.cavg)} de ${s.cmax}.</div>`:''}${s.vt.length?`<div class="mut">${s.vt.length} volteo${s.vt.length===1?'':'s'}.</div>`:''}</div><div class="acts"><button class="btn sm primary" onclick="openCiclo('${c.id}')">Ver detalle</button>${isAdm?`<button class="btn sm red" onclick="delCicloId('${c.id}')">Eliminar</button>`:''}</div></div>`}).join(''):'<div class="mut">No hay cargas con ese filtro.</div>';
   const gt=groupSum(db.entradas,e=>e.tipo||'Sin tipo',e=>e.kg);
   $('resTipo').innerHTML=gt.length?'<table class="t"><tr><th>Tipo</th><th class="r">Toneladas secas</th></tr>'+gt.map(([o,k])=>`<tr><td>${esc(o)}</td><td class="r">${nf.format(r2(k/1000))}</td></tr>`).join('')+'</table>':EMP('box','Sin datos todavía','Se llenará cuando registres cacao en las secadoras.')
 }
