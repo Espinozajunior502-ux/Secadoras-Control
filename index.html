@@ -353,6 +353,15 @@ details[open]>.hs::after{transform:rotate(-135deg)}#histBox[open]>.hs{margin-bot
 .ps .phint{order:4;flex-basis:100%;margin-top:6px;font-size:12px;font-weight:500;color:var(--mut);letter-spacing:0}#procBox[open]>.ps .phint{display:none}#procBox[open]>.ps{margin-bottom:10px}
 .pc{padding:5px 11px;border-radius:999px}.pc b{font-weight:800}.pc.a{background:rgba(217,138,28,.18);color:#a8651a}.pc.g{background:rgba(24,128,95,.18);color:#18805f}.pc.n{background:rgba(120,120,128,.15);color:var(--mut)}
 html[data-t=dark] .pc.a{color:#f0b429}html[data-t=dark] .pc.g{color:#4ade80}
+
+/* v1.6: producción y aviso de versión */
+#prodBox[open]>.ps .phint{display:none}#prodBox[open]>.ps{margin-bottom:10px}
+.seg{display:flex;gap:4px;padding:3px;background:rgba(120,120,128,.14);border-radius:12px;margin-bottom:12px}.seg button{flex:1;min-height:36px;border-radius:10px;background:none;font-weight:700;color:var(--mut);box-shadow:none}.seg button.on{background:var(--card);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.25)}
+.bars{display:flex;align-items:flex-end;gap:5px;height:200px;padding-top:6px}.bc{flex:1;min-width:0;height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center}
+.bc i{display:block;width:100%;border-radius:6px 6px 2px 2px;background:linear-gradient(180deg,#c0392b,#a31f1f);transition:height .4s ease}.bc:last-child i{background:linear-gradient(180deg,#f0b429,#d98a1c)}
+.bv{font-size:10px;font-weight:700;margin-bottom:3px;white-space:nowrap}.bl{font-size:10px;color:var(--mut);margin-top:5px;white-space:nowrap}
+#updBar{position:fixed;left:10px;right:10px;top:calc(env(safe-area-inset-top) + 8px);z-index:250;display:flex;justify-content:space-between;align-items:center;gap:10px;padding:8px 8px 8px 16px;border-radius:999px;background:var(--glass);-webkit-backdrop-filter:blur(24px) saturate(180%);backdrop-filter:blur(24px) saturate(180%);border:1px solid var(--glassb);box-shadow:0 10px 30px rgba(0,0,0,.3);font-weight:600;font-size:14px;animation:sheetup .3s ease}
+#updBar button{min-height:40px;padding:0 16px;border-radius:999px}
 </style></head>
 <body class="loading">
 <nav class="tabs">
@@ -404,6 +413,7 @@ html[data-t=dark] .pc.a{color:#f0b429}html[data-t=dark] .pc.g{color:#4ade80}
 
 <section id="t-res" hidden>
 <div class="stats" id="resStats"></div>
+<div class="card" id="prodCard"><details id="prodBox"><summary class="hs ps"><span class="pt">Producción</span><span id="prodSum" class="psum"></span><span class="phint">Despliega para ver los gráficos</span></summary><div class="seg"><button id="pmW" class="on" onclick="setProd('w')">Semanas</button><button id="pmM" onclick="setProd('m')">Meses</button></div><div id="prodChart"></div></details></div>
 <div class="card" id="procCard"><details id="procBox"><summary class="hs ps"><span class="pt">En las secadoras ahora</span><span id="procSum" class="psum"></span><span class="phint">Despliega para ver más detalles</span></summary><div id="resProc"></div></details></div>
 <div class="card"><h2>En almacenamiento</h2><div id="resLotes"></div>
 <div class="ma" style="justify-content:flex-start"><button class="btn leaf" onclick="openDisp()">Despachar cacao</button></div>
@@ -648,7 +658,10 @@ function toggleMenu(e){e.stopPropagation();const p=$('menuPanel'),o=p.hidden;p.h
 document.addEventListener('click',e=>{const p=$('menuPanel');if(p&&!p.hidden&&!p.contains(e.target))closeMenu()});
 document.getElementById('menuPanel').addEventListener('click',e=>{if(e.target.closest('button'))closeMenu()});
 let lastY=0;addEventListener('scroll',()=>{const y=Math.max(0,scrollY);if(Math.abs(y-lastY)<8)return;const n=document.querySelector('nav.tabs');if(n)n.classList.toggle('hide',y>lastY&&y>80);lastY=y},{passive:true});
-const APP_VER='1.5.1';let loadT0=0,loadT=null;
+const APP_VER='1.6';
+let updShown=false;
+async function checkUpdate(){if(updShown||!navigator.onLine)return;try{const r=await fetch(location.pathname+location.search,{cache:'no-store'});if(!r.ok)return;const m=(await r.text()).match(/APP_VER='([^']+)'/);if(m&&m[1]!==APP_VER){updShown=true;const b=document.createElement('div');b.id='updBar';b.innerHTML='<span>Hay una versión nueva de la app</span><button class="btn primary" onclick="location.reload()">Actualizar</button>';document.body.appendChild(b)}}catch(e){}}
+setInterval(checkUpdate,10*60*1000);document.addEventListener('visibilitychange',()=>{if(!document.hidden)checkUpdate()});setTimeout(checkUpdate,8000);let loadT0=0,loadT=null;
 function showLoadMsg(){const m=$('loadMsg');if(m.classList.contains('show')&&!m.classList.contains('out'))return;clearTimeout(loadT);loadT0=Date.now();m.classList.remove('out');m.classList.add('show');loadT=setTimeout(()=>hideLoadMsg(true),5000)}
 loadT0=Date.now();loadT=setTimeout(()=>hideLoadMsg(true),5000);
 function hideLoadMsg(force){const m=$('loadMsg');if(!m.classList.contains('show')||m.classList.contains('out'))return;clearTimeout(loadT);const w=force?0:Math.max(0,2500-(Date.now()-loadT0));loadT=setTimeout(()=>{m.classList.add('out');setTimeout(()=>m.classList.remove('show','out'),250)},w)}
@@ -656,7 +669,7 @@ let toastT=null;
 function toast(msg,err){const t=$('toast');t.textContent=msg;t.classList.toggle('err',!!err);t.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('show'),4500)}
 window.alert=m=>{m=String(m);toast(m,/no se pudo|permiso|error|incorrect|no válido/i.test(m))};
 function askConfirm(msg,ok,cb){$('dlgBody').textContent=msg;const b=$('dlgBtns');b.innerHTML='';const c=document.createElement('button');c.className='btn';c.textContent='Cancelar';c.onclick=()=>closeM('dlg');const o=document.createElement('button');o.className='btn primary';o.textContent=ok||'Aceptar';o.onclick=()=>{closeM('dlg');cb()};b.append(c,o);openM('dlg')}
-function openAbout(){$('dlgBody').innerHTML='<b style="font-family:Barlow Condensed,sans-serif;font-size:24px">Secadoras de cacao</b><br><small>Versión '+APP_VER+'</small><br><br>Aplicación desarrollada por<br><b>Junior Velez</b><br>Telf: 0998611246';const b=$('dlgBtns');b.innerHTML='';const e=document.createElement('button');e.className='btn';e.textContent='Descargar copia de datos';e.onclick=exportBackup;const c=document.createElement('button');c.className='btn primary';c.textContent='Cerrar';c.onclick=()=>closeM('dlg');const th=document.createElement('button');th.className='btn';th.textContent='Tema: '+{auto:'automático',dark:'oscuro',light:'claro'}[THEME];th.onclick=()=>cycleTheme(th);b.append(th,e,c);openM('dlg')}
+function openAbout(){$('dlgBody').innerHTML='<b style="font-family:Barlow Condensed,sans-serif;font-size:24px">Secadoras de cacao</b><br><small>Versión '+APP_VER+'</small><br><br>Aplicación desarrollada por<br><b>Junior Velez</b><br>Telf: 0998611246';const b=$('dlgBtns');b.innerHTML='';const e=document.createElement('button');e.className='btn';e.textContent='Descargar copia de datos';e.onclick=exportBackup;const c=document.createElement('button');c.className='btn primary';c.textContent='Cerrar';c.onclick=()=>closeM('dlg');const th=document.createElement('button');th.className='btn';th.textContent='Tema: '+{auto:'automático',dark:'oscuro',light:'claro'}[THEME];th.onclick=()=>cycleTheme(th);const fb=document.createElement('button');fb.className='btn';fb.textContent=FULL?'Mostrar solo los últimos 12 meses':'Cargar todo el historial';fb.onclick=()=>{FULL=!FULL;closeM('dlg');startSync();toast(FULL?'Cargando todo el historial…':'Mostrando los últimos 12 meses')};b.append(th,fb,e,c);openM('dlg')}
 function exportBackup(){const blob=new Blob([JSON.stringify(db,null,1)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='copia-secadoras-'+iso(new Date())+'.json';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),2000);toast('Copia descargada')}
 function togglePw(){const i=$('apw'),h=i.type==='password';i.type=h?'text':'password';$('eyeBtn').textContent=h?'Ocultar':'Ver'}
 function busy(on){const b=$('loginBtn');if(b){b.disabled=on;b.textContent=on?'Entrando…':'Entrar'}}
@@ -740,7 +753,7 @@ function startSync(){
   stopSync();ready={};document.body.classList.add('loading');$('sst').textContent='Cargando…';
   const names={sec_lotes:'lotes',sec_entradas:'entradas',sec_despachos:'despachos',sec_ciclos:'ciclos',sec_eventos:'eventos',sec_log:'log'};
   Object.keys(names).forEach(c=>{
-    unsubs.push((c==='sec_log'?col(c).orderBy('ts','desc').limit(300):col(c)).onSnapshot(sn=>{
+    unsubs.push((c==='sec_log'?col(c).orderBy('ts','desc').limit(300):(c==='sec_ciclos'&&!FULL)?col(c).where('startAt','>=',Date.now()-365*864e5):(c==='sec_eventos'&&!FULL)?col(c).where('ts','>=',Date.now()-365*864e5):col(c)).onSnapshot(sn=>{
       db[names[c]]=sn.docs.map(d=>({id:d.id,...d.data()}));
       ready[c]=true;if(Object.keys(names).every(k=>ready[k])){netStatus();hideLoadMsg();document.body.classList.remove('loading')};render()
     },e=>{document.body.classList.remove('loading');$('sst').dataset.s='off';$('sst').textContent='Error de sincronización';console.error(e)}))
@@ -783,7 +796,7 @@ function inStock(extraId){return Object.values(LI).filter(x=>x.stock>0.005||x.l.
 const sum=(arr,f)=>r2(arr.reduce((a,x)=>a+f(x),0));
 
 /* ---------- Pestañas y fecha ---------- */
-function setTab(t){tab=t;['histBox','procBox'].forEach(i=>{const h=$(i);if(h)h.open=false});['sec','cal','res'].forEach(x=>{$('t-'+x).hidden=x!==t;$('tb-'+x).classList.toggle('on',x===t)});render()}
+function setTab(t){tab=t;['histBox','procBox','prodBox'].forEach(i=>{const h=$(i);if(h)h.open=false});['sec','cal','res'].forEach(x=>{$('t-'+x).hidden=x!==t;$('tb-'+x).classList.toggle('on',x===t)});render()}
 function pickDate(v){if(v){selDate=v;calMonth=v.slice(0,7);render()}}
 function shiftDay(n){const d=parse(selDate);d.setDate(d.getDate()+n);pickDate(iso(d))}
 function goToday(){pickDate(iso(new Date()))}
@@ -816,9 +829,20 @@ const isoLocal=d=>iso(d)+'T'+String(d.getHours()).padStart(2,'0')+':'+String(d.g
 const num=v=>Number(String(v).replace(',','.'));
 const fnum=v=>String(v).replace('.',',');
 function evWho(e){return '<div class="who">'+(e.by?'👤 Por <b>'+nm(e.by)+'</b>':'👤 Autor no registrado')+'</div>'}
-let NM={};const openL=new Set();
+let NM={};const openL=new Set();let FULL=false,prodM='w';
 function nm(e){e=e||'';return esc(NM[e.toLowerCase()]||e)}
 function setNombre(email){const k=email.toLowerCase(),n=prompt('Nombre que se mostrará en lugar de '+email+' (vacío para quitarlo):',NM[k]||'');if(n===null)return;const id=encodeURIComponent(k),r=n.trim()?col('sec_nombres').doc(id).set({email:k,name:n.trim()}):col('sec_nombres').doc(id).delete();r.then(()=>{toast('Nombre guardado');openUsers()}).catch(fail)}
+function setProd(m){prodM=m;renderProd()}
+function renderProd(){
+  const wk=d=>{const x=new Date(d+'T12:00:00');x.setDate(x.getDate()-((x.getDay()+6)%7));return iso(x)},now=new Date(),B={},keys=[],MS=['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+  for(let i=11;i>=0;i--){const d=new Date(now);if(prodM==='w'){d.setDate(d.getDate()-7*i);keys.push(wk(iso(d)))}else{d.setDate(1);d.setMonth(d.getMonth()-i);keys.push(iso(d).slice(0,7))}}
+  keys.forEach(k=>B[k]=0);db.entradas.forEach(e=>{const k=prodM==='w'?wk(e.date):e.date.slice(0,7);if(k in B)B[k]+=e.kg});
+  const mx=Math.max(1,...keys.map(k=>B[k]));
+  $('pmW').classList.toggle('on',prodM==='w');$('pmM').classList.toggle('on',prodM==='m');
+  $('prodChart').innerHTML='<div class="bars">'+keys.map(k=>{const v=B[k],l=prodM==='w'?k.slice(8)+'/'+k.slice(5,7):MS[+k.slice(5,7)-1];return `<div class="bc"><span class="bv">${v?nf.format(r2(v/1000)):''}</span><i style="height:${Math.max(2,v/mx*78)}%"></i><span class="bl">${l}</span></div>`}).join('')+'</div><div class="mut">Toneladas que salieron de las secadoras '+(prodM==='w'?'por semana (desde el lunes). Últimas 12 semanas.':'por mes. Últimos 12 meses.')+'</div>';
+  const tw=sum(db.entradas.filter(e=>wk(e.date)===wk(iso(now))),e=>e.kg),tm=sum(db.entradas.filter(e=>e.date.slice(0,7)===iso(now).slice(0,7)),e=>e.kg);
+  $('prodSum').innerHTML=`<span class="pc a"><b>${nf.format(r2(tw/1000))}</b> t esta semana</span><span class="pc g"><b>${nf.format(r2(tm/1000))}</b> t este mes</span>`
+}
 function toggL(d){d.open?openL.add(d.dataset.id):openL.delete(d.dataset.id)}
 const PAL=['#a31f1f','#d98a1c','#18805f','#0a84ff','#8e5ad8','#c2417a','#2b8a9e','#7a5c3a'];
 function loteDetail(x){
@@ -1139,7 +1163,7 @@ function openDay(d){
 /* ---------- Resumen ---------- */
 function groupSum(arr,keyf,valf){const o={};arr.forEach(x=>{const k=keyf(x);o[k]=(o[k]||0)+valf(x)});return Object.entries(o).sort((a,b)=>b[1]-a[1])}
 function renderRes(){
-  $('actCard').hidden=!isAdm;
+  $('actCard').hidden=!isAdm;renderProd();
   {const ids=LAYOUT.flat();let nS=0,nK=0;ids.forEach(n=>{const a=activeOf(n);if(a){if(a.status==='secando')nS++;else nK++}});const nL=ids.length-nS-nK;
   $('procSum').innerHTML=`<span class="pc a"><b>${nS}</b> secadora${nS===1?'':'s'} secando</span><span class="pc g"><b>${nK}</b> secadora${nK===1?'':'s'} lista${nK===1?'':'s'} para llenar sacos</span><span class="pc n"><b>${nL}</b> libre${nL===1?'':'s'}</span>`}
   const L=Object.values(LI),open=L.filter(x=>x.stock>0.005).sort((a,b)=>a.l.name.localeCompare(b.l.name)),closed=L.filter(x=>x.stock<=0.005&&x.ing>0).sort((a,b)=>a.l.name.localeCompare(b.l.name));
