@@ -331,6 +331,22 @@ html[data-t=dark] .pr.ps .stl{color:#f5c070}html[data-t=dark] .pr.pg .stl{color:
 
 /* tarjetas con un solo botón: botón al lado */
 @media(max-width:420px){.item:has(.acts>button:only-child){flex-direction:row;align-items:center}.item:has(.acts>button:only-child) .acts{width:auto;align-self:center}.item .acts>button:only-child{min-width:44px;min-height:44px;padding:0 14px}}
+
+/* resumen v1.5 */
+#actCard[hidden]{display:none}
+#resStats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-bottom:12px}#resStats .stat{margin:0}#resStats .stat .v{font-size:24px}
+.hs{cursor:pointer;list-style:none;font-size:20px;font-weight:800;letter-spacing:-.02em;display:flex;justify-content:space-between;align-items:center;min-height:32px}
+.hs::-webkit-details-marker{display:none}.hs::after{content:"";width:9px;height:9px;border-right:2.5px solid var(--mut);border-bottom:2.5px solid var(--mut);transform:rotate(45deg);transition:transform .2s;margin-right:4px}
+details[open]>.hs::after{transform:rotate(-135deg)}#histBox[open]>.hs{margin-bottom:10px}
+.ldet{margin-top:10px;border-radius:16px;background:rgba(120,120,128,.09);padding:0 12px 4px}
+.ldet>summary{cursor:pointer;list-style:none;font-weight:700;padding:12px 0;display:flex;justify-content:space-between;align-items:center}.ldet>summary::-webkit-details-marker{display:none}
+.ldet>summary::after{content:"";width:8px;height:8px;border-right:2.5px solid var(--mut);border-bottom:2.5px solid var(--mut);transform:rotate(45deg);transition:transform .2s}.ldet[open]>summary::after{transform:rotate(-135deg)}
+.ld-bar{display:flex;height:14px;border-radius:8px;overflow:hidden;gap:2px}.ld-bar i{display:block;min-width:4px}
+.ld-leg{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:12px;margin:8px 0 10px}.ld-leg span::before{content:"";display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--c);margin-right:5px}
+.ld-kpi{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-bottom:10px}.ld-kpi div{background:var(--card);border-radius:12px;padding:8px 4px;text-align:center;font-size:12px;color:var(--mut)}.ld-kpi b{display:block;font-size:17px;color:var(--ink)}
+.ld-dry{background:var(--card);border-radius:16px;padding:12px;margin-bottom:10px;border-left:6px solid var(--c);box-shadow:0 1px 3px rgba(31,38,54,.1)}
+.ld-dry h4{margin:0 0 4px;display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;font-size:15px}.ld-dry .mut{font-size:13px;margin-top:3px}
+.spk{display:inline-flex;align-items:flex-end;gap:2px;height:20px;vertical-align:middle;margin-left:8px}.spk i{width:5px;background:var(--c);border-radius:2px;opacity:.85}
 </style></head>
 <body class="loading">
 <nav class="tabs">
@@ -387,12 +403,12 @@ html[data-t=dark] .pr.ps .stl{color:#f5c070}html[data-t=dark] .pr.pg .stl{color:
 <div class="ma" style="justify-content:flex-start"><button class="btn leaf" onclick="openDisp()">Despachar cacao</button></div>
 <details id="closedBox" style="margin-top:10px"><summary>Lotes ya despachados por completo</summary><div id="resClosed"></div></details></div>
 <div class="card"><h2>Despachos</h2><div id="resDesp"></div></div>
-<div class="card" id="histCard"><h2>Historial de cargas</h2>
+<div class="card" id="histCard"><details id="histBox"><summary class="hs">Historial de cargas</summary>
 <div class="hf"><select id="hfDry" aria-label="Filtrar por secadora" onchange="setHist('d',this.value)"></select><select id="hfMes" aria-label="Filtrar por mes" onchange="setHist('m',this.value)"></select></div>
 <div id="resCiclos"></div>
 <details style="margin-top:10px"><summary>Descargar datos (Excel / CSV)</summary>
 <div class="ma" style="justify-content:flex-start"><button class="btn sm" onclick="exportCiclos()">Resumen de cargas</button><button class="btn sm" onclick="exportEventos()">Temperaturas, volteos y calificaciones</button><button class="btn sm" onclick="exportSacos()">Sacos secos</button></div>
-<div class="mut">Se descargan con el filtro de secadora y mes que tengas elegido.</div></details></div>
+<div class="mut">Se descargan con el filtro de secadora y mes que tengas elegido.</div></details></details></div>
 <div class="card" id="actCard"><h2>Actividad reciente</h2>
 <div class="hf"><select id="actUser" aria-label="Filtrar por usuario" onchange="setActUser(this.value)"></select></div>
 <div id="resAct"></div>
@@ -626,7 +642,7 @@ function toggleMenu(e){e.stopPropagation();const p=$('menuPanel'),o=p.hidden;p.h
 document.addEventListener('click',e=>{const p=$('menuPanel');if(p&&!p.hidden&&!p.contains(e.target))closeMenu()});
 document.getElementById('menuPanel').addEventListener('click',e=>{if(e.target.closest('button'))closeMenu()});
 let lastY=0;addEventListener('scroll',()=>{const y=Math.max(0,scrollY);if(Math.abs(y-lastY)<8)return;const n=document.querySelector('nav.tabs');if(n)n.classList.toggle('hide',y>lastY&&y>80);lastY=y},{passive:true});
-const APP_VER='1.4.1';let loadT0=0,loadT=null;
+const APP_VER='1.5';let loadT0=0,loadT=null;
 function showLoadMsg(){const m=$('loadMsg');if(m.classList.contains('show')&&!m.classList.contains('out'))return;clearTimeout(loadT);loadT0=Date.now();m.classList.remove('out');m.classList.add('show');loadT=setTimeout(()=>hideLoadMsg(true),5000)}
 loadT0=Date.now();loadT=setTimeout(()=>hideLoadMsg(true),5000);
 function hideLoadMsg(force){const m=$('loadMsg');if(!m.classList.contains('show')||m.classList.contains('out'))return;clearTimeout(loadT);const w=force?0:Math.max(0,2500-(Date.now()-loadT0));loadT=setTimeout(()=>{m.classList.add('out');setTimeout(()=>m.classList.remove('show','out'),250)},w)}
@@ -676,7 +692,7 @@ async function openUsers(){
   try{
     const ps=await fdb.collection('perfiles').get();
     window.__users=ps.docs.map(d=>({uid:d.id,email:d.data().email||'',ult:d.data().ult||0})).sort((a,b)=>String(a.email).localeCompare(String(b.email)));
-    $('usList').innerHTML=window.__users.length?window.__users.map(u=>`<div class="shi"><div class="shm"><b>${esc(u.email||u.uid)}</b>${u.uid===uid?' (tú)':''}<div class="shmut">Último acceso: ${u.ult?new Date(u.ult).toLocaleString('es-EC',{hour12:false}):'sin dato'}</div></div>${u.uid===uid?'':`<button class="btn small primary" onclick="viewUser('${esc(u.uid)}')">${u.uid===spaceUid?'Viendo':'Ver datos'}</button>`}</div>`).join(''):'<div class="shmut">Todavía no hay otros usuarios.</div>'
+    $('usList').innerHTML=window.__users.length?window.__users.map(u=>`<div class="shi"><div class="shm"><b>${esc(u.email||u.uid)}</b>${u.uid===uid?' (tú)':''}<div class="shmut">Último acceso: ${u.ult?new Date(u.ult).toLocaleString('es-EC',{hour12:false}):'sin dato'}</div><button class="btn sm" style="margin-top:6px" onclick="setNombre('${esc(u.email)}')">Poner nombre</button></div>${u.uid===uid?'':`<button class="btn small primary" onclick="viewUser('${esc(u.uid)}')">${u.uid===spaceUid?'Viendo':'Ver datos'}</button>`}</div>`).join(''):'<div class="shmut">Todavía no hay otros usuarios.</div>'
   }catch(e){$('usList').innerHTML='<div class="shmut">No se pudo leer la lista: '+esc(e.code||e.message)+'</div>'}
 }
 function addUserManual(){
@@ -723,6 +739,7 @@ function startSync(){
       ready[c]=true;if(Object.keys(names).every(k=>ready[k])){netStatus();hideLoadMsg();document.body.classList.remove('loading')};render()
     },e=>{document.body.classList.remove('loading');$('sst').dataset.s='off';$('sst').textContent='Error de sincronización';console.error(e)}))
   })
+  NM={};unsubs.push(col('sec_nombres').onSnapshot(sn=>{NM={};sn.docs.forEach(d=>{const v=d.data();if(v&&v.email&&v.name)NM[v.email.toLowerCase()]=v.name});render()},e=>console.warn('nombres',e)))
 }
 function stopSync(){unsubs.forEach(u=>u());unsubs=[]}
 
@@ -760,7 +777,7 @@ function inStock(extraId){return Object.values(LI).filter(x=>x.stock>0.005||x.l.
 const sum=(arr,f)=>r2(arr.reduce((a,x)=>a+f(x),0));
 
 /* ---------- Pestañas y fecha ---------- */
-function setTab(t){tab=t;['sec','cal','res'].forEach(x=>{$('t-'+x).hidden=x!==t;$('tb-'+x).classList.toggle('on',x===t)});render()}
+function setTab(t){tab=t;const hb=$('histBox');if(hb)hb.open=false;['sec','cal','res'].forEach(x=>{$('t-'+x).hidden=x!==t;$('tb-'+x).classList.toggle('on',x===t)});render()}
 function pickDate(v){if(v){selDate=v;calMonth=v.slice(0,7);render()}}
 function shiftDay(n){const d=parse(selDate);d.setDate(d.getDate()+n);pickDate(iso(d))}
 function goToday(){pickDate(iso(new Date()))}
@@ -792,13 +809,36 @@ const dur=ms=>{const m=Math.max(0,Math.round(ms/60000)),h=Math.floor(m/60);retur
 const isoLocal=d=>iso(d)+'T'+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
 const num=v=>Number(String(v).replace(',','.'));
 const fnum=v=>String(v).replace('.',',');
-function evWho(e){return '<div class="who">'+(e.by?'👤 Por <b>'+esc(e.by)+'</b>':'👤 Autor no registrado')+'</div>'}
+function evWho(e){return '<div class="who">'+(e.by?'👤 Por <b>'+nm(e.by)+'</b>':'👤 Autor no registrado')+'</div>'}
+let NM={};const openL=new Set();
+function nm(e){e=e||'';return esc(NM[e.toLowerCase()]||e)}
+function setNombre(email){const k=email.toLowerCase(),n=prompt('Nombre que se mostrará en lugar de '+email+' (vacío para quitarlo):',NM[k]||'');if(n===null)return;const id=encodeURIComponent(k),r=n.trim()?col('sec_nombres').doc(id).set({email:k,name:n.trim()}):col('sec_nombres').doc(id).delete();r.then(()=>{toast('Nombre guardado');openUsers()}).catch(fail)}
+function toggL(d){d.open?openL.add(d.dataset.id):openL.delete(d.dataset.id)}
+const PAL=['#a31f1f','#d98a1c','#18805f','#0a84ff','#8e5ad8','#c2417a','#2b8a9e','#7a5c3a'];
+function loteDetail(x){
+  const E=db.entradas.filter(e=>e.loteId===x.l.id);if(!E.length)return '';
+  const G={};E.forEach(e=>{const k=e.cycleId||'d'+e.dryer,g=G[k]||(G[k]={k,dryer:e.dryer,cid:e.cycleId||null,s:0,kg:0,by:{}});g.s+=e.sacks;g.kg+=e.kg;if(e.by)g.by[e.by]=1});
+  const gs=Object.values(G).sort((a,b)=>dord(a.dryer)-dord(b.dryer)||a.k.localeCompare(b.k)),tot=sum(gs,g=>g.kg)||1,allT=[];
+  gs.forEach((g,i)=>g.c=PAL[i%PAL.length]);
+  const cards=gs.map(g=>{
+    const c=g.cid?db.ciclos.find(y=>y.id===g.cid):null,T=c?evsOf(c.id,'temp').map(e=>e.value).filter(v=>v!=null):[],V=c?evsOf(c.id,'volteo'):[],K=c?evsOf(c.id,'cal').map(e=>e.value):[];
+    allT.push(...T);const mn=Math.min(...T),mx=Math.max(...T),av=T.length?sum(T,v=>v)/T.length:0,vm=sum(V,e=>e.value||0);
+    const spk=T.length>1?'<span class="spk">'+T.slice(-12).map(v=>'<i style="height:'+(30+(v-mn)/((mx-mn)||1)*70)+'%"></i>').join('')+'</span>':'';
+    const by=Object.keys(g.by).map(nm).join(', ');
+    return `<div class="ld-dry" style="--c:${g.c}"><h4><span>${dlabel(g.dryer)}</span><span>${fk(g.kg)} · ${g.s} sacos · ${Math.round(g.kg/tot*100)} %</span></h4>`+
+    (c?`<div class="mut"><b>${esc(c.tipo||'Sin tipo')}</b> de ${esc(c.origin||'procedencia sin indicar')}. Ingresó ${fk(c.kgHumedo)} húmedo el ${tfmt(c.startAt)}${c.dryAt?'; secó en '+dur(c.dryAt-c.startAt):''}.</div>
+    <div class="mut">Cargada por ${c.by?'<b>'+nm(c.by)+'</b>':'autor no registrado'}${c.dryAt?' · marcada seca por '+(c.dryBy?'<b>'+nm(c.dryBy)+'</b>':'autor no registrado'):''}.</div>
+    <div class="mut">${T.length?T.length+' temperatura'+(T.length===1?'':'s')+': '+fnum(mn)+' a '+fnum(mx)+' °C (prom. '+fnum(r2(av))+')'+spk:'Sin temperaturas'} · ${V.length} volteo${V.length===1?'':'s'}${vm?' ('+fnum(vm)+' min)':''}${K.length?' · calificación prom. '+fnum(r2(sum(K,v=>v)/K.length))+' de 40':''}.</div>`:'<div class="mut">Registro anterior, sin datos de la carga.</div>')+
+    (by?`<div class="mut">Salida registrada por ${by}.</div>`:'')+'</div>'}).join('');
+  const bar=gs.map(g=>`<i style="flex:${g.kg};background:${g.c}"></i>`).join(''),leg=gs.map(g=>`<span style="--c:${g.c}">${dlabel(g.dryer)} ${Math.round(g.kg/tot*100)} %</span>`).join('');
+  return `<details class="ldet" data-id="${x.l.id}" ontoggle="toggL(this)"${openL.has(x.l.id)?' open':''}><summary>Detalle por secadora · ${gs.length}</summary><div class="ld-bar">${bar}</div><div class="ld-leg">${leg}</div><div class="ld-kpi"><div><b>${gs.length}</b>secadora${gs.length===1?'':'s'}</div><div><b>${sum(gs,g=>g.s)}</b>sacos</div><div><b>${allT.length?fnum(r2(sum(allT,v=>v)/allT.length))+' °C':'—'}</b>temp. prom.</div></div>${cards}</details>`
+}
 const BLD='<span class="blades" aria-hidden="true"><i></i><i></i></span>';
 const SKS='<svg class="sack" viewBox="0 0 60 60" aria-hidden="true"><rect class="sf" x="18" y="24" width="24" height="28" rx="3"/><path class="sb" d="M20 20h20l4 6v24a4 4 0 01-4 4H20a4 4 0 01-4-4V26z"/><circle class="gr" cx="30" cy="25" r="1.6"/><circle class="gr" cx="34" cy="25" r="1.6" style="animation-delay:.12s"/><circle class="gr" cx="38" cy="25" r="1.6" style="animation-delay:.24s"/><g class="sv"><line x1="8" y1="8" x2="27" y2="20"/><path d="M27 20l7-3 3 6-8 4z"/></g></svg>';
 function whoLine(o,verb){
   if(!o)return '';let t='';
-  if(o.by)t+=(verb||'Registrado')+' por '+esc(o.by);
-  if(o.upBy)t+=(t?' · ':'')+'editado por '+esc(o.upBy)+(o.upTs?' el '+tfmt(o.upTs):'');
+  if(o.by)t+=(verb||'Registrado')+' por '+nm(o.by);
+  if(o.upBy)t+=(t?' · ':'')+'editado por '+nm(o.upBy)+(o.upTs?' el '+tfmt(o.upTs):'');
   return t?'<div class="mut">'+t+'</div>':''
 }
 function logAct(txt,dryer){try{col('sec_log').doc(nid()).set({ts:Date.now(),by:myEmail||'',txt,dryer:dryer==null?null:Number(dryer)}).catch(()=>{})}catch(e){}}
@@ -890,7 +930,7 @@ function fillLote(){
 }
 function cycleSummary(ac){
   const ent=cycEntries(ac.id),kgS=sum(ent,e=>e.kg),sacos=ent.reduce((a,e)=>a+e.sacks,0),sec=ac.status==='secando',vt=evsOf(ac.id,'volteo');
-  return `<div class="cyc"><span class="chip ${sec?'a':'g'}">${sec?'Secando':'Seco: registrando sacos'}</span><div><b>${esc(ac.tipo||'Sin tipo')}</b> de ${esc(ac.origin||'procedencia sin indicar')}</div><div>${fk(ac.kgHumedo)} por secar (${ft(ac.kgHumedo)})</div><div class="mut">Ingresó el ${tfmt(ac.startAt)}. ${sec?'Lleva '+dur(Date.now()-ac.startAt)+' secando.':'Secó en '+dur(ac.dryAt-ac.startAt)+'.'}</div><div class="who">👤 ${ac.by?'Cargada a secar por <b>'+esc(ac.by)+'</b>':'Cargada a secar: autor no registrado'}</div>${!sec&&ac.dryAt?`<div class="who">👤 ${ac.dryBy?'Marcada como seca por <b>'+esc(ac.dryBy)+'</b>':'Marcada como seca: autor no registrado'} · ${tfmt(ac.dryAt)}</div>`:''}${vt.length?`<div class="mut">${vt.length} volteo${vt.length===1?'':'s'}. Último: ${tfmt(vt[vt.length-1].ts)}.</div>`:''}${ent.length?`<div class="mut">Ya salieron ${sacos} sacos secos (${fk(kgS)}). Rendimiento: ${nf.format(r2(kgS/ac.kgHumedo*100))} % del peso ingresado.</div>`:''}</div>`
+  return `<div class="cyc"><span class="chip ${sec?'a':'g'}">${sec?'Secando':'Seco: registrando sacos'}</span><div><b>${esc(ac.tipo||'Sin tipo')}</b> de ${esc(ac.origin||'procedencia sin indicar')}</div><div>${fk(ac.kgHumedo)} por secar (${ft(ac.kgHumedo)})</div><div class="mut">Ingresó el ${tfmt(ac.startAt)}. ${sec?'Lleva '+dur(Date.now()-ac.startAt)+' secando.':'Secó en '+dur(ac.dryAt-ac.startAt)+'.'}</div><div class="who">👤 ${ac.by?'Cargada a secar por <b>'+nm(ac.by)+'</b>':'Cargada a secar: autor no registrado'}</div>${!sec&&ac.dryAt?`<div class="who">👤 ${ac.dryBy?'Marcada como seca por <b>'+nm(ac.dryBy)+'</b>':'Marcada como seca: autor no registrado'} · ${tfmt(ac.dryAt)}</div>`:''}${vt.length?`<div class="mut">${vt.length} volteo${vt.length===1?'':'s'}. Último: ${tfmt(vt[vt.length-1].ts)}.</div>`:''}${ent.length?`<div class="mut">Ya salieron ${sacos} sacos secos (${fk(kgS)}). Rendimiento: ${nf.format(r2(kgS/ac.kgHumedo*100))} % del peso ingresado.</div>`:''}</div>`
 }
 function renderDmList(ac,state){
   const cyc=state==='seco';
@@ -1093,6 +1133,7 @@ function openDay(d){
 /* ---------- Resumen ---------- */
 function groupSum(arr,keyf,valf){const o={};arr.forEach(x=>{const k=keyf(x);o[k]=(o[k]||0)+valf(x)});return Object.entries(o).sort((a,b)=>b[1]-a[1])}
 function renderRes(){
+  $('actCard').hidden=!isAdm;
   const L=Object.values(LI),open=L.filter(x=>x.stock>0.005).sort((a,b)=>a.l.name.localeCompare(b.l.name)),closed=L.filter(x=>x.stock<=0.005&&x.ing>0).sort((a,b)=>a.l.name.localeCompare(b.l.name));
   const prod=sum(db.entradas,e=>e.kg),desp=sum(db.despachos,d=>d.kg),stock=sum(open,x=>x.stock),ym=iso(new Date()).slice(0,7),mProd=sum(db.entradas.filter(e=>e.date.startsWith(ym)),e=>e.kg);
   $('resStats').innerHTML=
@@ -1102,8 +1143,8 @@ function renderRes(){
     stat('Salió este mes',ft(mProd),fk(mProd));
   $('resLotes').innerHTML=open.length?open.map(x=>{
     const orig=Object.entries(x.orig).sort((a,b)=>b[1]-a[1]).map(([o,k])=>esc(o)+' '+ft(k)).join(', ');
-    return `<div class="lote"><div class="lh"><b>${esc(x.l.name)}</b><span class="big">${ft(x.stock)}</span></div><div class="mut">En almacén: ${fk(x.stock)} (≈ ${Math.round(x.stock/SACO)} sacos)</div><div class="mut">Ingresó ${fk(x.ing)}. Despachado ${fk(x.desp)}.</div><div class="mut">Procedencia: ${orig}</div><div class="acts"><button class="btn leaf sm" onclick="openDisp('${x.l.id}')">Despachar</button><button class="btn sm" onclick="renameLote('${x.l.id}')">Renombrar</button></div></div>`}).join(''):'<div class="mut">No hay cacao en almacenamiento. Se llena cuando registras sacos en una secadora.</div>';
-  $('resClosed').innerHTML=closed.length?closed.map(x=>`<div class="item"><div><b>${esc(x.l.name)}</b><div class="mut">Ingresó ${fk(x.ing)}, despachado por completo.</div></div></div>`).join(''):EMP('box','Aún no hay lotes cerrados','Aparecen cuando un lote se despacha por completo.');
+    return `<div class="lote"><div class="lh"><b>${esc(x.l.name)}</b><span class="big">${ft(x.stock)}</span></div><div class="mut">En almacén: ${fk(x.stock)} (≈ ${Math.round(x.stock/SACO)} sacos)</div><div class="mut">Ingresó ${fk(x.ing)}. Despachado ${fk(x.desp)}.</div><div class="mut">Procedencia: ${orig}</div>${loteDetail(x)}<div class="acts"><button class="btn leaf sm" onclick="openDisp('${x.l.id}')">Despachar</button><button class="btn sm" onclick="renameLote('${x.l.id}')">Renombrar</button></div></div>`}).join(''):'<div class="mut">No hay cacao en almacenamiento. Se llena cuando registras sacos en una secadora.</div>';
+  $('resClosed').innerHTML=closed.length?closed.map(x=>`<div class="item"><div><b>${esc(x.l.name)}</b><div class="mut">Ingresó ${fk(x.ing)}, despachado por completo.</div>${loteDetail(x)}</div></div>`).join(''):EMP('box','Aún no hay lotes cerrados','Aparecen cuando un lote se despacha por completo.');
   const ds=[...db.despachos].sort((a,b)=>b.date.localeCompare(a.date)||b.id.localeCompare(a.id)).slice(0,40);
   $('resDesp').innerHTML=ds.length?ds.map(d=>`<div class="item"><div><b>${esc(lname(d.loteId))}</b>: ${fk(d.kg)} (${ft(d.kg)})<div class="mut">${esc(fshort(d.date))}${d.note?' — '+esc(d.note):''}</div>${whoLine(d,'Despachado')}</div><div class="acts"><button class="btn sm" onclick="openDisp(null,'${d.id}')">Editar</button>${isAdm?`<button class="btn sm red" onclick="delDisp('${d.id}')" aria-label="Eliminar despacho">✕</button>`:''}</div></div>`).join(''):EMP('box','Aún no hay despachos','Registra el primero y aparecerá aquí.');
   const go=groupSum(db.entradas,e=>e.origin||'Sin procedencia',e=>e.kg);
@@ -1147,9 +1188,9 @@ function openCiclo(id){
   const kv=(l,v)=>`<div class="kv"><span>${l}</span><b>${v}</b></div>`;
   $('cyT').textContent=dlabel(c.dryer);
   let h=`<div class="sub">${esc(c.tipo||'Sin tipo')} de ${esc(c.origin||'procedencia sin indicar')} ${stChip(c)}</div><div class="kvs">`+
-    kv('Ingresó',tfmt(c.startAt))+(c.by?kv('Cargada por',esc(c.by)):'')+kv('Cacao por secar',fk(c.kgHumedo)+' ('+ft(c.kgHumedo)+')')+
-    kv('Marcado como seco',c.dryAt?tfmt(c.dryAt)+' ('+dur(c.dryAt-c.startAt)+' de secado)':'Todavía secando')+(c.dryBy?kv('Marcado seco por',esc(c.dryBy)):'')+(c.endBy?kv('Finalizada por',esc(c.endBy)):'')+
-    kv('Descarga finalizada',c.endAt?tfmt(c.endAt):'En curso')+(c.endBy?kv('Finalizada por',esc(c.endBy)):'')+
+    kv('Ingresó',tfmt(c.startAt))+(c.by?kv('Cargada por',nm(c.by)):'')+kv('Cacao por secar',fk(c.kgHumedo)+' ('+ft(c.kgHumedo)+')')+
+    kv('Marcado como seco',c.dryAt?tfmt(c.dryAt)+' ('+dur(c.dryAt-c.startAt)+' de secado)':'Todavía secando')+(c.dryBy?kv('Marcado seco por',nm(c.dryBy)):'')+(c.endBy?kv('Finalizada por',nm(c.endBy)):'')+
+    kv('Descarga finalizada',c.endAt?tfmt(c.endAt):'En curso')+(c.endBy?kv('Finalizada por',nm(c.endBy)):'')+
     kv('Sacos secos',ent.length?s.sacos+' sacos, '+fk(s.kgS)+' ('+ft(s.kgS)+')':'Sin registrar')+
     (s.rend!=null?kv('Rendimiento',nf.format(s.rend)+' % del peso ingresado'):'')+'</div>';
   h+=`<div class="sech">Temperaturas (${tm.length})</div>`;
@@ -1171,7 +1212,7 @@ function renderResExtra(){
   const hum=sum(act,c=>c.kgHumedo);
   $('resStats').insertAdjacentHTML('beforeend',stat('Por secar en las secadoras ahora',ft(hum),fk(hum)+' en '+act.length+' secadora'+(act.length===1?'':'s')));
   $('resProc').innerHTML=act.length?act.map(c=>{const t=evsOf(c.id,'temp').pop(),vo=evsOf(c.id,'volteo').pop(),cal=evsOf(c.id,'cal').pop();
-    return `<div class="item pr ${c.status==='secando'?'ps':'pg'}"><div><b>${dlabel(c.dryer)}</b>: ${esc(c.tipo||'Sin tipo')} de ${esc(c.origin||'procedencia sin indicar')}<div class="mut">${fk(c.kgHumedo)} por secar.${c.by?' Cargada por '+esc(c.by)+'.':''}</div><div class="stl">${stChip(c)}<span>${c.status==='secando'?'Lleva '+dur(Date.now()-c.startAt)+' secando':'Ya está seco · registrando sacos'}</span></div>${vo?`<div class="mut">Último volteo: ${hfmt(vo.ts)}${vo.by?' · por <b>'+esc(vo.by)+'</b>':''}</div>`:''}${t?`<div class="mut">Última temperatura: ${fnum(t.value)} °C a las ${hfmt(t.ts)}${t.by?' · por <b>'+esc(t.by)+'</b>':''}</div>`:''}${cal?`<div class="mut">Última calificación: ${calTxt(cal)}${cal.by?' · por <b>'+esc(cal.by)+'</b>':''}</div>`:''}</div><div class="acts"><button class="btn sm" onclick="goDryer(${c.dryer})">Abrir</button><button class="btn sm" onclick="openCiclo('${c.id}')">Detalle</button></div></div>`}).join(''):'<div class="mut">Ninguna secadora tiene carga en proceso.</div>';
+    return `<div class="item pr ${c.status==='secando'?'ps':'pg'}"><div><b>${dlabel(c.dryer)}</b>: ${esc(c.tipo||'Sin tipo')} de ${esc(c.origin||'procedencia sin indicar')}<div class="mut">${fk(c.kgHumedo)} por secar.${c.by?' Cargada por '+nm(c.by)+'.':''}</div><div class="stl">${stChip(c)}<span>${c.status==='secando'?'Lleva '+dur(Date.now()-c.startAt)+' secando':'Ya está seco · registrando sacos'}</span></div>${vo?`<div class="mut">Último volteo: ${hfmt(vo.ts)}${vo.by?' · por <b>'+nm(vo.by)+'</b>':''}</div>`:''}${t?`<div class="mut">Última temperatura: ${fnum(t.value)} °C a las ${hfmt(t.ts)}${t.by?' · por <b>'+nm(t.by)+'</b>':''}</div>`:''}${cal?`<div class="mut">Última calificación: ${calTxt(cal)}${cal.by?' · por <b>'+nm(cal.by)+'</b>':''}</div>`:''}</div><div class="acts"><button class="btn sm" onclick="goDryer(${c.dryer})">Abrir</button><button class="btn sm" onclick="openCiclo('${c.id}')">Detalle</button></div></div>`}).join(''):'<div class="mut">Ninguna secadora tiene carga en proceso.</div>';
   /* filtros del historial */
   const dryers=LAYOUT.flat().sort((a,b)=>dord(a)-dord(b));
   const meses=[...new Set(db.ciclos.map(c=>(c.startDate||'').slice(0,7)).filter(Boolean))].sort().reverse();
@@ -1181,7 +1222,7 @@ function renderResExtra(){
   const hs=filteredCiclos();
   $('resCiclos').innerHTML=hs.length?`<div class="mut" style="margin-bottom:4px">${hs.length} carga${hs.length===1?'':'s'}</div>`+hs.map(c=>{
     const s=cycStats(c);
-    return `<div class="item"><div><b>${dlabel(c.dryer)}</b>: ${esc(c.tipo||'Sin tipo')} de ${esc(c.origin||'procedencia sin indicar')} ${stChip(c)}<div class="mut">Ingresó ${tfmt(c.startAt)}${c.by?' (por '+esc(c.by)+')':''}${c.dryAt?'. Seco en '+dur(c.dryAt-c.startAt)+(c.dryBy?' (marcado seco por '+esc(c.dryBy)+')':''):''}.</div><div class="mut">${fk(c.kgHumedo)} por secar${s.rend!=null?' → '+fk(s.kgS)+' secos ('+nf.format(s.rend)+' %)':''}.</div>${s.tm.length?`<div class="mut">${s.tm.length} temperatura${s.tm.length===1?'':'s'}: de ${fnum(s.tmin)} a ${fnum(s.tmax)} °C.</div>`:''}${s.cl.length?`<div class="mut">Calificación promedio: ${fnum(s.cavg)} de ${s.cmax}.</div>`:''}${s.vt.length?`<div class="mut">${s.vt.length} volteo${s.vt.length===1?'':'s'}.</div>`:''}</div><div class="acts"><button class="btn sm primary" onclick="openCiclo('${c.id}')">Ver detalle</button>${isAdm?`<button class="btn sm red" onclick="delCicloId('${c.id}')">Eliminar</button>`:''}</div></div>`}).join(''):'<div class="mut">No hay cargas con ese filtro.</div>';
+    return `<div class="item"><div><b>${dlabel(c.dryer)}</b>: ${esc(c.tipo||'Sin tipo')} de ${esc(c.origin||'procedencia sin indicar')} ${stChip(c)}<div class="mut">Ingresó ${tfmt(c.startAt)}${c.by?' (por '+nm(c.by)+')':''}${c.dryAt?'. Seco en '+dur(c.dryAt-c.startAt)+(c.dryBy?' (marcado seco por '+nm(c.dryBy)+')':''):''}.</div><div class="mut">${fk(c.kgHumedo)} por secar${s.rend!=null?' → '+fk(s.kgS)+' secos ('+nf.format(s.rend)+' %)':''}.</div>${s.tm.length?`<div class="mut">${s.tm.length} temperatura${s.tm.length===1?'':'s'}: de ${fnum(s.tmin)} a ${fnum(s.tmax)} °C.</div>`:''}${s.cl.length?`<div class="mut">Calificación promedio: ${fnum(s.cavg)} de ${s.cmax}.</div>`:''}${s.vt.length?`<div class="mut">${s.vt.length} volteo${s.vt.length===1?'':'s'}.</div>`:''}</div><div class="acts"><button class="btn sm primary" onclick="openCiclo('${c.id}')">Ver detalle</button>${isAdm?`<button class="btn sm red" onclick="delCicloId('${c.id}')">Eliminar</button>`:''}</div></div>`}).join(''):'<div class="mut">No hay cargas con ese filtro.</div>';
   const gt=groupSum(db.entradas,e=>e.tipo||'Sin tipo',e=>e.kg);
   $('resTipo').innerHTML=gt.length?'<table class="t"><tr><th>Tipo</th><th class="r">Toneladas secas</th></tr>'+gt.map(([o,k])=>`<tr><td>${esc(o)}</td><td class="r">${nf.format(r2(k/1000))}</td></tr>`).join('')+'</table>':EMP('box','Sin datos todavía','Se llenará cuando registres cacao en las secadoras.')
 }
