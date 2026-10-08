@@ -300,6 +300,16 @@ html[data-t=dark] .pr.ps .stl{color:#f5c070}html[data-t=dark] .pr.pg .stl{color:
 .sheet::before{height:6px;margin:-8px auto 14px;position:sticky;top:0}
 .sheet .grab{display:block}
 .modal{touch-action:none}.modal .sheet{touch-action:pan-y}
+
+/* tarjetas: texto con margen interno */
+.item{padding:12px 14px;gap:12px}
+.item>div:first-child{flex:1;min-width:0;overflow-wrap:anywhere}
+.item.pr{padding:12px 14px 12px 14px}
+.cyc{padding:14px 16px;overflow-wrap:anywhere}
+.lote,.stat{overflow-wrap:anywhere}
+.who{font-size:13px;color:var(--mut);margin-top:2px}.who b{color:var(--ink)}
+.item .acts{align-self:center}
+@media(max-width:420px){.item .acts{align-self:stretch}}
 </style></head>
 <body class="loading">
 <nav class="tabs">
@@ -761,6 +771,7 @@ const dur=ms=>{const m=Math.max(0,Math.round(ms/60000)),h=Math.floor(m/60);retur
 const isoLocal=d=>iso(d)+'T'+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
 const num=v=>Number(String(v).replace(',','.'));
 const fnum=v=>String(v).replace('.',',');
+function evWho(e){return '<div class="who">'+(e.by?'👤 Por <b>'+esc(e.by)+'</b>':'👤 Autor no registrado')+'</div>'}
 function whoLine(o,verb){
   if(!o)return '';let t='';
   if(o.by)t+=(verb||'Registrado')+' por '+esc(o.by);
@@ -878,7 +889,7 @@ function refreshDryerModal(){
   $('blkDrying').hidden=state!=='secando';$('btnDelCiclo').hidden=!isAdm;
   const evs=ac?evsOf(ac.id):[];
   $('evBox').hidden=!ac||(!evs.length&&state!=='secando');
-  $('evList').innerHTML=evs.length?[...evs].reverse().map(e=>`<div class="item"><div><b>${hfmt(e.ts)}</b> ${evTxt(e)}<div class="mut">${tfmt(e.ts)}${e.by?' · por <b>'+esc(e.by)+'</b>':''}</div></div>${state==='secando'?`<div class="acts"><button class="btn sm red" onclick="delEv('${e.id}')" aria-label="Eliminar">✕</button></div>`:''}</div>`).join(''):EMP('box','Aún sin registros','Anota la primera temperatura, volteo o calificación de esta carga.');
+  $('evList').innerHTML=evs.length?[...evs].reverse().map(e=>`<div class="item"><div><b>${hfmt(e.ts)}</b> ${evTxt(e)}<div class="mut">${tfmt(e.ts)}</div>${evWho(e)}</div>${state==='secando'?`<div class="acts"><button class="btn sm red" onclick="delEv('${e.id}')" aria-label="Eliminar">✕</button></div>`:''}</div>`).join(''):EMP('box','Aún sin registros','Anota la primera temperatura, volteo o calificación de esta carga.');
   $('blkBag').hidden=!(state==='seco'||editEnt);
   $('blkDone').hidden=state!=='seco';
   if(ac)$('btnReopen').hidden=cycEntries(ac.id).length>0;
@@ -1121,12 +1132,12 @@ function openCiclo(id){
   h+=`<div class="sech">Temperaturas (${tm.length})</div>`;
   if(tm.length){
     h+=`<div class="kvs">${kv('Mínima',fnum(s.tmin)+' °C')}${kv('Máxima',fnum(s.tmax)+' °C')}${kv('Promedio',fnum(s.tavg)+' °C')}</div>`+tempChart(tm);
-    h+=tm.map(e=>`<div class="item"><div><b>${hfmt(e.ts)}</b> ${fnum(e.value)} °C<div class="mut">${tfmt(e.ts)}${e.by?' · '+esc(e.by):''}</div></div></div>`).join('')
+    h+=tm.map(e=>`<div class="item"><div><b>${hfmt(e.ts)}</b> ${fnum(e.value)} °C<div class="mut">${tfmt(e.ts)}</div>${evWho(e)}</div></div>`).join('')
   }else h+='<div class="mut">No se registraron temperaturas.</div>';
   h+=`<div class="sech">Volteos (${vt.length})</div>`;
-  h+=vt.length?vt.map(e=>`<div class="item"><div><b>${hfmt(e.ts)}</b> ${e.value>0?fnum(e.value)+' min':'volteo'}<div class="mut">${tfmt(e.ts)}${e.by?' · '+esc(e.by):''}</div></div></div>`).join(''):'<div class="mut">No se registraron volteos.</div>';
+  h+=vt.length?vt.map(e=>`<div class="item"><div><b>${hfmt(e.ts)}</b> ${e.value>0?fnum(e.value)+' min':'volteo'}<div class="mut">${tfmt(e.ts)}</div>${evWho(e)}</div></div>`).join(''):'<div class="mut">No se registraron volteos.</div>';
   h+=`<div class="sech">Calificaciones (${cl.length})</div>`;
-  h+=cl.length?(`<div class="mut">Promedio: ${fnum(s.cavg)} de ${s.cmax}</div>`+cl.map(e=>`<div class="item"><div><b>${hfmt(e.ts)}</b> ${calTxt(e)}${e.note?': '+esc(e.note):''}<div class="mut">${tfmt(e.ts)}${e.by?' · '+esc(e.by):''}</div></div></div>`).join('')):'<div class="mut">No se registraron calificaciones.</div>';
+  h+=cl.length?(`<div class="mut">Promedio: ${fnum(s.cavg)} de ${s.cmax}</div>`+cl.map(e=>`<div class="item"><div><b>${hfmt(e.ts)}</b> ${calTxt(e)}${e.note?': '+esc(e.note):''}<div class="mut">${tfmt(e.ts)}</div>${evWho(e)}</div></div>`).join('')):'<div class="mut">No se registraron calificaciones.</div>';
   h+=`<div class="sech">Sacos secos (${ent.length} registro${ent.length===1?'':'s'})</div>`;
   h+=ent.length?ent.map(e=>`<div class="item"><div><b>${e.sacks} sacos</b>: ${fk(e.kg)} (${ft(e.kg)})${modoTxt(e)}<div class="mut">${esc(fshort(e.date))}. Destino: ${esc(lname(e.loteId))}</div>${whoLine(e)}</div><div class="acts"><button class="btn sm" onclick="closeM('cycM');openDryer(${e.dryer},'${e.date}','${e.id}')">Editar</button></div></div>`).join(''):'<div class="mut">No se han registrado sacos de esta carga.</div>';
   if(isAdm)h+=`<div class="ma" style="justify-content:flex-start"><button class="btn red" onclick="delCicloId('${c.id}')">Eliminar esta carga</button></div>`;
