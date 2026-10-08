@@ -347,6 +347,12 @@ details[open]>.hs::after{transform:rotate(-135deg)}#histBox[open]>.hs{margin-bot
 .ld-dry{background:var(--card);border-radius:16px;padding:12px;margin-bottom:10px;border-left:6px solid var(--c);box-shadow:0 1px 3px rgba(31,38,54,.1)}
 .ld-dry h4{margin:0 0 4px;display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;font-size:15px}.ld-dry .mut{font-size:13px;margin-top:3px}
 .spk{display:inline-flex;align-items:flex-end;gap:2px;height:20px;vertical-align:middle;margin-left:8px}.spk i{width:5px;background:var(--c);border-radius:2px;opacity:.85}
+
+/* resumen: en las secadoras */
+.ps{flex-wrap:wrap}.ps .pt{order:1;flex:1}.ps::after{order:2}.ps .psum{order:3;flex-basis:100%;display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;font-size:13px;font-weight:600;letter-spacing:0}
+.ps .phint{order:4;flex-basis:100%;margin-top:6px;font-size:12px;font-weight:500;color:var(--mut);letter-spacing:0}#procBox[open]>.ps .phint{display:none}#procBox[open]>.ps{margin-bottom:10px}
+.pc{padding:5px 11px;border-radius:999px}.pc b{font-weight:800}.pc.a{background:rgba(217,138,28,.18);color:#a8651a}.pc.g{background:rgba(24,128,95,.18);color:#18805f}.pc.n{background:rgba(120,120,128,.15);color:var(--mut)}
+html[data-t=dark] .pc.a{color:#f0b429}html[data-t=dark] .pc.g{color:#4ade80}
 </style></head>
 <body class="loading">
 <nav class="tabs">
@@ -398,7 +404,7 @@ details[open]>.hs::after{transform:rotate(-135deg)}#histBox[open]>.hs{margin-bot
 
 <section id="t-res" hidden>
 <div class="stats" id="resStats"></div>
-<div class="card"><h2>En las secadoras ahora</h2><div id="resProc"></div></div>
+<div class="card" id="procCard"><details id="procBox"><summary class="hs ps"><span class="pt">En las secadoras ahora</span><span id="procSum" class="psum"></span><span class="phint">Despliega para ver más detalles</span></summary><div id="resProc"></div></details></div>
 <div class="card"><h2>En almacenamiento</h2><div id="resLotes"></div>
 <div class="ma" style="justify-content:flex-start"><button class="btn leaf" onclick="openDisp()">Despachar cacao</button></div>
 <details id="closedBox" style="margin-top:10px"><summary>Lotes ya despachados por completo</summary><div id="resClosed"></div></details></div>
@@ -642,7 +648,7 @@ function toggleMenu(e){e.stopPropagation();const p=$('menuPanel'),o=p.hidden;p.h
 document.addEventListener('click',e=>{const p=$('menuPanel');if(p&&!p.hidden&&!p.contains(e.target))closeMenu()});
 document.getElementById('menuPanel').addEventListener('click',e=>{if(e.target.closest('button'))closeMenu()});
 let lastY=0;addEventListener('scroll',()=>{const y=Math.max(0,scrollY);if(Math.abs(y-lastY)<8)return;const n=document.querySelector('nav.tabs');if(n)n.classList.toggle('hide',y>lastY&&y>80);lastY=y},{passive:true});
-const APP_VER='1.5';let loadT0=0,loadT=null;
+const APP_VER='1.5.1';let loadT0=0,loadT=null;
 function showLoadMsg(){const m=$('loadMsg');if(m.classList.contains('show')&&!m.classList.contains('out'))return;clearTimeout(loadT);loadT0=Date.now();m.classList.remove('out');m.classList.add('show');loadT=setTimeout(()=>hideLoadMsg(true),5000)}
 loadT0=Date.now();loadT=setTimeout(()=>hideLoadMsg(true),5000);
 function hideLoadMsg(force){const m=$('loadMsg');if(!m.classList.contains('show')||m.classList.contains('out'))return;clearTimeout(loadT);const w=force?0:Math.max(0,2500-(Date.now()-loadT0));loadT=setTimeout(()=>{m.classList.add('out');setTimeout(()=>m.classList.remove('show','out'),250)},w)}
@@ -777,7 +783,7 @@ function inStock(extraId){return Object.values(LI).filter(x=>x.stock>0.005||x.l.
 const sum=(arr,f)=>r2(arr.reduce((a,x)=>a+f(x),0));
 
 /* ---------- Pestañas y fecha ---------- */
-function setTab(t){tab=t;const hb=$('histBox');if(hb)hb.open=false;['sec','cal','res'].forEach(x=>{$('t-'+x).hidden=x!==t;$('tb-'+x).classList.toggle('on',x===t)});render()}
+function setTab(t){tab=t;['histBox','procBox'].forEach(i=>{const h=$(i);if(h)h.open=false});['sec','cal','res'].forEach(x=>{$('t-'+x).hidden=x!==t;$('tb-'+x).classList.toggle('on',x===t)});render()}
 function pickDate(v){if(v){selDate=v;calMonth=v.slice(0,7);render()}}
 function shiftDay(n){const d=parse(selDate);d.setDate(d.getDate()+n);pickDate(iso(d))}
 function goToday(){pickDate(iso(new Date()))}
@@ -1134,6 +1140,8 @@ function openDay(d){
 function groupSum(arr,keyf,valf){const o={};arr.forEach(x=>{const k=keyf(x);o[k]=(o[k]||0)+valf(x)});return Object.entries(o).sort((a,b)=>b[1]-a[1])}
 function renderRes(){
   $('actCard').hidden=!isAdm;
+  {const ids=LAYOUT.flat();let nS=0,nK=0;ids.forEach(n=>{const a=activeOf(n);if(a){if(a.status==='secando')nS++;else nK++}});const nL=ids.length-nS-nK;
+  $('procSum').innerHTML=`<span class="pc a"><b>${nS}</b> secadora${nS===1?'':'s'} secando</span><span class="pc g"><b>${nK}</b> secadora${nK===1?'':'s'} lista${nK===1?'':'s'} para llenar sacos</span><span class="pc n"><b>${nL}</b> libre${nL===1?'':'s'}</span>`}
   const L=Object.values(LI),open=L.filter(x=>x.stock>0.005).sort((a,b)=>a.l.name.localeCompare(b.l.name)),closed=L.filter(x=>x.stock<=0.005&&x.ing>0).sort((a,b)=>a.l.name.localeCompare(b.l.name));
   const prod=sum(db.entradas,e=>e.kg),desp=sum(db.despachos,d=>d.kg),stock=sum(open,x=>x.stock),ym=iso(new Date()).slice(0,7),mProd=sum(db.entradas.filter(e=>e.date.startsWith(ym)),e=>e.kg);
   $('resStats').innerHTML=
