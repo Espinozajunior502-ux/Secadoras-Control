@@ -274,6 +274,31 @@ body::before{content:"";position:fixed;top:0;left:0;right:0;height:env(safe-area
 nav.tabs{bottom:max(8px,calc(env(safe-area-inset-bottom) - 14px));padding:5px;border-radius:26px}
 nav.tabs button{min-height:50px;border-radius:21px}nav.tabs button .ic{width:22px;height:22px}
 body{padding-bottom:calc(84px + env(safe-area-inset-bottom))}body #toast{bottom:calc(92px + env(safe-area-inset-bottom))}
+.item.pr{border-left:6px solid var(--line);padding-left:12px;padding-right:8px;margin:8px 0;border-radius:0 12px 12px 0;border-bottom:0}
+.item.pr.ps{border-left-color:var(--amber);background:rgba(168,101,26,.14)}
+.item.pr.pg{border-left-color:var(--leaf);background:rgba(31,111,91,.15)}
+.stl{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-weight:700;margin-top:4px}
+.stl .chip{margin-bottom:0}
+.pr.ps .stl{color:#9a5a12}.pr.pg .stl{color:#17705a}
+html[data-t=dark] .pr.ps .stl{color:#f0b35c}html[data-t=dark] .pr.pg .stl{color:#6fd1b4}
+html[data-t=dark] .pr.ps .chip.a{background:#5a3d12;color:#ffd9a0}html[data-t=dark] .pr.pg .chip.g{background:#17463a;color:#a8ecd6}
+/* ventanas: asa para deslizar */
+.sheet::before{content:'';display:block;width:44px;height:5px;border-radius:3px;background:var(--mut);opacity:.45;margin:-8px auto 12px}
+.sheet{touch-action:pan-y}
+/* estados de secado bien visibles */
+.item.pr{border-left-width:8px}
+.item.pr.ps{background:rgba(217,119,6,.20);border-left-color:#d97706}
+.item.pr.pg{background:rgba(22,163,74,.20);border-left-color:#16a34a}
+.pr .stl .chip{color:#fff;font-size:13px;padding:4px 12px;box-shadow:0 1px 3px rgba(0,0,0,.2)}
+.pr.ps .stl .chip.a{background:#d97706;color:#fff}
+.pr.pg .stl .chip.g{background:#16a34a;color:#fff}
+.pr .stl .chip::before{content:"";display:inline-block;width:8px;height:8px;border-radius:50%;background:#fff;margin-right:6px}
+.pr.ps .stl .chip::before{animation:blinkst 1.4s ease-in-out infinite}
+@keyframes blinkst{50%{opacity:.25}}
+.pr.ps .stl{color:#b45309}.pr.pg .stl{color:#15803d}
+html[data-t=dark] .pr.ps .stl{color:#fbbf24}html[data-t=dark] .pr.pg .stl{color:#4ade80}
+html[data-t=dark] .item.pr.ps{background:rgba(217,119,6,.28)}html[data-t=dark] .item.pr.pg{background:rgba(22,163,74,.28)}
+html[data-t=dark] .pr.ps .stl .chip.a{background:#d97706;color:#fff}html[data-t=dark] .pr.pg .stl .chip.g{background:#16a34a;color:#fff}
 </style></head>
 <body class="loading">
 <nav class="tabs">
@@ -336,6 +361,10 @@ body{padding-bottom:calc(84px + env(safe-area-inset-bottom))}body #toast{bottom:
 <details style="margin-top:10px"><summary>Descargar datos (Excel / CSV)</summary>
 <div class="ma" style="justify-content:flex-start"><button class="btn sm" onclick="exportCiclos()">Resumen de cargas</button><button class="btn sm" onclick="exportEventos()">Temperaturas, volteos y calificaciones</button><button class="btn sm" onclick="exportSacos()">Sacos secos</button></div>
 <div class="mut">Se descargan con el filtro de secadora y mes que tengas elegido.</div></details></div>
+<div class="card" id="actCard"><h2>Actividad reciente</h2>
+<div class="hf"><select id="actUser" aria-label="Filtrar por usuario" onchange="setActUser(this.value)"></select></div>
+<div id="resAct"></div>
+<div class="ma" style="justify-content:flex-start"><button class="btn sm" onclick="exportAct()">Descargar actividad (Excel / CSV)</button></div></div>
 <div class="cols">
 <div class="card"><h2>Por procedencia</h2><div id="resOrig"></div></div>
 <div class="card"><h2>Por secadora</h2><div id="resDry"></div></div>
@@ -500,7 +529,7 @@ const cap=t=>t.charAt(0).toUpperCase()+t.slice(1);
 const fdate=s=>cap(parse(s).toLocaleDateString('es-EC',{weekday:'long',day:'numeric',month:'long',year:'numeric'}));
 const fshort=s=>parse(s).toLocaleDateString('es-EC',{day:'2-digit',month:'short',year:'numeric'});
 
-let db={lotes:[],entradas:[],despachos:[],ciclos:[],eventos:[]},LI={},uid=null,fdb=null,fauth=null,unsubs=[],ready={};
+let db={lotes:[],entradas:[],despachos:[],ciclos:[],eventos:[],log:[]},LI={},uid=null,fdb=null,fauth=null,unsubs=[],ready={};
 let tab='sec',selDate=iso(new Date()),calMonth=selDate.slice(0,7);
 let curDryer=null,editEnt=null,formLote='',editDisp=null;
 
@@ -511,7 +540,7 @@ function col(n){return fdb.collection('users').doc(spaceUid||uid).collection(n)}
 const ROLE_TXT={owner:'Administrador de este espacio',admin:'Administrador general',editor:'Editor',lector:'Solo lectura'};
 const canEdit=()=>spaceRole!=='lector';
 const canShare=()=>spaceRole==='owner'||spaceRole==='admin';
-function clearDB(){db={lotes:[],entradas:[],despachos:[],ciclos:[],eventos:[]}}
+function clearDB(){db={lotes:[],entradas:[],despachos:[],ciclos:[],eventos:[],log:[]}}
 async function loadSpaces(){
   const u=fauth.currentUser;
   spaces=[{uid:uid,label:'Mi espacio',role:'owner',email:myEmail}];isAdm=false;
@@ -606,12 +635,12 @@ function openShare(){
     const l=sn.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>String(a.email).localeCompare(String(b.email)));
     $('shList').innerHTML=l.length?l.map(m=>`<div class="shi"><div class="shm">${esc(m.email)}</div><select aria-label="Permiso" onchange="setMemberRole('${esc(m.id)}',this.value)"><option value="lector"${m.role==='lector'?' selected':''}>Solo lectura</option><option value="editor"${m.role==='editor'?' selected':''}>Editor</option></select><button class="btn small red" onclick="delMember('${esc(m.id)}')" aria-label="Quitar acceso">✕</button></div>`).join(''):'<div class="shmut">Todavía no compartes este espacio con nadie.</div>'
   },e=>{$('shErr').textContent='No se pudo leer la lista: '+(e.code||e.message)});
-  $('shareM').classList.add('show')
+  openM('shareM')
 }
 function closeShare(){if(shareUnsub)shareUnsub();shareUnsub=null;closeM('shareM')}
 async function openUsers(){
   if(!isAdm)return;
-  $('usList').innerHTML='<div class="shmut">Cargando…</div>';$('usersM').classList.add('show');
+  $('usList').innerHTML='<div class="shmut">Cargando…</div>';openM('usersM');
   try{
     const ps=await fdb.collection('perfiles').get();
     window.__users=ps.docs.map(d=>({uid:d.id,email:d.data().email||'',ult:d.data().ult||0})).sort((a,b)=>String(a.email).localeCompare(String(b.email)));
@@ -655,9 +684,9 @@ function netStatus(){const t=$('sst');t.dataset.s=navigator.onLine?'ok':'off';t.
 window.addEventListener('online',netStatus);window.addEventListener('offline',netStatus);
 function startSync(){
   stopSync();ready={};document.body.classList.add('loading');$('sst').textContent='Cargando…';
-  const names={sec_lotes:'lotes',sec_entradas:'entradas',sec_despachos:'despachos',sec_ciclos:'ciclos',sec_eventos:'eventos'};
+  const names={sec_lotes:'lotes',sec_entradas:'entradas',sec_despachos:'despachos',sec_ciclos:'ciclos',sec_eventos:'eventos',sec_log:'log'};
   Object.keys(names).forEach(c=>{
-    unsubs.push(col(c).onSnapshot(sn=>{
+    unsubs.push((c==='sec_log'?col(c).orderBy('ts','desc').limit(300):col(c)).onSnapshot(sn=>{
       db[names[c]]=sn.docs.map(d=>({id:d.id,...d.data()}));
       ready[c]=true;if(Object.keys(names).every(k=>ready[k])){netStatus();hideLoadMsg();document.body.classList.remove('loading')};render()
     },e=>{document.body.classList.remove('loading');$('sst').dataset.s='off';$('sst').textContent='Error de sincronización';console.error(e)}))
@@ -704,12 +733,21 @@ function pickDate(v){if(v){selDate=v;calMonth=v.slice(0,7);render()}}
 function shiftDay(n){const d=parse(selDate);d.setDate(d.getDate()+n);pickDate(iso(d))}
 function goToday(){pickDate(iso(new Date()))}
 function shiftMonth(n){const [y,m]=calMonth.split('-').map(Number);calMonth=iso(new Date(y,m-1+n,1)).slice(0,7);renderCal()}
-function openM(id){$(id).classList.add('show');document.body.classList.add('lock')}
-function closeM(id){$(id).classList.remove('show');if(!document.querySelector('.modal.show'))document.body.classList.remove('lock')}
+const openStack=[];let skipPop=0;
+function openM(id){
+  const m=$(id);if(!m)return;m.classList.add('show');document.body.classList.add('lock');
+  if(!openStack.includes(id)){openStack.push(id);try{history.pushState({sheet:id},'')}catch(e){}}
+}
+function closeM(id,fromPop){
+  const m=$(id);if(!m)return;m.classList.remove('show');
+  if(!document.querySelector('.modal.show'))document.body.classList.remove('lock');
+  const i=openStack.indexOf(id);
+  if(i>=0){openStack.splice(i,1);if(!fromPop){skipPop++;try{history.back()}catch(e){skipPop--}}}
+}
 
 function render(){
   recalc();
-  if(tab==='sec')renderSec();else if(tab==='cal')renderCal();else{renderRes();renderResExtra()}
+  if(tab==='sec')renderSec();else if(tab==='cal')renderCal();else{renderRes();renderResExtra();renderAct()}
   if($('dryerM').classList.contains('show'))refreshDryerModal()
 }
 
@@ -722,6 +760,13 @@ const dur=ms=>{const m=Math.max(0,Math.round(ms/60000)),h=Math.floor(m/60);retur
 const isoLocal=d=>iso(d)+'T'+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
 const num=v=>Number(String(v).replace(',','.'));
 const fnum=v=>String(v).replace('.',',');
+function whoLine(o,verb){
+  if(!o)return '';let t='';
+  if(o.by)t+=(verb||'Registrado')+' por '+esc(o.by);
+  if(o.upBy)t+=(t?' · ':'')+'editado por '+esc(o.upBy)+(o.upTs?' el '+tfmt(o.upTs):'');
+  return t?'<div class="mut">'+t+'</div>':''
+}
+function logAct(txt,dryer){try{col('sec_log').doc(nid()).set({ts:Date.now(),by:myEmail||'',txt,dryer:dryer==null?null:Number(dryer)}).catch(()=>{})}catch(e){}}
 let rateSel=null;
 function activeOf(n){return db.ciclos.filter(c=>Number(c.dryer)===Number(n)&&c.status!=='finalizada').sort((a,b)=>b.startAt-a.startAt)[0]||null}
 function evsOf(id,type){return db.eventos.filter(e=>e.cycleId===id&&(!type||e.type===type)).sort((a,b)=>a.ts-b.ts)}
@@ -810,13 +855,13 @@ function fillLote(){
 }
 function cycleSummary(ac){
   const ent=cycEntries(ac.id),kgS=sum(ent,e=>e.kg),sacos=ent.reduce((a,e)=>a+e.sacks,0),sec=ac.status==='secando',vt=evsOf(ac.id,'volteo');
-  return `<div class="cyc"><span class="chip ${sec?'a':'g'}">${sec?'Secando':'Seco: registrando sacos'}</span><div><b>${esc(ac.tipo||'Sin tipo')}</b> de ${esc(ac.origin||'procedencia sin indicar')}</div><div>${fk(ac.kgHumedo)} por secar (${ft(ac.kgHumedo)})</div><div class="mut">Ingresó el ${tfmt(ac.startAt)}. ${sec?'Lleva '+dur(Date.now()-ac.startAt)+' secando.':'Secó en '+dur(ac.dryAt-ac.startAt)+' (marcado el '+tfmt(ac.dryAt)+').'}</div>${vt.length?`<div class="mut">${vt.length} volteo${vt.length===1?'':'s'}. Último: ${tfmt(vt[vt.length-1].ts)}.</div>`:''}${ent.length?`<div class="mut">Ya salieron ${sacos} sacos secos (${fk(kgS)}). Rendimiento: ${nf.format(r2(kgS/ac.kgHumedo*100))} % del peso ingresado.</div>`:''}</div>`
+  return `<div class="cyc"><span class="chip ${sec?'a':'g'}">${sec?'Secando':'Seco: registrando sacos'}</span><div><b>${esc(ac.tipo||'Sin tipo')}</b> de ${esc(ac.origin||'procedencia sin indicar')}</div><div>${fk(ac.kgHumedo)} por secar (${ft(ac.kgHumedo)})</div><div class="mut">Ingresó el ${tfmt(ac.startAt)}${ac.by?' (cargada por '+esc(ac.by)+')':''}. ${sec?'Lleva '+dur(Date.now()-ac.startAt)+' secando.':'Secó en '+dur(ac.dryAt-ac.startAt)+' (marcado el '+tfmt(ac.dryAt)+(ac.dryBy?' por '+esc(ac.dryBy):'')+').'}</div>${vt.length?`<div class="mut">${vt.length} volteo${vt.length===1?'':'s'}. Último: ${tfmt(vt[vt.length-1].ts)}.</div>`:''}${ent.length?`<div class="mut">Ya salieron ${sacos} sacos secos (${fk(kgS)}). Rendimiento: ${nf.format(r2(kgS/ac.kgHumedo*100))} % del peso ingresado.</div>`:''}</div>`
 }
 function renderDmList(ac,state){
   const cyc=state==='seco';
   const l=(cyc?cycEntries(ac.id):db.entradas.filter(e=>e.dryer===curDryer&&e.date===selDate)).sort((a,b)=>a.date.localeCompare(b.date)||a.id.localeCompare(b.id));
   $('dmListT').textContent=cyc?'Sacos secos registrados de esta carga':'Sacos secos registrados el '+fshort(selDate);
-  $('dmList').innerHTML=l.length?l.map(e=>`<div class="item"><div><b>${e.sacks} sacos</b>: ${fk(e.kg)} (${ft(e.kg)})${modoTxt(e)}<div class="mut">${cyc?esc(fshort(e.date))+'. ':''}${esc(e.tipo?e.tipo+' de ':'')}${esc(e.origin||'procedencia sin indicar')}</div><div class="mut">Destino: ${esc(lname(e.loteId))}</div></div><div class="acts"><button class="btn sm" onclick="editEntry('${e.id}')">Editar</button><button class="btn sm red" onclick="delEnt('${e.id}')" aria-label="Eliminar">✕</button></div></div>`).join(''):'<div class="mut">'+(cyc?'Todavía no registras sacos de esta carga.':'Esta secadora no tiene registros ese día.')+'</div>'
+  $('dmList').innerHTML=l.length?l.map(e=>`<div class="item"><div><b>${e.sacks} sacos</b>: ${fk(e.kg)} (${ft(e.kg)})${modoTxt(e)}<div class="mut">${cyc?esc(fshort(e.date))+'. ':''}${esc(e.tipo?e.tipo+' de ':'')}${esc(e.origin||'procedencia sin indicar')}</div><div class="mut">Destino: ${esc(lname(e.loteId))}</div>${whoLine(e)}</div><div class="acts"><button class="btn sm" onclick="editEntry('${e.id}')">Editar</button><button class="btn sm red" onclick="delEnt('${e.id}')" aria-label="Eliminar">✕</button></div></div>`).join(''):'<div class="mut">'+(cyc?'Todavía no registras sacos de esta carga.':'Esta secadora no tiene registros ese día.')+'</div>'
 }
 function refreshDryerModal(){
   const n=curDryer,ac=activeOf(n),state=ac?ac.status:'libre',mine=db.entradas.filter(e=>e.dryer===n),ym=selDate.slice(0,7);
@@ -832,7 +877,7 @@ function refreshDryerModal(){
   $('blkDrying').hidden=state!=='secando';$('btnDelCiclo').hidden=!isAdm;
   const evs=ac?evsOf(ac.id):[];
   $('evBox').hidden=!ac||(!evs.length&&state!=='secando');
-  $('evList').innerHTML=evs.length?[...evs].reverse().map(e=>`<div class="item"><div><b>${hfmt(e.ts)}</b> ${evTxt(e)}<div class="mut">${tfmt(e.ts)}</div></div>${state==='secando'?`<div class="acts"><button class="btn sm red" onclick="delEv('${e.id}')" aria-label="Eliminar">✕</button></div>`:''}</div>`).join(''):EMP('box','Aún sin registros','Anota la primera temperatura, volteo o calificación de esta carga.');
+  $('evList').innerHTML=evs.length?[...evs].reverse().map(e=>`<div class="item"><div><b>${hfmt(e.ts)}</b> ${evTxt(e)}<div class="mut">${tfmt(e.ts)}${e.by?' · '+esc(e.by):''}</div></div>${state==='secando'?`<div class="acts"><button class="btn sm red" onclick="delEv('${e.id}')" aria-label="Eliminar">✕</button></div>`:''}</div>`).join(''):EMP('box','Aún sin registros','Anota la primera temperatura, volteo o calificación de esta carga.');
   $('blkBag').hidden=!(state==='seco'||editEnt);
   $('blkDone').hidden=state!=='seco';
   if(ac)$('btnReopen').hidden=cycEntries(ac.id).length>0;
@@ -851,7 +896,8 @@ function startCiclo(){
   if(!origin)return err('Indica la procedencia.');
   if(!(q>0))return err('Indica cuánto cacao por secar ingresó.');
   const kg=r2(u==='t'?q*1000:u==='qq'?q*UQQ:q),d=new Date(v);
-  col('sec_ciclos').doc(nid()).set({dryer:curDryer,startAt:d.getTime(),startDate:iso(d),tipo,origin,kgHumedo:kg,status:'secando',dryAt:null,endAt:null}).catch(fail);
+  col('sec_ciclos').doc(nid()).set({dryer:curDryer,startAt:d.getTime(),startDate:iso(d),tipo,origin,kgHumedo:kg,status:'secando',dryAt:null,endAt:null,by:myEmail}).catch(fail);
+  logAct('inició una carga de '+tipo+' ('+fk(kg)+') en '+dlabel(curDryer),curDryer);
   $('sq').value=''
 }
 function addTemp(){
@@ -859,7 +905,8 @@ function addTemp(){
   const raw=$('tt').value.trim(),t=num(raw);
   if(!raw||isNaN(t)||t<0||t>200)return $('eErr').textContent='Ingresa una temperatura válida en °C (de 0 a 200).';
   $('eErr').textContent='';
-  col('sec_eventos').doc(nid()).set({cycleId:ac.id,dryer:ac.dryer,ts:Date.now(),type:'temp',value:t}).catch(fail);
+  col('sec_eventos').doc(nid()).set({cycleId:ac.id,dryer:ac.dryer,ts:Date.now(),type:'temp',value:t,by:myEmail}).catch(fail);
+  logAct('registró '+fnum(t)+' °C en '+dlabel(ac.dryer),ac.dryer);
   $('tt').value=''
 }
 function addVolteo(){
@@ -867,31 +914,42 @@ function addVolteo(){
   const raw=$('tv').value.trim(),t=raw?num(raw):null;
   if(raw&&(isNaN(t)||t<=0||t>1440))return $('eErr').textContent='Ingresa el tiempo de volteo en minutos (o déjalo vacío).';
   $('eErr').textContent='';
-  col('sec_eventos').doc(nid()).set({cycleId:ac.id,dryer:ac.dryer,ts:Date.now(),type:'volteo',value:t}).catch(fail);
+  col('sec_eventos').doc(nid()).set({cycleId:ac.id,dryer:ac.dryer,ts:Date.now(),type:'volteo',value:t,by:myEmail}).catch(fail);
+  logAct('registró un volteo'+(t?' de '+fnum(t)+' min':'')+' en '+dlabel(ac.dryer),ac.dryer);
   $('tv').value=''
 }
 function addCal(){
   const ac=activeOf(curDryer);if(!ac||ac.status!=='secando')return;
   if(rateSel===null)return $('eErr').textContent='Elige una calificación (de 0 a 40).';
   $('eErr').textContent='';
-  col('sec_eventos').doc(nid()).set({cycleId:ac.id,dryer:ac.dryer,ts:Date.now(),type:'cal',value:rateSel,max:40,note:$('tn').value.trim()}).catch(fail);
+  col('sec_eventos').doc(nid()).set({cycleId:ac.id,dryer:ac.dryer,ts:Date.now(),type:'cal',value:rateSel,max:40,note:$('tn').value.trim(),by:myEmail}).catch(fail);
+  logAct('registró calificación '+rateSel+' de 40 en '+dlabel(ac.dryer),ac.dryer);
   $('tn').value='';pickRate(null)
 }
-function delEv(id){if(confirm('¿Eliminar este registro?'))col('sec_eventos').doc(id).delete().catch(fail)}
+function delEv(id){
+  const e=db.eventos.find(x=>x.id===id);
+  if(confirm('¿Eliminar este registro?')){col('sec_eventos').doc(id).delete().catch(fail);if(e)logAct('eliminó un registro de '+(e.type==='temp'?'temperatura':e.type==='volteo'?'volteo':'calificación')+' en '+dlabel(e.dryer),e.dryer)}
+}
 function markDry(){
   const ac=activeOf(curDryer);if(!ac||ac.status!=='secando')return;
-  if(confirm('¿Marcar este cacao como seco? Se habilitará el registro de sacos secos y ya no podrás agregar temperaturas.'))
-    col('sec_ciclos').doc(ac.id).update({status:'seco',dryAt:Date.now()}).catch(fail)
+  if(confirm('¿Marcar este cacao como seco? Se habilitará el registro de sacos secos y ya no podrás agregar temperaturas.')){
+    col('sec_ciclos').doc(ac.id).update({status:'seco',dryAt:Date.now(),dryBy:myEmail}).catch(fail);
+    logAct('marcó como seco el cacao de '+dlabel(ac.dryer),ac.dryer)
+  }
 }
 function reopenCiclo(){
   const ac=activeOf(curDryer);if(!ac||ac.status!=='seco'||cycEntries(ac.id).length)return;
-  if(confirm('¿Volver a marcar la carga como “secando”?'))col('sec_ciclos').doc(ac.id).update({status:'secando',dryAt:null}).catch(fail)
+  if(confirm('¿Volver a marcar la carga como “secando”?')){
+    col('sec_ciclos').doc(ac.id).update({status:'secando',dryAt:null,dryBy:null}).catch(fail);
+    logAct('volvió a marcar como “secando” la carga de '+dlabel(ac.dryer),ac.dryer)
+  }
 }
 function finishCiclo(){
   const ac=activeOf(curDryer);if(!ac||ac.status!=='seco')return;
   const n=cycEntries(ac.id).length;
   if(!confirm(n?'¿Finalizar la descarga? La secadora quedará libre para una nueva carga.':'No registraste sacos secos de esta carga. ¿Finalizar de todos modos?'))return;
-  editEnt=null;col('sec_ciclos').doc(ac.id).update({status:'finalizada',endAt:Date.now()}).catch(fail)
+  editEnt=null;col('sec_ciclos').doc(ac.id).update({status:'finalizada',endAt:Date.now(),endBy:myEmail}).catch(fail);
+  logAct('finalizó la descarga y liberó '+dlabel(ac.dryer),ac.dryer)
 }
 function delCiclo(){const ac=activeOf(curDryer);if(ac)delCicloId(ac.id)}
 function delCicloId(id){
@@ -913,6 +971,7 @@ function delCicloId(id){
     const quedan=db.entradas.some(x=>x.loteId===lid&&x.cycleId!==id),desp=db.despachos.some(x=>x.loteId===lid);
     if(!quedan&&!desp)b.delete(col('sec_lotes').doc(lid))
   });
+  logAct('eliminó la carga de '+(c.tipo||'sin tipo')+' ('+fk(c.kgHumedo)+') de '+dlabel(c.dryer),c.dryer);
   b.commit().then(()=>closeM('cycM')).catch(fail)
 }
 function editEntry(id){editEnt=db.entradas.find(x=>x.id===id);if(!editEnt)return;loadEdit(editEnt);refreshDryerModal();$('fs').focus()}
@@ -927,7 +986,7 @@ function saveEnt(){
   if(lv==='__new'){
     if(!nn)return err('Escribe el nombre del nuevo destinatario o lote.');
     const ex=Object.values(LI).find(x=>x.stock>0.005&&x.l.name.toLowerCase()===nn.toLowerCase());
-    if(ex)loteId=ex.l.id;else{loteId=nid();newLote={name:nn,created:date}}
+    if(ex)loteId=ex.l.id;else{loteId=nid();newLote={name:nn,created:date,by:myEmail}}
   }
   const bc=bagCalc();
   if(bagMode==='saco'&&!(bc.kgS>0&&bc.kgS<=300))return err('Escribe el peso de cada saco en kg.');
@@ -941,10 +1000,13 @@ function saveEnt(){
   const origin=editEnt?(editEnt.cycleId?(editEnt.origin||''):$('fo').value.trim()):ac.origin;
   const tipo=editEnt?(editEnt.tipo||''):(ac.tipo||'');
   const data={date,dryer:curDryer,sacks,kgSaco:bc.kgS,modo:bagMode,kg,origin,tipo,loteId};if(cyc)data.cycleId=cyc;
+  const _edit=!!editEnt;
+  if(_edit){data.by=editEnt.by||'';data.ts=editEnt.ts||0;data.upBy=myEmail;data.upTs=Date.now()}else{data.by=myEmail;data.ts=Date.now()}
   const b=fdb.batch();
   if(newLote)b.set(col('sec_lotes').doc(loteId),newLote);
   b.set(col('sec_entradas').doc(editEnt?editEnt.id:nid()),data);
   b.commit().catch(fail);
+  logAct((_edit?'editó el registro de ':'registró ')+sacks+' sacos secos ('+fk(kg)+') en '+dlabel(curDryer)+' para '+(newLote?newLote.name:lname(loteId)),curDryer);
   formLote=loteId;editEnt=null;selDate=date;
   resetForm();render()
 }
@@ -956,6 +1018,7 @@ function delEnt(id){
   const otros=db.entradas.some(x=>x.loteId===e.loteId&&x.id!==id),desp=db.despachos.some(x=>x.loteId===e.loteId);
   if(!otros&&!desp)b.delete(col('sec_lotes').doc(e.loteId));
   b.commit().catch(fail);
+  logAct('eliminó un registro de '+e.sacks+' sacos ('+fk(e.kg)+') de '+dlabel(e.dryer),e.dryer);
   if(editEnt&&editEnt.id===id){editEnt=null;resetForm();refreshDryerModal()}
 }
 function goDryer(n){setTab('sec');openDryer(n)}
@@ -984,9 +1047,9 @@ function openDay(d){
   const cy=db.ciclos.filter(c=>c.startDate===d).sort((a,b)=>a.startAt-b.startAt);
   let h=`<div class="sech">Cacao que entró a secar: ${fk(sum(cy,c=>c.kgHumedo))}</div>`+(cy.length?cy.map(c=>`<div class="item"><div><b>${dlabel(c.dryer)}</b>: ${fk(c.kgHumedo)} de ${esc(c.tipo||'cacao')}<div class="mut">${esc(c.origin||'')}. Ingresó a las ${hfmt(c.startAt)}.</div></div></div>`).join(''):EMP('box','Sin cargas este día','Las cargas que ingreses a las secadoras aparecerán aquí.'));
   h+=`<div class="sech">Cacao seco que salió de las secadoras: ${fk(sum(en,e=>e.kg))}</div>`;
-  h+=en.length?en.map(e=>`<div class="item"><div><b>${dlabel(e.dryer)}</b>: ${e.sacks} sacos, ${fk(e.kg)}<div class="mut">Procedencia: ${esc(e.origin||'sin indicar')}</div><div class="mut">Destino: ${esc(lname(e.loteId))}</div></div><div class="acts"><button class="btn sm" onclick="closeM('dayM');openDryer(${e.dryer},'${d}','${e.id}')">Editar</button></div></div>`).join(''):EMP('box','Sin salidas este día','Aquí verás los sacos secos que salgan.');
+  h+=en.length?en.map(e=>`<div class="item"><div><b>${dlabel(e.dryer)}</b>: ${e.sacks} sacos, ${fk(e.kg)}<div class="mut">Procedencia: ${esc(e.origin||'sin indicar')}</div><div class="mut">Destino: ${esc(lname(e.loteId))}</div>${whoLine(e)}</div><div class="acts"><button class="btn sm" onclick="closeM('dayM');openDryer(${e.dryer},'${d}','${e.id}')">Editar</button></div></div>`).join(''):EMP('box','Sin salidas este día','Aquí verás los sacos secos que salgan.');
   h+=`<div class="sech">Despachado: ${fk(sum(ds,x=>x.kg))}</div>`;
-  h+=ds.length?ds.map(x=>`<div class="item"><div><b>${esc(lname(x.loteId))}</b>: ${fk(x.kg)} (${ft(x.kg)})${x.note?`<div class="mut">${esc(x.note)}</div>`:''}</div></div>`).join(''):EMP('box','Sin despachos este día','Los despachos de ese día aparecerán aquí.');
+  h+=ds.length?ds.map(x=>`<div class="item"><div><b>${esc(lname(x.loteId))}</b>: ${fk(x.kg)} (${ft(x.kg)})${x.note?`<div class="mut">${esc(x.note)}</div>`:''}${whoLine(x,'Despachado')}</div></div>`).join(''):EMP('box','Sin despachos este día','Los despachos de ese día aparecerán aquí.');
   $('dayB').innerHTML=h;
   $('dayOpen').onclick=()=>{selDate=d;calMonth=d.slice(0,7);closeM('dayM');setTab('sec')};
   openM('dayM')
@@ -1007,13 +1070,17 @@ function renderRes(){
     return `<div class="lote"><div class="lh"><b>${esc(x.l.name)}</b><span class="big">${ft(x.stock)}</span></div><div class="mut">En almacén: ${fk(x.stock)} (≈ ${Math.round(x.stock/SACO)} sacos)</div><div class="mut">Ingresó ${fk(x.ing)}. Despachado ${fk(x.desp)}.</div><div class="mut">Procedencia: ${orig}</div><div class="acts"><button class="btn leaf sm" onclick="openDisp('${x.l.id}')">Despachar</button><button class="btn sm" onclick="renameLote('${x.l.id}')">Renombrar</button></div></div>`}).join(''):'<div class="mut">No hay cacao en almacenamiento. Se llena cuando registras sacos en una secadora.</div>';
   $('resClosed').innerHTML=closed.length?closed.map(x=>`<div class="item"><div><b>${esc(x.l.name)}</b><div class="mut">Ingresó ${fk(x.ing)}, despachado por completo.</div></div></div>`).join(''):EMP('box','Aún no hay lotes cerrados','Aparecen cuando un lote se despacha por completo.');
   const ds=[...db.despachos].sort((a,b)=>b.date.localeCompare(a.date)||b.id.localeCompare(a.id)).slice(0,40);
-  $('resDesp').innerHTML=ds.length?ds.map(d=>`<div class="item"><div><b>${esc(lname(d.loteId))}</b>: ${fk(d.kg)} (${ft(d.kg)})<div class="mut">${esc(fshort(d.date))}${d.note?' — '+esc(d.note):''}</div></div><div class="acts"><button class="btn sm" onclick="openDisp(null,'${d.id}')">Editar</button>${isAdm?`<button class="btn sm red" onclick="delDisp('${d.id}')" aria-label="Eliminar despacho">✕</button>`:''}</div></div>`).join(''):EMP('box','Aún no hay despachos','Registra el primero y aparecerá aquí.');
+  $('resDesp').innerHTML=ds.length?ds.map(d=>`<div class="item"><div><b>${esc(lname(d.loteId))}</b>: ${fk(d.kg)} (${ft(d.kg)})<div class="mut">${esc(fshort(d.date))}${d.note?' — '+esc(d.note):''}</div>${whoLine(d,'Despachado')}</div><div class="acts"><button class="btn sm" onclick="openDisp(null,'${d.id}')">Editar</button>${isAdm?`<button class="btn sm red" onclick="delDisp('${d.id}')" aria-label="Eliminar despacho">✕</button>`:''}</div></div>`).join(''):EMP('box','Aún no hay despachos','Registra el primero y aparecerá aquí.');
   const go=groupSum(db.entradas,e=>e.origin||'Sin procedencia',e=>e.kg);
   $('resOrig').innerHTML=go.length?'<table class="t"><tr><th>Procedencia</th><th class="r">Toneladas</th></tr>'+go.map(([o,k])=>`<tr><td>${esc(o)}</td><td class="r">${nf.format(r2(k/1000))}</td></tr>`).join('')+'</table>':EMP('box','Sin datos todavía','Se llenará cuando registres cacao en las secadoras.');
   const gd=groupSum(db.entradas,e=>e.dryer,e=>e.kg).sort((a,b)=>dord(a[0])-dord(b[0]));
   $('resDry').innerHTML=gd.length?'<table class="t"><tr><th>Secadora</th><th class="r">Sacos</th><th class="r">Toneladas</th></tr>'+gd.map(([d,k])=>`<tr><td>${dlabel(d)}</td><td class="r">${db.entradas.filter(e=>String(e.dryer)===String(d)).reduce((a,e)=>a+e.sacks,0)}</td><td class="r">${nf.format(r2(k/1000))}</td></tr>`).join('')+'</table>':EMP('box','Sin datos todavía','Se llenará cuando registres cacao en las secadoras.')
 }
-function renameLote(id){const l=db.lotes.find(x=>x.id===id);if(!l)return;const n=prompt('Nuevo nombre del destinatario o lote:',l.name);if(n&&n.trim())col('sec_lotes').doc(id).update({name:n.trim()}).catch(fail)}
+function renameLote(id){
+  const l=db.lotes.find(x=>x.id===id);if(!l)return;
+  const n=prompt('Nuevo nombre del destinatario o lote:',l.name);
+  if(n&&n.trim()){col('sec_lotes').doc(id).update({name:n.trim()}).catch(fail);logAct('renombró el lote “'+l.name+'” a “'+n.trim()+'”')}
+}
 
 /* ---------- Historial de cargas ---------- */
 let histDry='all',histMes='all';
@@ -1045,22 +1112,22 @@ function openCiclo(id){
   const kv=(l,v)=>`<div class="kv"><span>${l}</span><b>${v}</b></div>`;
   $('cyT').textContent=dlabel(c.dryer);
   let h=`<div class="sub">${esc(c.tipo||'Sin tipo')} de ${esc(c.origin||'procedencia sin indicar')} ${stChip(c)}</div><div class="kvs">`+
-    kv('Ingresó',tfmt(c.startAt))+kv('Cacao por secar',fk(c.kgHumedo)+' ('+ft(c.kgHumedo)+')')+
-    kv('Marcado como seco',c.dryAt?tfmt(c.dryAt)+' ('+dur(c.dryAt-c.startAt)+' de secado)':'Todavía secando')+
-    kv('Descarga finalizada',c.endAt?tfmt(c.endAt):'En curso')+
+    kv('Ingresó',tfmt(c.startAt))+(c.by?kv('Cargada por',esc(c.by)):'')+kv('Cacao por secar',fk(c.kgHumedo)+' ('+ft(c.kgHumedo)+')')+
+    kv('Marcado como seco',c.dryAt?tfmt(c.dryAt)+' ('+dur(c.dryAt-c.startAt)+' de secado)':'Todavía secando')+(c.dryBy?kv('Marcado seco por',esc(c.dryBy)):'')+
+    kv('Descarga finalizada',c.endAt?tfmt(c.endAt):'En curso')+(c.endBy?kv('Finalizada por',esc(c.endBy)):'')+
     kv('Sacos secos',ent.length?s.sacos+' sacos, '+fk(s.kgS)+' ('+ft(s.kgS)+')':'Sin registrar')+
     (s.rend!=null?kv('Rendimiento',nf.format(s.rend)+' % del peso ingresado'):'')+'</div>';
   h+=`<div class="sech">Temperaturas (${tm.length})</div>`;
   if(tm.length){
     h+=`<div class="kvs">${kv('Mínima',fnum(s.tmin)+' °C')}${kv('Máxima',fnum(s.tmax)+' °C')}${kv('Promedio',fnum(s.tavg)+' °C')}</div>`+tempChart(tm);
-    h+=tm.map(e=>`<div class="item"><div><b>${hfmt(e.ts)}</b> ${fnum(e.value)} °C<div class="mut">${tfmt(e.ts)}</div></div></div>`).join('')
+    h+=tm.map(e=>`<div class="item"><div><b>${hfmt(e.ts)}</b> ${fnum(e.value)} °C<div class="mut">${tfmt(e.ts)}${e.by?' · '+esc(e.by):''}</div></div></div>`).join('')
   }else h+='<div class="mut">No se registraron temperaturas.</div>';
   h+=`<div class="sech">Volteos (${vt.length})</div>`;
-  h+=vt.length?vt.map(e=>`<div class="item"><div><b>${hfmt(e.ts)}</b> ${e.value>0?fnum(e.value)+' min':'volteo'}<div class="mut">${tfmt(e.ts)}</div></div></div>`).join(''):'<div class="mut">No se registraron volteos.</div>';
+  h+=vt.length?vt.map(e=>`<div class="item"><div><b>${hfmt(e.ts)}</b> ${e.value>0?fnum(e.value)+' min':'volteo'}<div class="mut">${tfmt(e.ts)}${e.by?' · '+esc(e.by):''}</div></div></div>`).join(''):'<div class="mut">No se registraron volteos.</div>';
   h+=`<div class="sech">Calificaciones (${cl.length})</div>`;
-  h+=cl.length?(`<div class="mut">Promedio: ${fnum(s.cavg)} de ${s.cmax}</div>`+cl.map(e=>`<div class="item"><div><b>${hfmt(e.ts)}</b> ${calTxt(e)}${e.note?': '+esc(e.note):''}<div class="mut">${tfmt(e.ts)}</div></div></div>`).join('')):'<div class="mut">No se registraron calificaciones.</div>';
+  h+=cl.length?(`<div class="mut">Promedio: ${fnum(s.cavg)} de ${s.cmax}</div>`+cl.map(e=>`<div class="item"><div><b>${hfmt(e.ts)}</b> ${calTxt(e)}${e.note?': '+esc(e.note):''}<div class="mut">${tfmt(e.ts)}${e.by?' · '+esc(e.by):''}</div></div></div>`).join('')):'<div class="mut">No se registraron calificaciones.</div>';
   h+=`<div class="sech">Sacos secos (${ent.length} registro${ent.length===1?'':'s'})</div>`;
-  h+=ent.length?ent.map(e=>`<div class="item"><div><b>${e.sacks} sacos</b>: ${fk(e.kg)} (${ft(e.kg)})${modoTxt(e)}<div class="mut">${esc(fshort(e.date))}. Destino: ${esc(lname(e.loteId))}</div></div><div class="acts"><button class="btn sm" onclick="closeM('cycM');openDryer(${e.dryer},'${e.date}','${e.id}')">Editar</button></div></div>`).join(''):'<div class="mut">No se han registrado sacos de esta carga.</div>';
+  h+=ent.length?ent.map(e=>`<div class="item"><div><b>${e.sacks} sacos</b>: ${fk(e.kg)} (${ft(e.kg)})${modoTxt(e)}<div class="mut">${esc(fshort(e.date))}. Destino: ${esc(lname(e.loteId))}</div>${whoLine(e)}</div><div class="acts"><button class="btn sm" onclick="closeM('cycM');openDryer(${e.dryer},'${e.date}','${e.id}')">Editar</button></div></div>`).join(''):'<div class="mut">No se han registrado sacos de esta carga.</div>';
   if(isAdm)h+=`<div class="ma" style="justify-content:flex-start"><button class="btn red" onclick="delCicloId('${c.id}')">Eliminar esta carga</button></div>`;
   $('cyB').innerHTML=h;$('cyB').scrollTop=0;openM('cycM');$('cycM').querySelector('.sheet').scrollTop=0
 }
@@ -1069,7 +1136,7 @@ function renderResExtra(){
   const hum=sum(act,c=>c.kgHumedo);
   $('resStats').insertAdjacentHTML('beforeend',stat('Por secar en las secadoras ahora',ft(hum),fk(hum)+' en '+act.length+' secadora'+(act.length===1?'':'s')));
   $('resProc').innerHTML=act.length?act.map(c=>{const t=evsOf(c.id,'temp').pop(),vo=evsOf(c.id,'volteo').pop(),cal=evsOf(c.id,'cal').pop();
-    return `<div class="item"><div><b>${dlabel(c.dryer)}</b>: ${esc(c.tipo||'Sin tipo')} de ${esc(c.origin||'procedencia sin indicar')}<div class="mut">${fk(c.kgHumedo)} por secar. ${c.status==='secando'?'Lleva '+dur(Date.now()-c.startAt)+' secando.':'Ya está seco, se están registrando los sacos.'}</div>${vo?`<div class="mut">Último volteo: ${hfmt(vo.ts)}</div>`:''}${t?`<div class="mut">Última temperatura: ${fnum(t.value)} °C a las ${hfmt(t.ts)}</div>`:''}${cal?`<div class="mut">Última calificación: ${calTxt(cal)}</div>`:''}</div><div class="acts"><button class="btn sm" onclick="goDryer(${c.dryer})">Abrir</button><button class="btn sm" onclick="openCiclo('${c.id}')">Detalle</button></div></div>`}).join(''):'<div class="mut">Ninguna secadora tiene carga en proceso.</div>';
+    return `<div class="item pr ${c.status==='secando'?'ps':'pg'}"><div><b>${dlabel(c.dryer)}</b>: ${esc(c.tipo||'Sin tipo')} de ${esc(c.origin||'procedencia sin indicar')}<div class="mut">${fk(c.kgHumedo)} por secar.${c.by?' Cargada por '+esc(c.by)+'.':''}</div><div class="stl">${stChip(c)}<span>${c.status==='secando'?'Lleva '+dur(Date.now()-c.startAt)+' secando':'Ya está seco · registrando sacos'}</span></div>${vo?`<div class="mut">Último volteo: ${hfmt(vo.ts)}</div>`:''}${t?`<div class="mut">Última temperatura: ${fnum(t.value)} °C a las ${hfmt(t.ts)}</div>`:''}${cal?`<div class="mut">Última calificación: ${calTxt(cal)}</div>`:''}</div><div class="acts"><button class="btn sm" onclick="goDryer(${c.dryer})">Abrir</button><button class="btn sm" onclick="openCiclo('${c.id}')">Detalle</button></div></div>`}).join(''):'<div class="mut">Ninguna secadora tiene carga en proceso.</div>';
   /* filtros del historial */
   const dryers=LAYOUT.flat().sort((a,b)=>dord(a)-dord(b));
   const meses=[...new Set(db.ciclos.map(c=>(c.startDate||'').slice(0,7)).filter(Boolean))].sort().reverse();
@@ -1079,7 +1146,7 @@ function renderResExtra(){
   const hs=filteredCiclos();
   $('resCiclos').innerHTML=hs.length?`<div class="mut" style="margin-bottom:4px">${hs.length} carga${hs.length===1?'':'s'}</div>`+hs.map(c=>{
     const s=cycStats(c);
-    return `<div class="item"><div><b>${dlabel(c.dryer)}</b>: ${esc(c.tipo||'Sin tipo')} de ${esc(c.origin||'procedencia sin indicar')} ${stChip(c)}<div class="mut">Ingresó ${tfmt(c.startAt)}${c.dryAt?'. Seco en '+dur(c.dryAt-c.startAt):''}.</div><div class="mut">${fk(c.kgHumedo)} por secar${s.rend!=null?' → '+fk(s.kgS)+' secos ('+nf.format(s.rend)+' %)':''}.</div>${s.tm.length?`<div class="mut">${s.tm.length} temperatura${s.tm.length===1?'':'s'}: de ${fnum(s.tmin)} a ${fnum(s.tmax)} °C.</div>`:''}${s.cl.length?`<div class="mut">Calificación promedio: ${fnum(s.cavg)} de ${s.cmax}.</div>`:''}${s.vt.length?`<div class="mut">${s.vt.length} volteo${s.vt.length===1?'':'s'}.</div>`:''}</div><div class="acts"><button class="btn sm primary" onclick="openCiclo('${c.id}')">Ver detalle</button>${isAdm?`<button class="btn sm red" onclick="delCicloId('${c.id}')">Eliminar</button>`:''}</div></div>`}).join(''):'<div class="mut">No hay cargas con ese filtro.</div>';
+    return `<div class="item"><div><b>${dlabel(c.dryer)}</b>: ${esc(c.tipo||'Sin tipo')} de ${esc(c.origin||'procedencia sin indicar')} ${stChip(c)}<div class="mut">Ingresó ${tfmt(c.startAt)}${c.by?' (por '+esc(c.by)+')':''}${c.dryAt?'. Seco en '+dur(c.dryAt-c.startAt):''}.</div><div class="mut">${fk(c.kgHumedo)} por secar${s.rend!=null?' → '+fk(s.kgS)+' secos ('+nf.format(s.rend)+' %)':''}.</div>${s.tm.length?`<div class="mut">${s.tm.length} temperatura${s.tm.length===1?'':'s'}: de ${fnum(s.tmin)} a ${fnum(s.tmax)} °C.</div>`:''}${s.cl.length?`<div class="mut">Calificación promedio: ${fnum(s.cavg)} de ${s.cmax}.</div>`:''}${s.vt.length?`<div class="mut">${s.vt.length} volteo${s.vt.length===1?'':'s'}.</div>`:''}</div><div class="acts"><button class="btn sm primary" onclick="openCiclo('${c.id}')">Ver detalle</button>${isAdm?`<button class="btn sm red" onclick="delCicloId('${c.id}')">Eliminar</button>`:''}</div></div>`}).join(''):'<div class="mut">No hay cargas con ese filtro.</div>';
   const gt=groupSum(db.entradas,e=>e.tipo||'Sin tipo',e=>e.kg);
   $('resTipo').innerHTML=gt.length?'<table class="t"><tr><th>Tipo</th><th class="r">Toneladas secas</th></tr>'+gt.map(([o,k])=>`<tr><td>${esc(o)}</td><td class="r">${nf.format(r2(k/1000))}</td></tr>`).join('')+'</table>':EMP('box','Sin datos todavía','Se llenará cuando registres cacao en las secadoras.')
 }
@@ -1106,6 +1173,21 @@ function exportSacos(){
   dlCSV('sacos_secos.csv',rows)
 }
 
+/* ---------- Actividad (quién hizo qué) ---------- */
+let actUser='all';
+function setActUser(v){actUser=v;renderAct()}
+function renderAct(){
+  const L=[...(db.log||[])].sort((a,b)=>b.ts-a.ts),users=[...new Set(L.map(x=>x.by).filter(Boolean))].sort();
+  if(actUser!=='all'&&!users.includes(actUser))actUser='all';
+  $('actUser').innerHTML='<option value="all">Todos los usuarios</option>'+users.map(u=>`<option value="${esc(u)}">${esc(u)}</option>`).join('');$('actUser').value=actUser;
+  const l=L.filter(x=>actUser==='all'||x.by===actUser).slice(0,60);
+  $('resAct').innerHTML=l.length?l.map(x=>`<div class="item"><div><b>${esc(x.by||'—')}</b> ${esc(x.txt)}<div class="mut">${tfmt(x.ts)}</div></div></div>`).join(''):EMP('box','Aún no hay actividad','Aquí verás quién hizo cada movimiento.')
+}
+function exportAct(){
+  const rows=[['Fecha y hora','Usuario','Acción','Secadora']];
+  [...(db.log||[])].filter(x=>actUser==='all'||x.by===actUser).sort((a,b)=>b.ts-a.ts).forEach(x=>rows.push([fdt(x.ts),x.by||'',x.txt,x.dryer!=null?dlabel(x.dryer):'']));
+  dlCSV('actividad.csv',rows)
+}
 /* ---------- Despachos ---------- */
 function availFor(id){return r2(stockOf(id)+(editDisp&&editDisp.loteId===id?editDisp.kg:0))}
 function openDisp(loteId,editId){
@@ -1131,17 +1213,64 @@ function saveDisp(){
   if(!id)return err('Elige el destinatario o lote.');
   if(!(kg>0))return err('Ingresa la cantidad a despachar.');
   if(kg>availFor(id)+0.005)return err('Solo hay '+fk(availFor(id))+' ('+ft(availFor(id))+') disponibles en ese lote.');
-  const data={date,loteId:id,kg,note:$('dn').value.trim()};
+  const data={date,loteId:id,kg,note:$('dn').value.trim()},_ed=!!editDisp;
+  if(_ed){data.by=editDisp.by||'';data.ts=editDisp.ts||0;data.upBy=myEmail;data.upTs=Date.now()}else{data.by=myEmail;data.ts=Date.now()}
   col('sec_despachos').doc(editDisp?editDisp.id:nid()).set(data).catch(fail);
+  logAct((_ed?'editó un despacho de ':'despachó ')+fk(kg)+' del lote “'+lname(id)+'”'+(data.note?' ('+data.note+')':''));
   editDisp=null;closeM('dispM')
 }
-function delDisp(id){if(!isAdm)return alert('Solo el administrador puede eliminar despachos.');const d=db.despachos.find(x=>x.id===id);if(!d)return;if(confirm('¿Eliminar este despacho de '+fk(d.kg)+'? El cacao vuelve al almacenamiento.'))col('sec_despachos').doc(id).delete().catch(fail)}
+function delDisp(id){
+  if(!isAdm)return alert('Solo el administrador puede eliminar despachos.');
+  const d=db.despachos.find(x=>x.id===id);if(!d)return;
+  if(confirm('¿Eliminar este despacho de '+fk(d.kg)+'? El cacao vuelve al almacenamiento.')){col('sec_despachos').doc(id).delete().catch(fail);logAct('eliminó un despacho de '+fk(d.kg)+' del lote “'+lname(d.loteId)+'”')}
+}
 
 document.addEventListener('focusin',e=>{if(e.target.matches&&e.target.matches('.sheet input,.sheet select'))setTimeout(()=>{try{e.target.scrollIntoView({block:'center',behavior:'smooth'})}catch(x){}},350)});
-document.addEventListener('keydown',e=>{if(e.key==='Escape')['dryerM','dayM','dispM','cycM'].forEach(closeM)});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')['dryerM','dayM','dispM','cycM','shareM','usersM'].forEach(id=>{if($(id).classList.contains('show'))closeModalById(id)})});
 ['dryerM','dayM','dispM','cycM'].forEach(id=>$(id).addEventListener('click',e=>{if(e.target.id===id)closeM(id)}));
 $('rate').innerHTML=[40,35,30,25,20,15,10,5,0].map(i=>`<button type="button" class="rt" data-v="${i}" onclick="pickRate(${i})">${i}</button>`).join('');
 setInterval(()=>{const c=$('nowClock');if(c)c.textContent=new Date().toLocaleTimeString('es-EC',{hour12:false})},1000);
+/* ---- cerrar ventanas: deslizar hacia abajo, tocar fuera y botón atrás ---- */
+function closeModalById(id,fromPop){if(id==='shareM'){if(shareUnsub)shareUnsub();shareUnsub=null}closeM(id,fromPop)}
+addEventListener('popstate',()=>{
+  if(skipPop>0){skipPop--;return}
+  const id=openStack[openStack.length-1];if(id)closeModalById(id,true)
+});
+function bindSwipe(modal,sheet){
+  let y0=0,t0=0,dy=0,vel=0,ly=0,lt=0,drag=false,top=false,sup=0;
+  sheet.addEventListener('touchstart',e=>{
+    if(e.touches.length!==1)return;
+    y0=ly=e.touches[0].clientY;t0=lt=Date.now();dy=0;vel=0;drag=false;top=sheet.scrollTop<=0
+  },{passive:true});
+  sheet.addEventListener('touchmove',e=>{
+    if(e.touches.length!==1)return;
+    const y=e.touches[0].clientY,d=y-y0,now=Date.now();
+    if(!drag){
+      if(sheet.scrollTop>0||d<0){y0=y;ly=y;lt=now;return}
+      if(d>8){drag=true;sheet.style.animation='none';sheet.style.transition='none'}else return
+    }
+    dy=Math.max(0,d);if(now>lt){vel=(y-ly)/(now-lt);ly=y;lt=now}
+    sheet.style.transform='translateY('+dy+'px)';
+    if(e.cancelable)e.preventDefault()
+  },{passive:false});
+  const end=()=>{
+    if(!drag)return;drag=false;sup=Date.now()+350;
+    const h=sheet.offsetHeight||400;
+    if(dy>h*0.22||(vel>0.45&&dy>24)){
+      sheet.style.transition='transform .2s ease-out';sheet.style.transform='translateY(110%)';
+      setTimeout(()=>{closeModalById(modal.id);sheet.style.transition='';sheet.style.transform='';sheet.style.animation=''},190)
+    }else{
+      sheet.style.transition='transform .2s ease-out';sheet.style.transform='';
+      setTimeout(()=>{sheet.style.transition='';sheet.style.animation=''},220)
+    }
+  };
+  sheet.addEventListener('touchend',end);sheet.addEventListener('touchcancel',end);
+  sheet.addEventListener('click',e=>{if(Date.now()<sup){e.stopPropagation();e.preventDefault()}},true)
+}
+document.querySelectorAll('.modal').forEach(m=>{
+  m.addEventListener('click',e=>{if(e.target===m)closeModalById(m.id)});
+  const sh=m.querySelector('.sheet');if(sh)bindSwipe(m,sh)
+});
 applyTheme();decorate();initFirebase();render();
 </script>
 </body></html>
