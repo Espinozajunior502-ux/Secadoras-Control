@@ -285,20 +285,21 @@ html[data-t=dark] .pr.ps .chip.a{background:#5a3d12;color:#ffd9a0}html[data-t=da
 /* ventanas: asa para deslizar */
 .sheet::before{content:'';display:block;width:44px;height:5px;border-radius:3px;background:var(--mut);opacity:.45;margin:-8px auto 12px}
 .sheet{touch-action:pan-y}
-/* estados de secado bien visibles */
+/* estado bien visible en RESUMEN */
 .item.pr{border-left-width:8px}
-.item.pr.ps{background:rgba(217,119,6,.20);border-left-color:#d97706}
-.item.pr.pg{background:rgba(22,163,74,.20);border-left-color:#16a34a}
-.pr .stl .chip{color:#fff;font-size:13px;padding:4px 12px;box-shadow:0 1px 3px rgba(0,0,0,.2)}
-.pr.ps .stl .chip.a{background:#d97706;color:#fff}
-.pr.pg .stl .chip.g{background:#16a34a;color:#fff}
-.pr .stl .chip::before{content:"";display:inline-block;width:8px;height:8px;border-radius:50%;background:#fff;margin-right:6px}
-.pr.ps .stl .chip::before{animation:blinkst 1.4s ease-in-out infinite}
-@keyframes blinkst{50%{opacity:.25}}
-.pr.ps .stl{color:#b45309}.pr.pg .stl{color:#15803d}
-html[data-t=dark] .pr.ps .stl{color:#fbbf24}html[data-t=dark] .pr.pg .stl{color:#4ade80}
-html[data-t=dark] .item.pr.ps{background:rgba(217,119,6,.28)}html[data-t=dark] .item.pr.pg{background:rgba(22,163,74,.28)}
-html[data-t=dark] .pr.ps .stl .chip.a{background:#d97706;color:#fff}html[data-t=dark] .pr.pg .stl .chip.g{background:#16a34a;color:#fff}
+.item.pr.ps{border-left-color:#d98a1c;background:rgba(217,138,28,.20)}
+.item.pr.pg{border-left-color:#18805f;background:rgba(24,128,95,.20)}
+.pr.ps .stl .chip{background:#d98a1c;color:#fff}
+.pr.pg .stl .chip{background:#18805f;color:#fff}
+.pr.ps .stl{color:#8a4d06}.pr.pg .stl{color:#0f5f46}
+.pr .stl span::before{content:'';display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px;background:currentColor}
+html[data-t=dark] .pr.ps .stl .chip{background:#b8741a;color:#fff}html[data-t=dark] .pr.pg .stl .chip{background:#1f8f6c;color:#fff}
+html[data-t=dark] .pr.ps .stl{color:#f5c070}html[data-t=dark] .pr.pg .stl{color:#7fe0c3}
+/* cerrar ventanas */
+.sheet{touch-action:pan-y}
+.sheet::before{height:6px;margin:-8px auto 14px;position:sticky;top:0}
+.sheet .grab{display:block}
+.modal{touch-action:none}.modal .sheet{touch-action:pan-y}
 </style></head>
 <body class="loading">
 <nav class="tabs">
@@ -877,7 +878,7 @@ function refreshDryerModal(){
   $('blkDrying').hidden=state!=='secando';$('btnDelCiclo').hidden=!isAdm;
   const evs=ac?evsOf(ac.id):[];
   $('evBox').hidden=!ac||(!evs.length&&state!=='secando');
-  $('evList').innerHTML=evs.length?[...evs].reverse().map(e=>`<div class="item"><div><b>${hfmt(e.ts)}</b> ${evTxt(e)}<div class="mut">${tfmt(e.ts)}${e.by?' · '+esc(e.by):''}</div></div>${state==='secando'?`<div class="acts"><button class="btn sm red" onclick="delEv('${e.id}')" aria-label="Eliminar">✕</button></div>`:''}</div>`).join(''):EMP('box','Aún sin registros','Anota la primera temperatura, volteo o calificación de esta carga.');
+  $('evList').innerHTML=evs.length?[...evs].reverse().map(e=>`<div class="item"><div><b>${hfmt(e.ts)}</b> ${evTxt(e)}<div class="mut">${tfmt(e.ts)}${e.by?' · por <b>'+esc(e.by)+'</b>':''}</div></div>${state==='secando'?`<div class="acts"><button class="btn sm red" onclick="delEv('${e.id}')" aria-label="Eliminar">✕</button></div>`:''}</div>`).join(''):EMP('box','Aún sin registros','Anota la primera temperatura, volteo o calificación de esta carga.');
   $('blkBag').hidden=!(state==='seco'||editEnt);
   $('blkDone').hidden=state!=='seco';
   if(ac)$('btnReopen').hidden=cycEntries(ac.id).length>0;
@@ -1113,7 +1114,7 @@ function openCiclo(id){
   $('cyT').textContent=dlabel(c.dryer);
   let h=`<div class="sub">${esc(c.tipo||'Sin tipo')} de ${esc(c.origin||'procedencia sin indicar')} ${stChip(c)}</div><div class="kvs">`+
     kv('Ingresó',tfmt(c.startAt))+(c.by?kv('Cargada por',esc(c.by)):'')+kv('Cacao por secar',fk(c.kgHumedo)+' ('+ft(c.kgHumedo)+')')+
-    kv('Marcado como seco',c.dryAt?tfmt(c.dryAt)+' ('+dur(c.dryAt-c.startAt)+' de secado)':'Todavía secando')+(c.dryBy?kv('Marcado seco por',esc(c.dryBy)):'')+
+    kv('Marcado como seco',c.dryAt?tfmt(c.dryAt)+' ('+dur(c.dryAt-c.startAt)+' de secado)':'Todavía secando')+(c.dryBy?kv('Marcado seco por',esc(c.dryBy)):'')+(c.endBy?kv('Finalizada por',esc(c.endBy)):'')+
     kv('Descarga finalizada',c.endAt?tfmt(c.endAt):'En curso')+(c.endBy?kv('Finalizada por',esc(c.endBy)):'')+
     kv('Sacos secos',ent.length?s.sacos+' sacos, '+fk(s.kgS)+' ('+ft(s.kgS)+')':'Sin registrar')+
     (s.rend!=null?kv('Rendimiento',nf.format(s.rend)+' % del peso ingresado'):'')+'</div>';
@@ -1136,7 +1137,7 @@ function renderResExtra(){
   const hum=sum(act,c=>c.kgHumedo);
   $('resStats').insertAdjacentHTML('beforeend',stat('Por secar en las secadoras ahora',ft(hum),fk(hum)+' en '+act.length+' secadora'+(act.length===1?'':'s')));
   $('resProc').innerHTML=act.length?act.map(c=>{const t=evsOf(c.id,'temp').pop(),vo=evsOf(c.id,'volteo').pop(),cal=evsOf(c.id,'cal').pop();
-    return `<div class="item pr ${c.status==='secando'?'ps':'pg'}"><div><b>${dlabel(c.dryer)}</b>: ${esc(c.tipo||'Sin tipo')} de ${esc(c.origin||'procedencia sin indicar')}<div class="mut">${fk(c.kgHumedo)} por secar.${c.by?' Cargada por '+esc(c.by)+'.':''}</div><div class="stl">${stChip(c)}<span>${c.status==='secando'?'Lleva '+dur(Date.now()-c.startAt)+' secando':'Ya está seco · registrando sacos'}</span></div>${vo?`<div class="mut">Último volteo: ${hfmt(vo.ts)}</div>`:''}${t?`<div class="mut">Última temperatura: ${fnum(t.value)} °C a las ${hfmt(t.ts)}</div>`:''}${cal?`<div class="mut">Última calificación: ${calTxt(cal)}</div>`:''}</div><div class="acts"><button class="btn sm" onclick="goDryer(${c.dryer})">Abrir</button><button class="btn sm" onclick="openCiclo('${c.id}')">Detalle</button></div></div>`}).join(''):'<div class="mut">Ninguna secadora tiene carga en proceso.</div>';
+    return `<div class="item pr ${c.status==='secando'?'ps':'pg'}"><div><b>${dlabel(c.dryer)}</b>: ${esc(c.tipo||'Sin tipo')} de ${esc(c.origin||'procedencia sin indicar')}<div class="mut">${fk(c.kgHumedo)} por secar.${c.by?' Cargada por '+esc(c.by)+'.':''}</div><div class="stl">${stChip(c)}<span>${c.status==='secando'?'Lleva '+dur(Date.now()-c.startAt)+' secando':'Ya está seco · registrando sacos'}</span></div>${vo?`<div class="mut">Último volteo: ${hfmt(vo.ts)}${vo.by?' · por <b>'+esc(vo.by)+'</b>':''}</div>`:''}${t?`<div class="mut">Última temperatura: ${fnum(t.value)} °C a las ${hfmt(t.ts)}${t.by?' · por <b>'+esc(t.by)+'</b>':''}</div>`:''}${cal?`<div class="mut">Última calificación: ${calTxt(cal)}${cal.by?' · por <b>'+esc(cal.by)+'</b>':''}</div>`:''}</div><div class="acts"><button class="btn sm" onclick="goDryer(${c.dryer})">Abrir</button><button class="btn sm" onclick="openCiclo('${c.id}')">Detalle</button></div></div>`}).join(''):'<div class="mut">Ninguna secadora tiene carga en proceso.</div>';
   /* filtros del historial */
   const dryers=LAYOUT.flat().sort((a,b)=>dord(a)-dord(b));
   const meses=[...new Set(db.ciclos.map(c=>(c.startDate||'').slice(0,7)).filter(Boolean))].sort().reverse();
@@ -1237,38 +1238,46 @@ addEventListener('popstate',()=>{
   const id=openStack[openStack.length-1];if(id)closeModalById(id,true)
 });
 function bindSwipe(modal,sheet){
-  let y0=0,t0=0,dy=0,vel=0,ly=0,lt=0,drag=false,top=false,sup=0;
-  sheet.addEventListener('touchstart',e=>{
+  let y0=0,dy=0,vel=0,ly=0,lt=0,drag=false,armed=false,sup=0,fromBack=false;
+  const HANDLE=64; /* zona alta de la ventana: siempre arrastrable */
+  function start(e,back){
     if(e.touches.length!==1)return;
-    y0=ly=e.touches[0].clientY;t0=lt=Date.now();dy=0;vel=0;drag=false;top=sheet.scrollTop<=0
-  },{passive:true});
-  sheet.addEventListener('touchmove',e=>{
-    if(e.touches.length!==1)return;
+    const t=e.touches[0];y0=ly=t.clientY;lt=Date.now();dy=0;vel=0;drag=false;fromBack=back;
+    const rel=t.clientY-sheet.getBoundingClientRect().top;
+    armed=back||sheet.scrollTop<=0||rel<=HANDLE
+  }
+  function move(e){
+    if(!armed||e.touches.length!==1)return;
     const y=e.touches[0].clientY,d=y-y0,now=Date.now();
     if(!drag){
-      if(sheet.scrollTop>0||d<0){y0=y;ly=y;lt=now;return}
-      if(d>8){drag=true;sheet.style.animation='none';sheet.style.transition='none'}else return
+      if(d>4&&(fromBack||sheet.scrollTop<=0||y0-sheet.getBoundingClientRect().top<=HANDLE)){drag=true;sheet.style.animation='none';sheet.style.transition='none'}
+      else{if(d<-4)armed=false;return}
     }
     dy=Math.max(0,d);if(now>lt){vel=(y-ly)/(now-lt);ly=y;lt=now}
     sheet.style.transform='translateY('+dy+'px)';
     if(e.cancelable)e.preventDefault()
-  },{passive:false});
-  const end=()=>{
-    if(!drag)return;drag=false;sup=Date.now()+350;
+  }
+  function end(){
+    armed=false;if(!drag)return;drag=false;sup=Date.now()+350;
     const h=sheet.offsetHeight||400;
-    if(dy>h*0.22||(vel>0.45&&dy>24)){
+    if(dy>Math.min(h*0.22,120)||(vel>0.45&&dy>20)){
       sheet.style.transition='transform .2s ease-out';sheet.style.transform='translateY(110%)';
       setTimeout(()=>{closeModalById(modal.id);sheet.style.transition='';sheet.style.transform='';sheet.style.animation=''},190)
     }else{
       sheet.style.transition='transform .2s ease-out';sheet.style.transform='';
       setTimeout(()=>{sheet.style.transition='';sheet.style.animation=''},220)
     }
-  };
+  }
+  sheet.addEventListener('touchstart',e=>start(e,false),{passive:true});
+  sheet.addEventListener('touchmove',move,{passive:false});
+  modal.addEventListener('touchstart',e=>{if(e.target===modal)start(e,true)},{passive:true});
+  modal.addEventListener('touchmove',e=>{if(e.target===modal||drag)move(e)},{passive:false});
   sheet.addEventListener('touchend',end);sheet.addEventListener('touchcancel',end);
+  modal.addEventListener('touchend',end);modal.addEventListener('touchcancel',end);
   sheet.addEventListener('click',e=>{if(Date.now()<sup){e.stopPropagation();e.preventDefault()}},true)
 }
 document.querySelectorAll('.modal').forEach(m=>{
-  m.addEventListener('click',e=>{if(e.target===m)closeModalById(m.id)});
+  m.addEventListener('click',e=>{if(e.target===m&&Date.now()>=0)closeModalById(m.id)});
   const sh=m.querySelector('.sheet');if(sh)bindSwipe(m,sh)
 });
 applyTheme();decorate();initFirebase();render();
