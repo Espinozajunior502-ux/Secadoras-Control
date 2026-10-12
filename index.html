@@ -562,10 +562,11 @@ body.pubmode #pubView{display:block;max-width:560px;margin:0 auto;padding:14px 1
 <div class="sech" id="dmFormT">Registrar sacos secos que salieron</div>
 <div class="fg">
 <div class="field"><label for="fd">Fecha</label><input type="date" id="fd"></div>
-<div class="field"><label for="fs">Sacos secos</label><input type="number" id="fs" min="1" step="1" inputmode="numeric" oninput="calcPrev()"></div>
+<div class="field"><label for="fs">Sacos secos</label><input type="number" id="fs" min="0" step="1" inputmode="numeric" oninput="calcPrev()"></div>
 <div class="field full"><label>Peso de los sacos</label><div class="chips" id="fmChips"><button type="button" class="chip-b on" data-m="std" onclick="setMode('std')">69,10 kg por saco</button><button type="button" class="chip-b" data-m="saco" onclick="setMode('saco')">Otro peso por saco</button><button type="button" class="chip-b" data-m="bas" onclick="setMode('bas')">Peso de báscula</button></div></div>
 <div class="field full" id="fwW" hidden><label for="fw">Peso de cada saco (kg)</label><input id="fw" inputmode="decimal" placeholder="Ej. 65" autocomplete="off" oninput="calcPrev()"></div>
 <div class="field full" id="ftW" hidden><label for="ftot">Peso total de la báscula (kg)</label><input id="ftot" inputmode="decimal" placeholder="Ej. 1385,5" autocomplete="off" oninput="calcPrev()"></div>
+<div class="field full" id="fxW"><label for="fx">Saco incompleto (opcional)</label><div style="display:flex;gap:8px"><input id="fx" inputmode="decimal" placeholder="Ej. 30" autocomplete="off" oninput="calcPrev()" style="flex:1;min-width:0"><select id="fxu" onchange="calcPrev()" style="width:auto"><option value="lb">lb</option><option value="kg">kg</option></select></div></div>
 <div class="field full"><div class="prev" id="fprev"></div></div>
 <div class="field full" id="foW" hidden><label for="fo">Procedencia del cacao</label><div class="chips" id="foChips"></div><input id="fo" placeholder="Elige una arriba o escribe otra" autocomplete="off" oninput="syncChips('fo')"></div>
 <div class="field full"><label for="fl">Destinatario o lote</label><select id="fl" onchange="onLote()"></select>
@@ -1025,12 +1026,12 @@ function openDryer(n,date,editId){
   refreshDryerModal();openM('dryerM')
 }
 function resetForm(){
-  $('fd').value=selDate;$('fs').value='';$('fo').value='';$('fn').value='';$('fErr').textContent='';$('foW').hidden=true;$('fw').value='';$('ftot').value='';
+  $('fd').value=selDate;$('fs').value='';$('fo').value='';$('fn').value='';$('fErr').textContent='';$('foW').hidden=true;$('fw').value='';$('ftot').value='';$('fx').value='';$('fxu').value='lb';
   $('fSave').textContent='Guardar';$('fCancel').hidden=true;$('dmFormT').textContent='Registrar sacos secos que salieron';
   setMode('std')
 }
 function loadEdit(e){
-  $('fd').value=e.date;$('fs').value=e.sacks;$('fo').value=e.origin||'';$('foW').hidden=!!e.cycleId;formLote=e.loteId;$('fn').value='';
+  $('fd').value=e.date;{const xs=e.extraKg>0?1:0;$('fs').value=(e.sacks-xs)||'';$('fx').value=xs?String(e.extraKg).replace('.',','):'';$('fxu').value='kg'}$('fo').value=e.origin||'';$('foW').hidden=!!e.cycleId;formLote=e.loteId;$('fn').value='';
   $('fSave').textContent='Guardar cambios';$('fCancel').hidden=false;$('dmFormT').textContent='Editar registro';
   const m=e.modo||(Math.abs((e.kgSaco||SACO)-SACO)<0.005?'std':'saco');$('fw').value=m==='saco'?String(e.kgSaco).replace('.',','):'';$('ftot').value=m==='bas'?String(e.kg).replace('.',','):'';setMode(m)
 }
@@ -1038,21 +1039,23 @@ function cancelEdit(){editEnt=null;resetForm();refreshDryerModal()}
 let bagMode='std';
 function bagCalc(){
   const s=Math.round(num($('fs').value))||0;let kg=0,kgS=SACO;
-  if(bagMode==='std')kg=r2(s*SACO);
-  else if(bagMode==='saco'){kgS=num($('fw').value)||0;kg=r2(s*kgS)}
+  const xv=num($('fx').value)||0,xk=bagMode==='bas'||xv<=0?0:r2($('fxu').value==='lb'?xv*0.45359237:xv);
+  if(bagMode==='std')kg=r2(s*SACO+xk);
+  else if(bagMode==='saco'){kgS=num($('fw').value)||0;kg=r2(s*kgS+xk)}
   else{kg=r2(num($('ftot').value)||0);kgS=s>0?r2(kg/s):0}
-  return {s,kg,kgS}
+  return {s,kg,kgS,xk}
 }
 function setMode(m){
   bagMode=m;
   document.querySelectorAll('#fmChips .chip-b').forEach(b=>b.classList.toggle('on',b.dataset.m===m));
-  $('fwW').hidden=m!=='saco';$('ftW').hidden=m!=='bas';calcPrev()
+  $('fwW').hidden=m!=='saco';$('ftW').hidden=m!=='bas';$('fxW').hidden=m==='bas';calcPrev()
 }
 function calcPrev(){
   $('fErr').textContent='';const c=bagCalc(),t=fk(c.kg)+' = '+ft(c.kg);
-  $('fprev').textContent=bagMode==='std'?'Total: '+t+' (69,10 kg por saco)':bagMode==='saco'?c.s+' sacos × '+fnum(c.kgS)+' kg = '+t:'Peso de báscula: '+t+(c.s>0&&c.kg>0?' (≈ '+fnum(c.kgS)+' kg por saco)':'')
+  const xt=c.xk>0?' + 1 saco de '+fnum(c.xk)+' kg':'';
+  $('fprev').textContent=bagMode==='std'?(c.xk>0?c.s+' sacos × 69,10 kg'+xt+' = '+t:'Total: '+t+' (69,10 kg por saco)'):bagMode==='saco'?c.s+' sacos × '+fnum(c.kgS)+' kg'+xt+' = '+t:'Peso de báscula: '+t+(c.s>0&&c.kg>0?' (≈ '+fnum(c.kgS)+' kg por saco)':'')
 }
-function modoTxt(e){return e.modo==='bas'?' · peso de báscula':(e.modo==='saco'||(e.kgSaco&&Math.abs(e.kgSaco-SACO)>0.005))?' · '+fnum(e.kgSaco)+' kg por saco':''}
+function modoTxt(e){return(e.modo==='bas'?' · peso de báscula':(e.modo==='saco'||(e.kgSaco&&Math.abs(e.kgSaco-SACO)>0.005))?' · '+fnum(e.kgSaco)+' kg por saco':'')+(e.extraKg>0?' · incluye 1 saco incompleto de '+fnum(r2(e.extraKg))+' kg':'')}
 function onLote(){formLote=$('fl').value;$('fn').style.display=formLote==='__new'?'block':'none'}
 function fillLote(){
   const s=$('fl'),list=inStock(editEnt&&editEnt.loteId);
@@ -1211,7 +1214,7 @@ function saveEnt(){
   const date=$('fd').value,sacks=Math.round(Number($('fs').value)),lv=$('fl').value,nn=$('fn').value.trim(),ac=activeOf(curDryer);
   if(!editEnt&&(!ac||ac.status!=='seco'))return err('Primero marca el cacao como seco para registrar los sacos.');
   if(!date)return err('Selecciona la fecha.');
-  if(!(sacks>=1))return err('Ingresa cuántos sacos salieron.');
+  if(!(sacks>=1)&&!(bagMode!=='bas'&&bagCalc().xk>0))return err('Ingresa cuántos sacos salieron.');
   if(!lv)return err('Elige un destinatario o lote, o crea uno nuevo.');
   let loteId=lv,newLote=null;
   if(lv==='__new'){
@@ -1220,9 +1223,9 @@ function saveEnt(){
     if(ex)loteId=ex.l.id;else{loteId=nid();newLote={name:nn,created:date,by:myEmail,ts:Date.now(),code:nextCode(date),producto:'Cacao seco'}}
   }
   const bc=bagCalc();
-  if(bagMode==='saco'&&!(bc.kgS>0&&bc.kgS<=300))return err('Escribe el peso de cada saco en kg.');
+  if(bagMode==='saco'&&sacks>0&&!(bc.kgS>0&&bc.kgS<=300))return err('Escribe el peso de cada saco en kg.');
   if(bagMode==='bas'&&!(bc.kg>0))return err('Escribe el peso total de la báscula en kg.');
-  const kg=bc.kg;
+  const kg=bc.kg,nS=sacks+(bc.xk>0?1:0);
   if(editEnt){
     const after=stockOf(editEnt.loteId)-editEnt.kg+(editEnt.loteId===loteId?kg:0);
     if(after<-0.005)return err('No se puede aplicar el cambio: parte de ese cacao ya se despachó y el lote quedaría en negativo.')
@@ -1230,14 +1233,14 @@ function saveEnt(){
   const cyc=editEnt?editEnt.cycleId:ac.id;
   const origin=editEnt?(editEnt.cycleId?(editEnt.origin||''):$('fo').value.trim()):ac.origin;
   const tipo=editEnt?(editEnt.tipo||''):(ac.tipo||'');
-  const data={date,dryer:curDryer,sacks,kgSaco:bc.kgS,modo:bagMode,kg,origin,tipo,loteId,productor:editEnt?(editEnt.productor||''):(ac.productor||''),finca:editEnt?(editEnt.finca||''):(ac.finca||'')};if(cyc)data.cycleId=cyc;
+  const data={date,dryer:curDryer,sacks:nS,kgSaco:bc.kgS,modo:bagMode,kg,extraKg:bc.xk>0?bc.xk:0,origin,tipo,loteId,productor:editEnt?(editEnt.productor||''):(ac.productor||''),finca:editEnt?(editEnt.finca||''):(ac.finca||'')};if(cyc)data.cycleId=cyc;
   const _edit=!!editEnt;
   if(_edit){data.by=editEnt.by||'';data.ts=editEnt.ts||0;data.upBy=myEmail;data.upTs=Date.now()}else{data.by=myEmail;data.ts=Date.now()}
   const b=fdb.batch();
   if(newLote)b.set(col('sec_lotes').doc(loteId),newLote);
   b.set(col('sec_entradas').doc(editEnt?editEnt.id:nid()),data);
   b.commit().catch(fail);
-  logAct((_edit?'editó el registro de ':'registró ')+sacks+' sacos secos ('+fk(kg)+') en '+dlabel(curDryer)+' para '+(newLote?newLote.name:lname(loteId)),curDryer);
+  logAct((_edit?'editó el registro de ':'registró ')+nS+' sacos secos ('+fk(kg)+') en '+dlabel(curDryer)+' para '+(newLote?newLote.name:lname(loteId)),curDryer);
   formLote=loteId;editEnt=null;selDate=date;
   resetForm();render()
 }
