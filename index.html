@@ -1100,7 +1100,7 @@ function refreshDryerModal(){
   renderDmList(ac,state);fillLote();
   const past=db.ciclos.filter(c=>Number(c.dryer)===Number(n)&&(!ac||c.id!==ac.id)).sort((a,b)=>b.startAt-a.startAt);
   $('pastBox').hidden=!past.length;
-  $('pastList').innerHTML=past.slice(0,5).map(c=>{const t=cycStats(c);return `<div class="item"><div><b>${esc(c.tipo||'Sin tipo')}</b> de ${esc(c.origin||'sin procedencia')}<div class="mut">${tfmt(c.startAt)}. ${fk(c.kgHumedo)}${t.ent.length?' → '+fk(t.kgS)+' secos':''}</div></div><div class="acts"><button class="btn sm" onclick="openCiclo('${c.id}')">Ver detalle</button></div></div>`}).join('')+(past.length>5?`<div class="ma" style="justify-content:flex-start"><button class="btn sm" onclick="goHist(${n})">Ver las ${past.length} cargas</button></div>`:'')
+  $('pastList').innerHTML=past.slice(0,5).map(c=>{const t=cycStats(c);return `<div class="item"><div><b>${esc(c.tipo||'Sin tipo')}</b> de ${esc(c.origin||'sin procedencia')}<div class="mut">${tfmt(c.startAt)}. ${fk(c.kgHumedo)}${t.ent.length?' → '+fk(t.kgS)+' secos':''}</div></div><div class="acts">${(!ac&&c.status==='finalizada'&&!t.ent.length)?`<button class="btn sm" onclick="reabrirDescarga('${c.id}')">Registrar sacos</button>`:''}<button class="btn sm" onclick="openCiclo('${c.id}')">Ver detalle</button></div></div>`}).join('')+(past.length>5?`<div class="ma" style="justify-content:flex-start"><button class="btn sm" onclick="goHist(${n})">Ver las ${past.length} cargas</button></div>`:'')
 }
 /* --- flujo de la carga --- */
 function startCiclo(){
@@ -1184,6 +1184,15 @@ function finishCiclo(){
   if(!confirm(n?'¿Finalizar la descarga? La secadora quedará libre para una nueva carga.':'No registraste sacos secos de esta carga. ¿Finalizar de todos modos?'))return;
   editEnt=null;col('sec_ciclos').doc(ac.id).update({status:'finalizada',endAt:Date.now(),endBy:myEmail}).catch(fail);
   logAct('finalizó la descarga y liberó '+dlabel(ac.dryer),ac.dryer)
+}
+function reabrirDescarga(id){
+  const c=db.ciclos.find(x=>x.id===id);if(!c||c.status!=='finalizada')return;
+  if(activeOf(c.dryer))return alert('Esta secadora ya tiene otra carga en proceso. Finalízala primero para poder reabrir esta.');
+  const n=cycEntries(id).length;
+  if(!confirm('¿Reabrir la descarga de esta carga de '+dlabel(c.dryer)+'?\n\nVolverá a la fase de “registrar sacos secos”'+(n?' (ya tiene '+n+' registro'+(n===1?'':'s')+')':' (todavía no tiene sacos registrados)')+'. Cuando termines, pulsa “Finalizar descarga” otra vez.'))return;
+  col('sec_ciclos').doc(id).update({status:'seco',endAt:null,endBy:null}).catch(fail);
+  logAct('reabrió la descarga de la carga de '+(c.tipo||'sin tipo')+' de '+dlabel(c.dryer),c.dryer);
+  closeM('cycM');openDryer(c.dryer)
 }
 function delCiclo(){const ac=activeOf(curDryer);if(ac)delCicloId(ac.id)}
 function delCicloId(id){
@@ -1365,6 +1374,7 @@ function openCiclo(id){
   h+=cl.length?(`<div class="mut">Promedio: ${fnum(s.cavg)} ${s.cmax?' de '+s.cmax:''}</div>`+cl.map(e=>`<div class="item"><div><b>${hfmt(e.ts)}</b> ${calTxt(e)}${e.note?': '+esc(e.note):''}<div class="mut">${tfmt(e.ts)}</div>${evWho(e)}</div></div>`).join('')):'<div class="mut">No se registraron calificaciones.</div>';
   h+=`<div class="sech">Sacos secos (${ent.length} registro${ent.length===1?'':'s'})</div>`;
   h+=ent.length?ent.map(e=>`<div class="item"><div><b>${e.sacks} sacos</b>: ${fk(e.kg)} (${ft(e.kg)})${modoTxt(e)}<div class="mut">${esc(fshort(e.date))}. Destino: ${esc(lname(e.loteId))}</div>${whoLine(e)}</div><div class="acts"><button class="btn sm" onclick="closeM('cycM');openDryer(${e.dryer},'${e.date}','${e.id}')">Editar</button></div></div>`).join(''):'<div class="mut">No se han registrado sacos de esta carga.</div>';
+  if(c.status==='finalizada'&&!activeOf(c.dryer))h+=`<div class="ma" style="justify-content:flex-start"><button class="btn" onclick="reabrirDescarga('${c.id}')">Reabrir descarga${ent.length?'':' y registrar sacos'}</button></div>`;
   if(isAdm)h+=`<div class="ma" style="justify-content:flex-start"><button class="btn red" onclick="delCicloId('${c.id}')">Eliminar esta carga</button></div>`;
   $('cyB').innerHTML=h;$('cyB').scrollTop=0;openM('cycM');$('cycM').querySelector('.sheet').scrollTop=0
 }
