@@ -211,7 +211,7 @@ html[data-t=dark] input,html[data-t=dark] select{color:var(--ink)}
 .shmut{color:#6b7280;font-size:14px}
 @media print{.roletag{display:none}}
 body.ro #blkStart,body.ro #blkDrying,body.ro #blkBag,body.ro #blkDone{display:none!important}
-body.ro [onclick*="delEnt("],body.ro [onclick*="editEntry("],body.ro [onclick*="delEv("],body.ro [onclick*="openDisp("],body.ro [onclick*="delDisp("],body.ro [onclick*="renameLote("],body.ro [onclick*="openDryer("][onclick*=",'"]{display:none!important}
+body.ro [onclick*="delEnt("],body.ro [onclick*="editEntry("],body.ro [onclick*="delEv("],body.ro [onclick*="openDisp("],body.ro [onclick*="delDisp("],body.ro [onclick*="renameLote("],body.ro [onclick*="openMover("],body.ro [onclick*="openDryer("][onclick*=",'"]{display:none!important}
 #spaceBanner{background:#fde68a;color:#422006;padding:10px 14px;font-weight:600;font-size:14px;display:flex;gap:10px;align-items:center;justify-content:center;flex-wrap:wrap;text-align:center}
 #spaceBanner[hidden]{display:none}
 #spaceBanner button{background:#422006;color:#fff;border-radius:10px;padding:8px 12px;font-size:13px;font-weight:700}
@@ -1273,7 +1273,7 @@ function saveEnt(){
   const tipo=editEnt?(editEnt.tipo||''):(ac.tipo||'');
   const data={date,dryer:curDryer,sacks:nS,kgSaco:bc.kgS,modo:bagMode,kg,extraKg:bc.xk>0?bc.xk:0,origin,tipo,loteId,productor:editEnt?(editEnt.productor||''):(ac.productor||''),finca:editEnt?(editEnt.finca||''):(ac.finca||'')};if(cyc)data.cycleId=cyc;
   const _edit=!!editEnt;
-  if(_edit){data.by=editEnt.by||'';data.ts=editEnt.ts||0;data.upBy=myEmail;data.upTs=Date.now()}else{data.by=myEmail;data.ts=Date.now()}
+  if(_edit){data.by=editEnt.by||'';data.ts=editEnt.ts||0;data.upBy=myEmail;data.upTs=Date.now();if(editEnt.movedFrom){data.movedFrom=editEnt.movedFrom;data.loteOrig=editEnt.loteOrig||editEnt.movedFrom;data.movedAt=editEnt.movedAt||0;data.movedBy=editEnt.movedBy||''}}else{data.by=myEmail;data.ts=Date.now()}
   const b=fdb.batch();
   if(newLote)b.set(col('sec_lotes').doc(loteId),newLote);
   b.set(col('sec_entradas').doc(editEnt?editEnt.id:nid()),data);
@@ -1342,7 +1342,7 @@ function renderRes(){
     stat('Salió este mes',ft(mProd),fk(mProd));
   $('resLotes').innerHTML=open.length?open.map(x=>{
     const orig=Object.entries(x.orig).sort((a,b)=>b[1]-a[1]).map(([o,k])=>esc(o)+' '+ft(k)).join(', ');
-    return `<div class="lote"><div class="lcode">${esc(lcode(x.l))}</div><div class="lh"><b>${esc(x.l.name)}</b><span class="big">${ft(x.stock)}</span></div><div class="mut">En almacén: ${fk(x.stock)} (≈ ${Math.round(x.stock/SACO)} sacos)</div><div class="mut"><b>${origN(x)}</b> origen${origN(x)===1?'':'es'} · <b>${db.entradas.filter(e=>e.loteId===x.l.id).reduce((a,e)=>a+e.sacks,0)}</b> sacos ingresados${ubicTxt(x.l)?' · '+esc(ubicTxt(x.l)):''}</div><div class="mut">Ingresó ${fk(x.ing)}. Despachado ${fk(x.desp)}.</div><div class="mut">Procedencia: ${orig}</div>${loteDetail(x)}<div class="acts"><button class="btn primary sm" onclick="openFicha('${x.l.id}')">Ver ficha</button><button class="btn sm" onclick="printFicha('${x.l.id}')">Imprimir</button><button class="btn sm" onclick="openFicha('${x.l.id}',{tab:'qr'})">QR</button><button class="btn leaf sm" onclick="openDisp('${x.l.id}')">Despachar</button><button class="btn sm" onclick="renameLote('${x.l.id}')">Renombrar</button></div></div>`}).join(''):'<div class="mut">No hay cacao en almacenamiento. Se llena cuando registras sacos en una secadora.</div>';
+    return `<div class="lote"><div class="lcode">${esc(lcode(x.l))}</div><div class="lh"><b>${esc(x.l.name)}</b><span class="big">${ft(x.stock)}</span></div><div class="mut">En almacén: ${fk(x.stock)} (≈ ${Math.round(x.stock/SACO)} sacos)</div><div class="mut"><b>${origN(x)}</b> origen${origN(x)===1?'':'es'} · <b>${db.entradas.filter(e=>e.loteId===x.l.id).reduce((a,e)=>a+e.sacks,0)}</b> sacos ingresados${ubicTxt(x.l)?' · '+esc(ubicTxt(x.l)):''}</div><div class="mut">Ingresó ${fk(x.ing)}. Despachado ${fk(x.desp)}.</div>${movTxt(x.l.id)}<div class="mut">Procedencia: ${orig}</div>${loteDetail(x)}<div class="acts"><button class="btn primary sm" onclick="openFicha('${x.l.id}')">Ver ficha</button><button class="btn sm" onclick="printFicha('${x.l.id}')">Imprimir</button><button class="btn sm" onclick="openFicha('${x.l.id}',{tab:'qr'})">QR</button><button class="btn leaf sm" onclick="openDisp('${x.l.id}')">Despachar</button><button class="btn sm" onclick="openMover('${x.l.id}')">Mover</button><button class="btn sm" onclick="renameLote('${x.l.id}')">Renombrar</button></div></div>`}).join(''):'<div class="mut">No hay cacao en almacenamiento. Se llena cuando registras sacos en una secadora.</div>';
   $('resClosed').innerHTML=closed.length?closed.map(x=>`<div class="item"><div><div class="lcode">${esc(lcode(x.l))}</div><b>${esc(x.l.name)}</b><div class="mut">Ingresó ${fk(x.ing)}, despachado por completo.</div>${loteDetail(x)}<div class="acts" style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap"><button class="btn primary sm" onclick="openFicha('${x.l.id}')">Ver ficha</button><button class="btn sm" onclick="printFicha('${x.l.id}')">Imprimir</button></div></div></div>`).join(''):EMP('box','Aún no hay lotes cerrados','Aparecen cuando un lote se despacha por completo.');
   const ds=[...db.despachos].sort((a,b)=>b.date.localeCompare(a.date)||b.id.localeCompare(a.id)).slice(0,40);
   $('resDesp').innerHTML=ds.length?ds.map(d=>`<div class="item"><div><b>${esc(lname(d.loteId))}</b>: ${fk(d.kg)} (${ft(d.kg)})<div class="mut">${esc(fshort(d.date))}${d.note?' — '+esc(d.note):''}</div>${whoLine(d,'Despachado')}</div><div class="acts"><button class="btn sm" onclick="openDisp(null,'${d.id}')">Editar</button>${isAdm?`<button class="btn sm red" onclick="delDisp('${d.id}')" aria-label="Eliminar despacho">✕</button>`:''}</div></div>`).join(''):EMP('box','Aún no hay despachos','Registra el primero y aparecerá aquí.');
@@ -1350,6 +1350,62 @@ function renderRes(){
   $('resOrig').innerHTML=go.length?'<table class="t"><tr><th>Procedencia</th><th class="r">Toneladas</th></tr>'+go.map(([o,k])=>`<tr><td>${esc(o)}</td><td class="r">${nf.format(r2(k/1000))}</td></tr>`).join('')+'</table>':EMP('box','Sin datos todavía','Se llenará cuando registres cacao en las secadoras.');
   const gd=groupSum(db.entradas,e=>e.dryer,e=>e.kg).sort((a,b)=>dord(a[0])-dord(b[0]));
   $('resDry').innerHTML=gd.length?'<table class="t"><tr><th>Secadora</th><th class="r">Sacos</th><th class="r">Toneladas</th></tr>'+gd.map(([d,k])=>`<tr><td>${dlabel(d)}</td><td class="r">${db.entradas.filter(e=>String(e.dryer)===String(d)).reduce((a,e)=>a+e.sacks,0)}</td><td class="r">${nf.format(r2(k/1000))}</td></tr>`).join('')+'</table>':EMP('box','Sin datos todavía','Se llenará cuando registres cacao en las secadoras.')
+}
+function movTxt(id){
+  const rec=sum(db.entradas.filter(e=>e.loteId===id&&e.movedFrom&&e.movedFrom!==id),e=>e.kg),env=sum(db.entradas.filter(e=>e.movedFrom===id&&e.loteId!==id),e=>e.kg);
+  return (rec>0?`<div class="mut">Recibido de otros lotes: ${fk(rec)}.</div>`:'')+(env>0?`<div class="mut">Enviado a otros lotes: ${fk(env)}.</div>`:'')
+}
+function openMover(id){
+  if(!canEdit())return;
+  const x=LI[id];if(!x)return;
+  const G={};db.entradas.filter(e=>e.loteId===id).forEach(e=>{const d=Number(e.dryer),g=G[d]||(G[d]={d,kg:0,s:0});g.kg+=e.kg;g.s+=e.sacks});
+  const gs=Object.values(G).sort((a,b)=>dord(a.d)-dord(b.d));
+  if(!gs.length)return toast('Este lote no tiene cacao para mover.',true);
+  const lbl='display:flex;gap:10px;align-items:center;padding:7px 0;cursor:pointer',cb='width:auto;flex:none;margin:0;min-height:0';
+  const dest=db.lotes.filter(l=>l.id!==id).sort((a,b)=>a.name.localeCompare(b.name));
+  $('dlgBody').innerHTML=`<div style="text-align:left"><b style="font-family:Barlow Condensed,sans-serif;font-size:22px">Mover cacao a otro lote</b>`+
+    `<div class="mut" style="margin:4px 0 8px">Desde <b>${esc(x.l.name)}</b> · en almacén ${fk(x.stock)}</div>`+
+    `<label style="${lbl};font-weight:800;border-bottom:1px solid var(--line)"><input type="checkbox" id="mvAll" style="${cb}" onchange="mvAll()"> Todo el lote</label>`+
+    gs.map(g=>`<label style="${lbl}"><input type="checkbox" class="mvD" value="${g.d}" style="${cb}" onchange="mvSum()"><span><b>${esc(dlabel(g.d))}</b>: ${g.s} sacos, ${fk(g.kg)}</span></label>`).join('')+
+    `<div class="field full" style="margin-top:8px"><label for="mvTo">Pasar a</label><select id="mvTo" onchange="mvSum()"><option value="">Selecciona…</option>${dest.map(l=>`<option value="${l.id}">${esc(l.name)} · ${esc(lcode(l))} (${fk(stockOf(l.id))})</option>`).join('')}<option value="__new">➕ Lote nuevo…</option></select></div>`+
+    `<div class="field full" id="mvNW" hidden><label for="mvNn">Nombre del lote nuevo</label><input id="mvNn" autocomplete="off"></div>`+
+    `<div class="prev" id="mvPrev" style="margin-top:8px">Elige qué secadoras mover.</div><div class="err" id="mvErr"></div></div>`;
+  const b=$('dlgBtns');b.innerHTML='';
+  const cn=document.createElement('button');cn.className='btn';cn.textContent='Cancelar';cn.onclick=()=>closeM('dlg');
+  const ok=document.createElement('button');ok.className='btn primary';ok.textContent='Mover';ok.onclick=()=>runMover(id);ok._mvId=id;
+  b.append(cn,ok);openM('dlg')
+}
+function mvSel(){return [...document.querySelectorAll('.mvD:checked')].map(c=>Number(c.value))}
+function mvAll(){const on=$('mvAll').checked;document.querySelectorAll('.mvD').forEach(c=>c.checked=on);mvSum()}
+function mvSum(){
+  const all=document.querySelectorAll('.mvD'),sel=mvSel();$('mvAll').checked=all.length>0&&sel.length===all.length;
+  $('mvNW').hidden=$('mvTo').value!=='__new';$('mvErr').textContent='';
+  const id=openMoverId();const E=db.entradas.filter(e=>e.loteId===id&&sel.includes(Number(e.dryer))),kg=r2(sum(E,e=>e.kg)),sc=E.reduce((a,e)=>a+e.sacks,0);
+  $('mvPrev').textContent=sel.length?'Se moverán '+sc+' sacos ('+fk(kg)+') de '+sel.length+' secadora'+(sel.length===1?'':'s')+'. En este lote quedan '+fk(r2(stockOf(id)-kg))+'.':'Elige qué secadoras mover.'
+}
+function openMoverId(){const b=$('dlgBtns').lastChild;return b&&b._mvId||''}
+function runMover(id){
+  const x=LI[id];if(!x||!canEdit())return;
+  const sel=mvSel(),E=db.entradas.filter(e=>e.loteId===id&&sel.includes(Number(e.dryer))),err=m=>{$('mvErr').textContent=m};
+  if(!E.length)return err('Elige al menos una secadora.');
+  const to=$('mvTo').value;if(!to)return err('Elige el lote de destino.');
+  const kg=r2(sum(E,e=>e.kg)),sc=E.reduce((a,e)=>a+e.sacks,0);
+  if(r2(x.stock-kg)<-0.005)return err('No se puede: este lote ya tuvo despachos y en almacén solo quedan '+fk(x.stock)+'. Mueve menos o ajusta el despacho.');
+  let dest=to,newLote=null;
+  if(to==='__new'){
+    const nn=$('mvNn').value.trim();if(!nn)return err('Escribe el nombre del lote nuevo.');
+    const ex=db.lotes.find(l=>l.id!==id&&l.name.toLowerCase()===nn.toLowerCase());
+    if(ex)dest=ex.id;else{const d=iso(new Date());dest=nid();newLote={name:nn,created:d,by:myEmail,ts:Date.now(),code:nextCode(d),producto:'Cacao seco'}}
+  }
+  if(dest===id)return err('El destino debe ser otro lote.');
+  const dn=newLote?newLote.name:lname(dest),dl=sel.map(d=>dlabel(d)).join(', ');
+  if(!confirm('¿Mover '+sc+' sacos ('+fk(kg)+') de '+dl+'\ndesde “'+x.l.name+'” hacia “'+dn+'”?'))return;
+  const b=fdb.batch(),now=Date.now();
+  if(newLote)b.set(col('sec_lotes').doc(dest),newLote);
+  E.forEach(e=>b.update(col('sec_entradas').doc(e.id),{loteId:dest,movedFrom:id,loteOrig:e.loteOrig||id,movedAt:now,movedBy:myEmail}));
+  b.commit().catch(fail);
+  logAct('movió '+sc+' sacos ('+fk(kg)+') de '+dl+' del lote “'+x.l.name+'” al lote “'+dn+'”');
+  closeM('dlg');toast('Se movieron '+fk(kg)+' a “'+dn+'”.')
 }
 function renameLote(id){
   const l=db.lotes.find(x=>x.id===id);if(!l)return;
