@@ -45,7 +45,7 @@ main{max-width:980px;margin:0 auto;padding:16px 12px calc(40px + env(safe-area-i
 .row{display:flex;justify-content:center;align-items:flex-end;gap:clamp(12px,4vw,36px)}
 .dry{--d:min(25vw,128px);display:flex;flex-direction:column;align-items:center;gap:5px;width:var(--d);padding:0}
 .dry.small{--d:min(19vw,96px)}
-.disc{position:relative;width:var(--d);height:var(--d);border-radius:50%;background:conic-gradient(var(--leaf) calc(var(--p,0)*1%),var(--sand) 0);display:grid;place-items:center;box-shadow:0 3px 8px #2a141426;transition:transform .12s}
+.disc{position:relative;width:var(--d);height:var(--d);border-radius:50%;background:conic-gradient(var(--leaf) calc(var(--p,0)*1%),var(--sand) 0);display:grid;place-items:center;box-shadow:0 3px 8px #2a141426;transition:transform .16s cubic-bezier(.23,1,.32,1)}
 .dry:active .disc{transform:scale(.95)}
 .hub{width:82%;height:82%;border-radius:50%;background:radial-gradient(circle at 35% 30%,#d9544a,var(--brown) 70%);color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1;box-shadow:inset 0 0 0 3px #ffffff30}
 .hub b{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:calc(var(--d)*.36)}
@@ -131,7 +131,7 @@ body.lock{overflow:hidden}
 button,.btn,.chip-b{min-height:48px}.userbar button{min-height:40px;padding:6px 12px}.rt{min-height:52px}.eye{min-height:36px}
 .datebar button,.calhead button{min-width:48px;min-height:48px}
 .ic{width:1.15em;height:1.15em;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;vertical-align:-3px;margin-right:6px}.ic.n{margin:0}
-main>section{animation:tabin .25s ease}@keyframes tabin{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+main>section{animation:tabin .25s cubic-bezier(.23,1,.32,1)}@keyframes tabin{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
 @media(prefers-reduced-motion:reduce){main>section,.modal.show .sheet{animation:none}}
 #sst::before{content:"";display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:6px;background:#4ade80}#sst[data-s=off]::before{background:#fbbf24}
 .empty{display:flex;flex-direction:column;align-items:center;text-align:center;gap:4px;padding:18px 12px;color:var(--mut)}.empty .ic{width:34px;height:34px;margin:0 0 4px;opacity:.6}.empty b{color:var(--ink);font-size:15px}.empty span{font-size:14px}
@@ -142,9 +142,9 @@ html[data-t=dark]{color-scheme:dark;--card:#2a2423;--btn:#3a3230;--ink:#f2e9e6;-
 html[data-t=dark] .floor{background-color:#1b1615}html[data-t=dark] .cd.sel{background:#24352f}
 html[data-t=dark] input,html[data-t=dark] select{color:var(--ink)}
 /* pulido */
-.btn{min-height:44px}.tabs button{min-height:44px}button:active{transform:scale(.97)}
-.modal.show .sheet{animation:sheetup .25s ease}@keyframes sheetup{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}
-#toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom));transform:translate(-50%,20px);background:#2a1414;color:#fff;padding:12px 18px;border-radius:12px;font-weight:600;font-size:14px;max-width:90vw;opacity:0;pointer-events:none;transition:opacity .25s,transform .25s;z-index:300;box-shadow:0 6px 20px #0005}
+.btn{min-height:44px}.tabs button{min-height:44px}button{touch-action:manipulation;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;transition:transform .16s cubic-bezier(.23,1,.32,1)}button:active{transform:scale(.97)}
+.modal.show .sheet{animation:sheetup .3s cubic-bezier(.23,1,.32,1)}@keyframes sheetup{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}
+#toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom));transform:translate(-50%,20px);background:#2a1414;color:#fff;padding:12px 18px;border-radius:12px;font-weight:600;font-size:14px;max-width:90vw;opacity:0;pointer-events:none;transition:opacity .25s cubic-bezier(.23,1,.32,1),transform .25s cubic-bezier(.23,1,.32,1);z-index:300;box-shadow:0 6px 20px #0005}
 #toast.show{opacity:1;transform:translate(-50%,0)}#toast.err{background:var(--red)}
 .authlogo{width:64px;height:64px;border-radius:50%;background:var(--brown);display:grid;place-items:center;margin:0 auto 10px;box-shadow:0 4px 12px #a31f1f55}
 .authbox h2,.authbox>p{text-align:center}
@@ -358,7 +358,7 @@ html[data-t=dark] .pc.a{color:#f0b429}html[data-t=dark] .pc.g{color:#4ade80}
 #prodBox[open]>.ps .phint{display:none}#prodBox[open]>.ps{margin-bottom:10px}
 .seg{display:flex;gap:4px;padding:3px;background:rgba(120,120,128,.14);border-radius:12px;margin-bottom:12px}.seg button{flex:1;min-height:36px;border-radius:10px;background:none;font-weight:700;color:var(--mut);box-shadow:none}.seg button.on{background:var(--card);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.25)}
 .bars{display:flex;align-items:flex-end;gap:5px;height:200px;padding-top:6px}.bc{flex:1;min-width:0;height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center}
-.bc i{display:block;width:100%;border-radius:6px 6px 2px 2px;background:linear-gradient(180deg,#c0392b,#a31f1f);transition:height .4s ease}.bc:last-child i{background:linear-gradient(180deg,#f0b429,#d98a1c)}
+.bc i{display:block;width:100%;border-radius:6px 6px 2px 2px;background:linear-gradient(180deg,#c0392b,#a31f1f);transition:height .4s cubic-bezier(.23,1,.32,1)}.bc:last-child i{background:linear-gradient(180deg,#f0b429,#d98a1c)}
 .bv{font-size:10px;font-weight:700;margin-bottom:3px;white-space:nowrap}.bl{font-size:10px;color:var(--mut);margin-top:5px;white-space:nowrap}
 #updBar{position:fixed;left:10px;right:10px;top:calc(env(safe-area-inset-top) + 8px);z-index:250;display:flex;justify-content:space-between;align-items:center;gap:10px;padding:8px 8px 8px 16px;border-radius:999px;background:var(--glass);-webkit-backdrop-filter:blur(24px) saturate(180%);backdrop-filter:blur(24px) saturate(180%);border:1px solid var(--glassb);box-shadow:0 10px 30px rgba(0,0,0,.3);font-weight:600;font-size:14px;animation:sheetup .3s ease}
 #updBar button{min-height:40px;padding:0 16px;border-radius:999px}
@@ -438,12 +438,75 @@ body.pubmode>*:not(#pubView){display:none!important}
 body.pubmode #pubView{display:block;max-width:560px;margin:0 auto;padding:14px 14px 40px;min-height:100vh}
 .pubtl{display:grid;grid-template-columns:1fr auto;gap:2px 10px;padding:10px 0;border-bottom:1px solid var(--line);font-size:14px}
 @media print{body.pf>*:not(#printArea){display:none!important}body.pf #printArea{display:block!important}html,body.pf{background:#fff!important;height:auto!important;overflow:visible!important}}
+/* ---- pulido final: tipografía y movimiento reducido ---- */
+h1,h2,h3{text-wrap:balance}
+.stat .v,.lote .big,.fgrid b,.rdisp,.daysum .dn b,.lote .lh b,.ld-kpi b{font-variant-numeric:tabular-nums}
+@media(prefers-reduced-motion:reduce){.sk,#updBar,.bc i{animation:none!important;transition:none!important}}
+
+/* ===== rediseño v1.12: paleta cacao, jerarquía y estados ===== */
+:root{--brown:#5b3420;--bean:#7a4a2e;--leaf:#2f7d5b;--amber:#b5651d;--cocoa:#3b2116;--cream:#fbf7f1;--stone:#8c7f74}
+html[data-t=dark]{--brown:#c98a62;--cocoa:#2a1810}
+body,body *{font-family:'Barlow',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif!important;font-feature-settings:"ss01"}
+.top h1,.sheet h2,.card h2,.authbox h2,#loadMsg h2,.sech,.fsec,.stat .v,.daysum .dn b,.daysum .dt,.lote .big,.hub b,.hub i,.fgrid b,.rdisp,.fbar,.fhead b,.pf-code,.calhead h2,.tabs button,.pfh-b b{font-family:'Barlow Condensed',sans-serif!important;letter-spacing:0!important}
+.top{background:linear-gradient(180deg,#4a2a1a,#3b2116);box-shadow:0 8px 24px rgba(59,33,22,.28);padding-top:calc(10px + env(safe-area-inset-top))}
+.top h1{font-size:30px;font-weight:700;letter-spacing:.005em!important}
+.userbar:has(#uemail:empty){display:none}
+.top-in{padding-bottom:12px}
+body::before{background:#4a2a1a}
+.authbox,.sheet{border-radius:24px}
+#auth{background:radial-gradient(circle at 50% 18%,#7a4a2e,#4a2a1a 60%,#2a1810)}
+#loadMsg{background:radial-gradient(circle at 50% 35%,#8a5636 0,#5b3420 55%,#2a1810 100%)}
+.btn.primary{background:linear-gradient(180deg,#6e4129,#5b3420);box-shadow:0 6px 16px rgba(59,33,22,.28)}
+.btn.leaf{background:linear-gradient(180deg,#3a8f6b,#2f7d5b);box-shadow:0 6px 16px rgba(47,125,91,.25)}
+.btn.red{background:#f3e3dc;color:#8a3a26}
+nav.tabs button.on{background:rgba(91,52,32,.12);color:var(--brown)}
+html[data-t=dark] nav.tabs button.on{color:#e9b99a;background:rgba(233,185,154,.14)}
+nav.tabs button{font-weight:700;letter-spacing:.01em}
+
+/* estados de secadoras: gris = libre (calmo), no rojo */
+.dry .hub{background:radial-gradient(circle at 35% 30%,#a7998c,var(--stone) 70%);color:#fff}
+.dry .disc{background:conic-gradient(var(--leaf) calc(var(--p,0)*1%),#e4ddd3 0);box-shadow:0 1px 2px rgba(59,33,22,.12),0 8px 18px rgba(59,33,22,.10)}
+.dry.st-sec .hub{background:radial-gradient(circle at 35% 30%,#e0a25a,var(--amber) 70%)}
+.dry.st-seco .hub{background:radial-gradient(circle at 35% 30%,#4aa383,var(--leaf) 70%)}
+.dry.air .hub{background:radial-gradient(circle at 35% 30%,#6cb8d8,#2a7fa8 70%)}
+.floor{background-color:var(--cream);background-image:linear-gradient(rgba(59,33,22,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(59,33,22,.035) 1px,transparent 1px);background-size:32px 32px;border-radius:26px}
+.dry .dkg{font-weight:700;color:var(--cocoa)}
+.dry .dkg small{color:var(--amber)}
+
+/* resumen del día: una sola tarjeta con tres cifras */
+.daysum{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;background:#fff;border-radius:20px;padding:14px 14px 12px;box-shadow:0 1px 2px rgba(59,33,22,.06),0 10px 24px rgba(59,33,22,.06);margin-bottom:16px}
+html[data-t=dark] .daysum{background:var(--card)}
+.daysum .dt{grid-column:1/-1;font-size:18px;color:var(--cocoa)}
+.daysum .dn{min-width:0}
+.daysum .dn b{font-size:28px;display:block;line-height:1.05;color:var(--cocoa);overflow-wrap:anywhere}
+.daysum .dn{font-size:13px;color:var(--mut)}
+@media(max-width:360px){.daysum{grid-template-columns:1fr 1fr}.daysum .dn:last-child{grid-column:1/-1}}
+
+/* estados vacíos: tarjeta punteada con mensaje claro */
+.empty{background:transparent;border:1.5px dashed var(--line);border-radius:18px;padding:22px 16px}
+.empty .ic{color:var(--stone);opacity:.9}
+
+/* tarjetas y cifras: menos sombra, más jerarquía */
+.card,.lote,.stat,.cyc{background:#fff}
+html[data-t=dark] .card,html[data-t=dark] .lote,html[data-t=dark] .stat{background:var(--panel)}
+.stat.main{background:linear-gradient(160deg,#6e4129,#4a2a1a);border-color:transparent}
+.lote .big{color:var(--leaf)}
+.chip.a{background:#f6e4cc;color:#7a4a0e}.chip.g{background:#d8ece4;color:#14503f}
+.pc.n{background:rgba(140,127,116,.16);color:#5f544b}
+@media (prefers-reduced-motion:reduce){.dry .disc{transition:none}}
+/* ajustes finos */
+.daysum .dn b{font-size:24px}
+.top-in{padding-bottom:0}.top{padding-bottom:8px}
+:root{--stone:#9a8e83}
+.lote .lh b{font-family:'Barlow',sans-serif!important}
+.ld-wel{font-family:'Barlow',sans-serif!important;font-size:20px;font-weight:600;margin:0;color:#fff;min-height:1.4em;text-align:center}
 </style></head>
 <body class="loading">
 <nav class="tabs">
 <button id="tb-sec" class="on" onclick="setTab('sec')">Secadoras</button>
+<button id="tb-alm" onclick="setTab('alm')">Almacén</button>
 <button id="tb-cal" onclick="setTab('cal')">Calendario</button>
-<button id="tb-res" onclick="setTab('res')">Resumen</button>
+<button id="tb-res" onclick="setTab('res')">Informes</button>
 </nav><div id="toast" role="status" aria-live="polite"></div>
 <div id="dlg" class="modal" onclick="if(event.target===this)closeM('dlg')"><div class="sheet"><div id="dlgBody"></div><div class="ma" id="dlgBtns"></div></div></div>
 <div id="loadMsg" class="show" role="status" aria-live="polite">
@@ -451,15 +514,16 @@ body.pubmode #pubView{display:block;max-width:560px;margin:0 auto;padding:14px 1
 <div class="ld-mid">
 <div class="ld-logo"><div class="ld-core"><svg viewBox="0 0 64 64" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M32 6c-3 0-5 2-5 5" /><path d="M32 8c13 4 21 17 21 28 0 10-8 20-21 20S11 46 11 36C11 25 19 12 32 8z" fill="#ffffff22"/><path d="M32 10c-7 10-7 38 0 46M32 10c7 10 7 38 0 46M20 16c-5 12-4 28 4 38M44 16c5 12 4 28-4 38"/></svg></div></div>
 <h2>Cargando tus datos<span class="ld-dots"><span>.</span><span>.</span><span>.</span></span></h2>
+<p id="ldWelcome" class="ld-wel" aria-live="polite"></p>
 <div class="ld-step"><span>Conectando con tu espacio</span><span>Sincronizando tus lotes</span><span>Preparando tus secadoras</span></div>
 <div class="ld-bar"><i></i></div>
 </div>
 <div class="ld-dev"><small>Aplicación desarrollada por</small><b>Junior Velez</b><em>Telf: 0998611246</em></div>
 </div>
 <div id="auth"><div class="authbox"><div class="authlogo"><svg viewBox="0 0 64 64" width="38" height="38" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M32 8c13 4 21 17 21 28 0 10-8 20-21 20S11 46 11 36C11 25 19 12 32 8z" fill="#ffffff22"/><path d="M32 10c-7 10-7 38 0 46M32 10c7 10 7 38 0 46"/></svg></div><h2>Secadoras de cacao</h2><p id="authmsg">Inicia sesión para ver tus datos.</p>
-<input id="aem" type="email" placeholder="Correo" autocomplete="username">
-<div class="pwrap"><input id="apw" type="password" placeholder="Contraseña (mínimo 6 caracteres)" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()"><button type="button" class="eye" id="eyeBtn" onclick="togglePw()">Ver</button></div>
-<div id="autherr" class="err"></div><div id="authok" style="color:#1c7a4f;font-size:13px;font-weight:600;min-height:0;margin-bottom:6px"></div><button type="button" onclick="doReset()" style="background:none;border:0;color:#2b6cb0;text-decoration:underline;font-size:14px;padding:8px 0;margin-bottom:6px;cursor:pointer">¿Olvidaste tu contraseña?</button>
+<input id="aem" type="email" placeholder="Correo" aria-label="Correo electrónico" autocomplete="username">
+<div class="pwrap"><input id="apw" type="password" placeholder="Contraseña (mínimo 6 caracteres)" aria-label="Contraseña" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()"><button type="button" class="eye" id="eyeBtn" onclick="togglePw()">Ver</button></div>
+<div id="autherr" class="err" role="alert"></div><div id="authok" style="color:#1c7a4f;font-size:13px;font-weight:600;min-height:0;margin-bottom:6px"></div><button type="button" onclick="doReset()" style="background:none;border:0;color:#2b6cb0;text-decoration:underline;font-size:14px;padding:8px 0;margin-bottom:6px;cursor:pointer">¿Olvidaste tu contraseña?</button>
 <div class="row2"><button class="btn primary" id="loginBtn" onclick="doLogin()">Entrar</button><button class="btn" onclick="doRegister()">Crear cuenta</button></div></div></div>
 
 <header class="top"><div class="top-in">
@@ -475,7 +539,17 @@ body.pubmode #pubView{display:block;max-width:560px;margin:0 auto;padding:14px 1
 <div class="datebar"><button onclick="shiftDay(-1)" aria-label="Día anterior">◀</button><input type="date" id="selDate" onchange="pickDate(this.value)"><button onclick="shiftDay(1)" aria-label="Día siguiente">▶</button><button onclick="goToday()">Hoy</button></div>
 <div class="daysum" id="daySum"></div>
 <div class="floor" id="floor"></div>
-<p class="mut" style="margin-top:10px">Toca una secadora para ingresar cacao por secar, anotar temperaturas y registrar los sacos secos. Rojo = libre, ámbar = secando, verde = seco. El anillo verde compara los sacos secos que salieron cada día.</p>
+<p class="mut" style="margin-top:10px">Toca una secadora para ingresar cacao por secar, anotar temperaturas y registrar los sacos secos. Gris = libre, ámbar = secando, azul = fase de aire, verde = seco. El anillo verde compara los sacos secos que salieron cada día.</p>
+<div class="sech" style="margin-top:14px">En las secadoras ahora</div>
+<div class="card" id="procCard"><details id="procBox"><summary class="hs ps"><span class="pt">En las secadoras ahora</span><span id="procSum" class="psum"></span><span class="phint">Despliega para ver más detalles</span></summary><div id="resProc"></div></details></div>
+</section>
+
+<section id="t-alm" hidden>
+<div class="card"><h2>En almacenamiento</h2><div id="resLotes"></div>
+<div class="ma" style="justify-content:flex-start"><button class="btn leaf" onclick="openDisp()">Despachar cacao</button></div>
+<details id="closedBox" style="margin-top:10px"><summary>Lotes ya despachados por completo</summary><div id="resClosed"></div></details></div>
+<div class="card"><h2>Despachos</h2><div id="resDesp"></div></div>
+
 </section>
 
 <section id="t-cal" hidden>
@@ -490,11 +564,7 @@ body.pubmode #pubView{display:block;max-width:560px;margin:0 auto;padding:14px 1
 <section id="t-res" hidden>
 <div class="stats" id="resStats"></div>
 <div class="card" id="prodCard"><details id="prodBox"><summary class="hs ps"><span class="pt">Producción</span><span id="prodSum" class="psum"></span><span class="phint">Despliega para ver los gráficos</span></summary><div class="seg"><button id="pmW" class="on" onclick="setProd('w')">Semanas</button><button id="pmM" onclick="setProd('m')">Meses</button></div><div id="prodChart"></div></details></div>
-<div class="card" id="procCard"><details id="procBox"><summary class="hs ps"><span class="pt">En las secadoras ahora</span><span id="procSum" class="psum"></span><span class="phint">Despliega para ver más detalles</span></summary><div id="resProc"></div></details></div>
-<div class="card"><h2>En almacenamiento</h2><div id="resLotes"></div>
-<div class="ma" style="justify-content:flex-start"><button class="btn leaf" onclick="openDisp()">Despachar cacao</button></div>
-<details id="closedBox" style="margin-top:10px"><summary>Lotes ya despachados por completo</summary><div id="resClosed"></div></details></div>
-<div class="card"><h2>Despachos</h2><div id="resDesp"></div></div>
+
 <div class="card" id="histCard"><details id="histBox"><summary class="hs">Historial de cargas</summary>
 <div class="hf"><select id="hfDry" aria-label="Filtrar por secadora" onchange="setHist('d',this.value)"></select><select id="hfMes" aria-label="Filtrar por mes" onchange="setHist('m',this.value)"></select></div>
 <div id="resCiclos"></div>
@@ -550,7 +620,7 @@ body.pubmode #pubView{display:block;max-width:560px;margin:0 auto;padding:14px 1
 <div class="mut" style="margin-top:4px">Se guarda con la hora del teléfono. Déjalo vacío para anotar solo la hora del volteo.</div>
 <div class="sech">Calificación del cacao</div>
 <div class="rdisp"><span id="rdisp">—</span></div><div class="rate" id="rate"></div>
-<div class="field" style="margin-top:8px"><input id="tn" placeholder="Observación (opcional)" autocomplete="off"></div>
+<div class="field" style="margin-top:8px"><input id="tn" placeholder="Observación (opcional)" aria-label="Observación de la calificación" autocomplete="off"></div>
 <div class="ma" style="justify-content:flex-start"><button class="btn primary" onclick="addCal()">Agregar calificación</button></div>
 <div class="err" id="eErr"></div>
 <div class="mut" id="airHint"></div><div class="ma"><button class="btn red" id="btnDelCiclo" onclick="delCiclo()">Eliminar esta carga</button><button class="btn" id="btnAir" onclick="startAire()">Iniciar fase de aire</button><button class="btn" id="btnAirX" onclick="cancelAire()" hidden>Cancelar fase de aire</button><button class="btn leaf" id="btnDry" onclick="markDry()">Marcar como seco</button></div>
@@ -570,7 +640,7 @@ body.pubmode #pubView{display:block;max-width:560px;margin:0 auto;padding:14px 1
 <div class="field full"><div class="prev" id="fprev"></div></div>
 <div class="field full" id="foW" hidden><label for="fo">Procedencia del cacao</label><div class="chips" id="foChips"></div><input id="fo" placeholder="Elige una arriba o escribe otra" autocomplete="off" oninput="syncChips('fo')"></div>
 <div class="field full"><label for="fl">Destinatario o lote</label><select id="fl" onchange="onLote()"></select>
-<input id="fn" placeholder="Nombre del nuevo destinatario o lote (ej. Exportación lote 50)" style="display:none;margin-top:8px"></div>
+<input id="fn" placeholder="Nombre del nuevo destinatario o lote (ej. Exportación lote 50)" aria-label="Nombre del nuevo destinatario o lote" style="display:none;margin-top:8px"></div>
 </div>
 <div id="fHint" class="mut" style="margin-top:6px"></div>
 <div class="err" id="fErr"></div>
@@ -743,7 +813,7 @@ const IC={menu:'M4 7h16M4 12h16M4 17h16',grid:'M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7
 function ic(n,solo){return '<svg class="ic'+(solo?' n':'')+'" viewBox="0 0 24 24" aria-hidden="true"><path d="'+IC[n]+'"/></svg>'}
 function EMP(i,t,h){return '<div class="empty">'+ic(i,1)+'<b>'+t+'</b><span>'+h+'</span></div>'}
 function decorate(){const P=(sel,n)=>{const b=document.querySelector(sel);if(b)b.insertAdjacentHTML('afterbegin',ic(n))},S=(sel,n)=>{const b=document.querySelector(sel);if(b)b.innerHTML=ic(n,1)};
-S('#btnMenu','menu');P('#tb-sec','grid');P('#tb-cal','cal');P('#tb-res','chart');S('[onclick="shiftDay(-1)"]','l');S('[onclick="shiftDay(1)"]','r');S('[onclick="shiftMonth(-1)"]','l');S('[onclick="shiftMonth(1)"]','r');
+S('#btnMenu','menu');P('#tb-sec','grid');P('#tb-alm','box');P('#tb-cal','cal');P('#tb-res','chart');S('[onclick="shiftDay(-1)"]','l');S('[onclick="shiftDay(1)"]','r');S('[onclick="shiftMonth(-1)"]','l');S('[onclick="shiftMonth(1)"]','r');
 P('#btnShare','share');P('#btnUsers','users');P('#btnVer','mail');P('[onclick="refreshAccess()"]','refresh');P('[onclick="openAbout()"]','info');P('[onclick="doLogout()"]','out')}
 let THEME='auto';try{THEME=localStorage.getItem('theme')||'auto'}catch(e){}
 const mq=window.matchMedia?matchMedia('(prefers-color-scheme: dark)'):null;
@@ -757,7 +827,7 @@ function toggleMenu(e){e.stopPropagation();const p=$('menuPanel'),o=p.hidden;p.h
 document.addEventListener('click',e=>{const p=$('menuPanel');if(p&&!p.hidden&&!p.contains(e.target))closeMenu()});
 document.getElementById('menuPanel').addEventListener('click',e=>{if(e.target.closest('button'))closeMenu()});
 let lastY=0;addEventListener('scroll',()=>{const y=Math.max(0,scrollY);if(Math.abs(y-lastY)<8)return;const n=document.querySelector('nav.tabs');if(n)n.classList.toggle('hide',y>lastY&&y>80);lastY=y},{passive:true});
-const APP_VER='1.11.0';
+const APP_VER='1.12.0';
 let updShown=false;
 async function checkUpdate(){if(updShown||!navigator.onLine)return;try{const r=await fetch(location.pathname+location.search,{cache:'no-store'});if(!r.ok)return;const m=(await r.text()).match(/APP_VER='([^']+)'/);if(m&&m[1]!==APP_VER){updShown=true;const ae=document.activeElement;if(!document.querySelector('.modal.show')&&!(ae&&/INPUT|TEXTAREA|SELECT/.test(ae.tagName))){location.reload();return}const b=document.createElement('div');b.id='updBar';b.innerHTML='<span>Hay una versión nueva de la app</span><button class="btn primary" onclick="location.reload()">Actualizar</button>';document.body.appendChild(b)}}catch(e){}}
 setInterval(checkUpdate,10*60*1000);document.addEventListener('visibilitychange',()=>{if(!document.hidden)checkUpdate()});setTimeout(checkUpdate,8000);let loadT0=0,loadT=null;
@@ -773,8 +843,9 @@ function exportBackup(){const blob=new Blob([JSON.stringify(db,null,1)],{type:'a
 function togglePw(){const i=$('apw'),h=i.type==='password';i.type=h?'text':'password';$('eyeBtn').textContent=h?'Ocultar':'Ver'}
 function busy(on){const b=$('loginBtn');if(b){b.disabled=on;b.textContent=on?'Entrando…':'Entrar'}}
 if('serviceWorker' in navigator&&location.protocol.startsWith('http'))addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
+function welcomeUser(){const el=$('ldWelcome');if(!el)return;const n=NM[myEmail];el.textContent=n?'Bienvenido, '+n:(myEmail?'Bienvenido':'')}
 async function onUser(u){
-  uid=u.uid;myEmail=(u.email||'').toLowerCase();
+  uid=u.uid;myEmail=(u.email||'').toLowerCase();welcomeUser();
   showLoadMsg();busy(false);
   $('uemail').textContent=u.email;$('auth').classList.remove('show');$('apw').value='';
   try{await fdb.collection('perfiles').doc(uid).set({email:myEmail,ult:Date.now()},{merge:true})}catch(e){console.error(e)}
@@ -857,7 +928,7 @@ function startSync(){
       ready[c]=true;if(Object.keys(names).every(k=>ready[k])){netStatus();hideLoadMsg();document.body.classList.remove('loading')};render()
     },e=>{document.body.classList.remove('loading');$('sst').dataset.s='off';$('sst').textContent='Error de sincronización';console.error(e)}))
   })
-  NM={};unsubs.push(col('sec_nombres').onSnapshot(sn=>{NM={};sn.docs.forEach(d=>{const v=d.data();if(v&&v.email&&v.name)NM[v.email.toLowerCase()]=v.name});render()},e=>console.warn('nombres',e)))
+  NM={};unsubs.push(col('sec_nombres').onSnapshot(sn=>{NM={};sn.docs.forEach(d=>{const v=d.data();if(v&&v.email&&v.name)NM[v.email.toLowerCase()]=v.name});welcomeUser();render()},e=>console.warn('nombres',e)))
 }
 function stopSync(){unsubs.forEach(u=>u());unsubs=[]}
 
@@ -895,7 +966,7 @@ function inStock(extraId){return Object.values(LI).filter(x=>x.stock>0.005||x.l.
 const sum=(arr,f)=>r2(arr.reduce((a,x)=>a+f(x),0));
 
 /* ---------- Pestañas y fecha ---------- */
-function setTab(t){tab=t;['histBox','procBox','prodBox'].forEach(i=>{const h=$(i);if(h)h.open=false});['sec','cal','res'].forEach(x=>{$('t-'+x).hidden=x!==t;$('tb-'+x).classList.toggle('on',x===t)});render()}
+function setTab(t){tab=t;['histBox','procBox','prodBox'].forEach(i=>{const h=$(i);if(h)h.open=false});['sec','alm','cal','res'].forEach(x=>{$('t-'+x).hidden=x!==t;$('tb-'+x).classList.toggle('on',x===t);$('tb-'+x).setAttribute('aria-current',x===t?'page':'false')});render()}
 function pickDate(v){if(v){selDate=v;calMonth=v.slice(0,7);render()}}
 function shiftDay(n){const d=parse(selDate);d.setDate(d.getDate()+n);pickDate(iso(d))}
 function goToday(){pickDate(iso(new Date()))}
@@ -914,7 +985,7 @@ function closeM(id,fromPop){
 
 function render(){
   recalc();qrCheck();
-  if(tab==='sec')renderSec();else if(tab==='cal')renderCal();else{renderRes();renderResExtra();renderAct()}
+  if(tab==='sec'){renderSec();renderRes();renderResExtra()}else if(tab==='cal')renderCal();else{renderRes();renderResExtra();renderAct()}
   if($('dryerM').classList.contains('show'))refreshDryerModal()
 }
 
@@ -1609,7 +1680,7 @@ function bindSwipe(modal,sheet){
   modal.addEventListener('touchend',end);modal.addEventListener('touchcancel',end);
   sheet.addEventListener('click',e=>{if(Date.now()<sup){e.stopPropagation();e.preventDefault()}},true)
 }
-document.querySelectorAll('.modal').forEach(m=>{
+document.querySelectorAll('.modal').forEach(m=>{m.setAttribute('role','dialog');m.setAttribute('aria-modal','true');
   m.addEventListener('click',e=>{if(e.target===m&&Date.now()>=0)closeModalById(m.id)});
   const sh=m.querySelector('.sheet');if(sh)bindSwipe(m,sh)
 });
