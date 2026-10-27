@@ -500,6 +500,36 @@ html[data-t=dark] .card,html[data-t=dark] .lote,html[data-t=dark] .stat{backgrou
 :root{--stone:#9a8e83}
 .lote .lh b{font-family:'Barlow',sans-serif!important}
 .ld-wel{font-family:'Barlow',sans-serif!important;font-size:20px;font-weight:600;margin:0;color:#fff;min-height:1.4em;text-align:center}
+#loadMsg h2{font-family:'Barlow',sans-serif!important;font-size:44px;font-weight:600;letter-spacing:-.01em}
+.ld-sub{font-size:20px;margin:6px 0 0;opacity:.95;text-align:center}
+.ld-foot{font-size:15px;opacity:.9;margin-top:auto}
+#loadMsg .ld-mid{justify-content:center;align-items:flex-start;text-align:left;max-width:360px}
+#loadMsg .ld-bar{margin-top:auto}
+.ld-dev{display:none}
+/* ===== diseño para computadora ===== */
+@media(min-width:900px){
+  .top-in,main{max-width:1200px}
+  .top-in{padding:0 4px}
+  nav.tabs{left:50%;right:auto;width:600px;margin-left:-300px;max-width:calc(100% - 20px)}
+  #t-sec{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(320px,1fr);gap:0 22px;align-items:start}
+  #t-sec>.datebar{grid-column:1/-1;grid-row:1}
+  #t-sec>#daySum{grid-column:2;grid-row:2;margin-bottom:14px}
+  #t-sec>#floor{grid-column:1;grid-row:2/span 5;margin-bottom:0}
+  #t-sec>#procCard{grid-column:2;grid-row:3}
+  #t-sec>p.mut{grid-column:2;grid-row:4}
+  #t-sec .dry{--d:min(18vw,132px)}
+  #t-sec .row{gap:clamp(14px,3vw,40px)}
+  #resStats{grid-template-columns:repeat(4,minmax(0,1fr))}
+  #t-alm #resLotes{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+  #t-alm #resLotes .lote{margin:0}
+  #loadMsg .ld-mid{align-items:center;text-align:center;max-width:560px}
+  #loadMsg h2{font-size:56px}
+  #loadMsg .ld-sub{font-size:24px}
+  #loadMsg .ld-bar{max-width:360px}
+  #loadMsg .ld-foot{text-align:center}
+}
+@media(min-width:1280px){#t-sec{grid-template-columns:minmax(0,1.5fr) minmax(360px,1fr)}}
+@media(min-width:1100px){#resStats{grid-template-columns:repeat(5,minmax(0,1fr))}}
 </style></head>
 <body class="loading">
 <nav class="tabs">
@@ -512,10 +542,9 @@ html[data-t=dark] .card,html[data-t=dark] .lote,html[data-t=dark] .stat{backgrou
 <div id="loadMsg" class="show" role="status" aria-live="polite">
 <div class="ld-top"></div>
 <div class="ld-mid">
-<div class="ld-logo"><div class="ld-core"><svg viewBox="0 0 64 64" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M32 6c-3 0-5 2-5 5" /><path d="M32 8c13 4 21 17 21 28 0 10-8 20-21 20S11 46 11 36C11 25 19 12 32 8z" fill="#ffffff22"/><path d="M32 10c-7 10-7 38 0 46M32 10c7 10 7 38 0 46M20 16c-5 12-4 28 4 38M44 16c5 12 4 28-4 38"/></svg></div></div>
-<h2>Cargando tus datos<span class="ld-dots"><span>.</span><span>.</span><span>.</span></span></h2>
-<p id="ldWelcome" class="ld-wel" aria-live="polite"></p>
-<div class="ld-step"><span>Conectando con tu espacio</span><span>Sincronizando tus lotes</span><span>Preparando tus secadoras</span></div>
+<h2 id="ldH" aria-live="polite">Hola</h2>
+<p class="ld-sub" id="ldSub">¡Qué gusto tenerte aquí!</p>
+<div class="ld-foot">Estamos cargando tus datos…</div>
 <div class="ld-bar"><i></i></div>
 </div>
 <div class="ld-dev"><small>Aplicación desarrollada por</small><b>Junior Velez</b><em>Telf: 0998611246</em></div>
@@ -530,7 +559,7 @@ html[data-t=dark] .card,html[data-t=dark] .lote,html[data-t=dark] .stat{backgrou
 <h1>Secadoras de cacao</h1>
 <button id="btnMenu" onclick="toggleMenu(event)" aria-label="Menú" aria-expanded="false"></button>
 <div class="userbar"><span id="uemail"></span><span class="roletag" id="roleTag"></span><span class="st" id="sst"></span><select id="spaceSel" onchange="switchSpace(this.value)" aria-label="Espacio de datos" hidden></select></div>
-<div id="menuPanel" hidden><button id="btnShare" onclick="openShare()" hidden>Compartir</button><button id="btnUsers" onclick="openUsers()" hidden>Usuarios</button><button id="btnVer" onclick="doVerify()" hidden>Verificar correo</button><button onclick="refreshAccess()">Actualizar accesos</button><button onclick="openAbout()">Acerca de</button><button onclick="doLogout()">Cerrar sesión</button></div>
+<div id="menuPanel" hidden><button id="btnShare" onclick="openShare()" hidden>Compartir</button><button id="btnUsers" onclick="openUsers()" hidden>Usuarios</button><button id="btnVer" onclick="doVerify()" hidden>Verificar correo</button><button onclick="refreshAccess()">Actualizar accesos</button><button onclick="setNombre(uid,myEmail)">Mi nombre</button><button onclick="openAbout()">Acerca de</button><button onclick="doLogout()">Cerrar sesión</button></div>
 </div></header>
 <div id="spaceBanner" hidden></div>
 <main>
@@ -540,7 +569,6 @@ html[data-t=dark] .card,html[data-t=dark] .lote,html[data-t=dark] .stat{backgrou
 <div class="daysum" id="daySum"></div>
 <div class="floor" id="floor"></div>
 <p class="mut" style="margin-top:10px">Toca una secadora para ingresar cacao por secar, anotar temperaturas y registrar los sacos secos. Gris = libre, ámbar = secando, azul = fase de aire, verde = seco. El anillo verde compara los sacos secos que salieron cada día.</p>
-<div class="sech" style="margin-top:14px">En las secadoras ahora</div>
 <div class="card" id="procCard"><details id="procBox"><summary class="hs ps"><span class="pt">En las secadoras ahora</span><span id="procSum" class="psum"></span><span class="phint">Despliega para ver más detalles</span></summary><div id="resProc"></div></details></div>
 </section>
 
@@ -762,7 +790,7 @@ const cap=t=>t.charAt(0).toUpperCase()+t.slice(1);
 const fdate=s=>cap(parse(s).toLocaleDateString('es-EC',{weekday:'long',day:'numeric',month:'long',year:'numeric'}));
 const fshort=s=>parse(s).toLocaleDateString('es-EC',{day:'2-digit',month:'short',year:'numeric'});
 
-let db={lotes:[],entradas:[],despachos:[],ciclos:[],eventos:[],log:[]},LI={},uid=null,fdb=null,fauth=null,unsubs=[],ready={};
+let MYNAME='',db={lotes:[],entradas:[],despachos:[],ciclos:[],eventos:[],log:[]},LI={},uid=null,fdb=null,fauth=null,unsubs=[],ready={};
 let tab='sec',selDate=iso(new Date()),calMonth=selDate.slice(0,7);
 let curDryer=null,editEnt=null,formLote='',editDisp=null;
 
@@ -843,12 +871,16 @@ function exportBackup(){const blob=new Blob([JSON.stringify(db,null,1)],{type:'a
 function togglePw(){const i=$('apw'),h=i.type==='password';i.type=h?'text':'password';$('eyeBtn').textContent=h?'Ocultar':'Ver'}
 function busy(on){const b=$('loginBtn');if(b){b.disabled=on;b.textContent=on?'Entrando…':'Entrar'}}
 if('serviceWorker' in navigator&&location.protocol.startsWith('http'))addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
-function welcomeUser(){const el=$('ldWelcome');if(!el)return;const n=NM[myEmail];el.textContent=n?'Bienvenido, '+n:(myEmail?'Bienvenido':'')}
+const LD_MSGS=['¡Qué gusto tenerte aquí!','Qué bueno verte de nuevo','Gracias por tu trabajo de hoy','Un nuevo turno, un gran cacao','Listos para otro día de secado','Tu trabajo hace la diferencia','Cada saco cuenta, gracias'];
+function pickLdMsg(){const el=$('ldSub');if(el)el.textContent=LD_MSGS[Math.floor(Math.random()*LD_MSGS.length)]}
+function cachedName(id){try{return localStorage.getItem('nomb_'+id)||''}catch(e){return ''}}
+function welcomeUser(){const h=$('ldH');if(!h)return;const n=MYNAME||NM[myEmail]||'';h.textContent=n?'Hola '+n:'Hola'}
 async function onUser(u){
-  uid=u.uid;myEmail=(u.email||'').toLowerCase();welcomeUser();
+  uid=u.uid;myEmail=(u.email||'').toLowerCase();MYNAME=cachedName(uid);pickLdMsg();welcomeUser();
   showLoadMsg();busy(false);
   $('uemail').textContent=u.email;$('auth').classList.remove('show');$('apw').value='';
-  try{await fdb.collection('perfiles').doc(uid).set({email:myEmail,ult:Date.now()},{merge:true})}catch(e){console.error(e)}
+  fdb.collection('perfiles').doc(uid).set({email:myEmail,ult:Date.now()},{merge:true}).catch(e=>console.error(e));
+  fdb.collection('perfiles').doc(uid).get().then(pf=>{MYNAME=(pf.exists&&pf.data().nombre)||'';try{MYNAME?localStorage.setItem('nomb_'+uid,MYNAME):localStorage.removeItem('nomb_'+uid)}catch(e){}welcomeUser()}).catch(e=>console.error(e));
   await loadSpaces();pickSpace()
 }
 function doVerify(){
@@ -880,8 +912,8 @@ async function openUsers(){
   $('usList').innerHTML='<div class="shmut">Cargando…</div>';openM('usersM');
   try{
     const ps=await fdb.collection('perfiles').get();
-    window.__users=ps.docs.map(d=>({uid:d.id,email:d.data().email||'',ult:d.data().ult||0})).sort((a,b)=>String(a.email).localeCompare(String(b.email)));
-    $('usList').innerHTML=window.__users.length?window.__users.map(u=>`<div class="shi"><div class="shm"><b>${esc(u.email||u.uid)}</b>${u.uid===uid?' (tú)':''}<div class="shmut">Último acceso: ${u.ult?new Date(u.ult).toLocaleString('es-EC',{hour12:false}):'sin dato'}</div><button class="btn sm" style="margin-top:6px" onclick="setNombre('${esc(u.email)}')">Poner nombre</button></div>${u.uid===uid?'':`<button class="btn small primary" onclick="viewUser('${esc(u.uid)}')">${u.uid===spaceUid?'Viendo':'Ver datos'}</button>`}</div>`).join(''):'<div class="shmut">Todavía no hay otros usuarios.</div>'
+    window.__users=ps.docs.map(d=>({uid:d.id,email:d.data().email||'',ult:d.data().ult||0,nombre:d.data().nombre||''})).sort((a,b)=>String(a.email).localeCompare(String(b.email)));
+    $('usList').innerHTML=window.__users.length?window.__users.map(u=>`<div class="shi"><div class="shm"><b>${esc(u.email||u.uid)}</b>${u.uid===uid?' (tú)':''}<div class="shmut">Último acceso: ${u.ult?new Date(u.ult).toLocaleString('es-EC',{hour12:false}):'sin dato'}</div><button class="btn sm" style="margin-top:6px" onclick="setNombre('${esc(u.uid)}','${esc(u.email)}')">Poner nombre</button></div>${u.uid===uid?'':`<button class="btn small primary" onclick="viewUser('${esc(u.uid)}')">${u.uid===spaceUid?'Viendo':'Ver datos'}</button>`}</div>`).join(''):'<div class="shmut">Todavía no hay otros usuarios.</div>'
   }catch(e){$('usList').innerHTML='<div class="shmut">No se pudo leer la lista: '+esc(e.code||e.message)+'</div>'}
 }
 function addUserManual(){
@@ -1001,7 +1033,19 @@ const fnum=v=>String(v).replace('.',',');
 function evWho(e){return '<div class="who">'+(e.by?'👤 Por <b>'+nm(e.by)+'</b>':'👤 Autor no registrado')+'</div>'}
 let NM={};const openL=new Set();let FULL=false,prodM='w';
 function nm(e){e=e||'';const n=NM[e.toLowerCase()];return esc(n||(PUBGEN?'Personal de planta':e))}
-function setNombre(email){const k=email.toLowerCase(),n=prompt('Nombre que se mostrará en lugar de '+email+' (vacío para quitarlo):',NM[k]||'');if(n===null)return;const id=encodeURIComponent(k),r=n.trim()?col('sec_nombres').doc(id).set({email:k,name:n.trim()}):col('sec_nombres').doc(id).delete();r.then(()=>{toast('Nombre guardado');openUsers()}).catch(fail)}
+function setNombre(target,email){
+  const k=email.toLowerCase(),u=(window.__users||[]).find(x=>x.uid===target),cur=(u&&u.nombre)||NM[k]||'';
+  const n=prompt('Nombre que se mostrará para '+email+' (vacío para quitarlo):',cur);if(n===null)return;
+  const nombre=n.trim();
+  const a=fdb.collection('perfiles').doc(target).set({nombre},{merge:true});
+  const id=encodeURIComponent(k);
+  const b=nombre?col('sec_nombres').doc(id).set({email:k,name:nombre}):col('sec_nombres').doc(id).delete();
+  Promise.all([a,b]).then(()=>{
+    if(nombre)NM[k]=nombre;else delete NM[k];
+    if(target===uid){MYNAME=nombre;try{nombre?localStorage.setItem('nomb_'+uid,nombre):localStorage.removeItem('nomb_'+uid)}catch(e){}welcomeUser()}
+    toast('Nombre guardado');if(isAdm)openUsers();render()
+  }).catch(fail)
+}
 function setProd(m){prodM=m;renderProd()}
 function renderProd(){
   const wk=d=>{const x=new Date(d+'T12:00:00');x.setDate(x.getDate()-((x.getDay()+6)%7));return iso(x)},now=new Date(),B={},keys=[],MS=['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
@@ -1976,6 +2020,6 @@ function initPublic(){
   }catch(e){pubMsg('No se pudo cargar la ficha.')}
 }
 
-applyTheme();decorate();if(PUBF)initPublic();else{initFirebase();render()}
+applyTheme();decorate();pickLdMsg();if(PUBF)initPublic();else{initFirebase();render()}
 </script>
 </body></html>
