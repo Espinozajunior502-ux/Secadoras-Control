@@ -582,6 +582,50 @@ html[data-t=dark] .ld-dry,html[data-t=dark] .ld-kpi div{background:var(--card)}
 html[data-t=dark] .mnu{box-shadow:0 14px 34px rgba(0,0,0,.55)}
 html[data-t=dark] .dry.st-sec .hub{background:radial-gradient(circle at 35% 30%,#e09a50,#a85c18 72%)}
 @media(prefers-reduced-motion:reduce){#toast.show .ic,.mnu{animation:none}.lbar i{transition:none}}
+/* ===== v1.14: hojas de diálogo propias ===== */
+#askM{z-index:80}
+#askM .sheet{max-width:440px;padding:22px 20px calc(20px + env(safe-area-inset-bottom))}
+.aqt{display:block;font-family:'Barlow Condensed',sans-serif!important;font-size:25px;font-weight:700;line-height:1.15}
+.aqb{margin:8px 0 0;color:var(--mut);font-size:15px;line-height:1.45}.aqb b{color:var(--ink);font-weight:600}
+#askBtns{margin-top:18px}#askBtns .btn{flex:1;min-height:50px}
+.btn.danger{background:#c0392b;color:#fff;box-shadow:0 6px 16px rgba(192,57,43,.28)}
+html[data-t=dark] .btn.danger{background:#d9483a}
+#toast .tundo{flex:none;margin-left:6px;padding:6px 12px;min-height:36px;border-radius:999px;background:rgba(255,255,255,.16);color:#fff;font-weight:700;font-size:14px}
+/* ===== v1.14: ventana de secadora por pasos ===== */
+.dsheet{padding-top:14px}
+.dhead{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.dht{flex:1;min-width:0;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.dht h2{margin:0;font-size:26px}.dht .chip{margin:0;font-size:13px;padding:3px 11px}
+.chip.b{background:#d6ebf5;color:#1d5f80}
+.dhead .more>summary,.dclose{min-width:44px;width:44px;min-height:44px;height:44px;padding:0;border-radius:50%;display:inline-flex;align-items:center;justify-content:center}
+.mnu.mdown{bottom:auto;top:calc(100% + 6px)}
+.mnu .mdanger{color:var(--red)}
+.steps{list-style:none;margin:4px 0 14px;padding:0;display:flex;gap:6px}
+.steps li{flex:1;min-width:0;display:flex;flex-direction:column;gap:6px;font-size:12px;font-weight:700;color:var(--mut)}
+.steps li i{display:block;height:5px;border-radius:99px;background:rgba(120,120,128,.2);transition:background .3s}
+.steps li.done i{background:var(--leaf)}.steps li.cur i{background:var(--amber)}
+.steps li.cur{color:var(--ink)}
+.steps li span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dcyc{margin-top:0}.dcyc .dcl{font-size:16px}.dcyc .dcm{color:var(--mut);font-size:14px;margin-top:2px}
+.dcyc .lmeta{margin:10px 0 2px}
+.dmi>summary,.dopt>summary{cursor:pointer;font-weight:700;padding:10px 0;list-style:none;display:flex;justify-content:space-between;align-items:center;font-size:14px;min-height:44px}
+.dmi>summary::-webkit-details-marker,.dopt>summary::-webkit-details-marker{display:none}
+.dmi>summary::after,.dopt>summary::after{content:"";flex:none;width:8px;height:8px;border-right:2.5px solid var(--mut);border-bottom:2.5px solid var(--mut);transform:rotate(45deg);transition:transform .2s;margin:0 4px 0 10px}
+.dmi[open]>summary::after,.dopt[open]>summary::after{transform:rotate(-135deg)}
+.dmi .who,.dmi .mut{margin:2px 0}
+.dopt{margin-top:12px;border-top:1px solid var(--line)}
+#pastBox>summary{font-size:16px}
+.evrow{display:flex;gap:8px;align-items:flex-end}.evrow .field{flex:1}.evrow>.btn{min-height:48px;flex:none;padding:0 20px}
+#evSeg{margin-top:4px}#evSeg button{min-height:44px}
+.dhint{margin-top:12px;padding:10px 12px;border-radius:12px;background:rgba(42,127,168,.10);color:var(--ink);font-size:14px}
+.evi{padding:10px 0}
+.dfoot{position:sticky;bottom:calc(-20px - env(safe-area-inset-bottom));z-index:5;display:flex;gap:8px;margin:16px -18px calc(-20px - env(safe-area-inset-bottom));padding:12px 18px calc(14px + env(safe-area-inset-bottom));background:var(--glass);-webkit-backdrop-filter:blur(20px) saturate(170%);backdrop-filter:blur(20px) saturate(170%);border-top:1px solid var(--line)}
+.dfoot .btn{flex:1;min-height:52px;font-size:16px;display:inline-flex;align-items:center;justify-content:center}
+.dfoot .btn:first-child:not(:only-child){flex:0 0 auto}
+body.ro #dmFoot{display:none!important}
+html[data-t=dark] .chip.b{background:#173a4a;color:#9fd6ef}
+html[data-t=dark] .dhint{background:rgba(108,184,216,.12)}
+body.lock #toast{top:calc(env(safe-area-inset-top) + 12px);bottom:auto;transform:translate(-50%,-20px)}body.lock #toast.show{transform:translate(-50%,0)}
 </style></head>
 <body class="loading">
 <nav class="tabs">
@@ -591,6 +635,7 @@ html[data-t=dark] .dry.st-sec .hub{background:radial-gradient(circle at 35% 30%,
 <button id="tb-res" onclick="setTab('res')">Informes</button>
 </nav><div id="toast" role="status" aria-live="polite"></div>
 <div id="dlg" class="modal" onclick="if(event.target===this)closeM('dlg')"><div class="sheet"><div id="dlgBody"></div><div class="ma" id="dlgBtns"></div></div></div>
+<div id="askM" class="modal"><div class="sheet"><div id="askB"></div><div class="ma" id="askBtns"></div></div></div>
 <div id="loadMsg" class="show" role="status" aria-live="polite">
 <div class="ld-top"></div>
 <div class="ld-mid">
@@ -664,49 +709,39 @@ html[data-t=dark] .dry.st-sec .hub{background:radial-gradient(circle at 35% 30%,
 </main>
 
 <!-- Modal secadora -->
-<div id="dryerM" class="modal"><div class="sheet">
-<h2 id="dmT"></h2><div class="sub" id="dmSub"></div>
+<div id="dryerM" class="modal"><div class="sheet dsheet">
+<div class="dhead"><div class="dht"><h2 id="dmT"></h2><span id="dmChip" class="chip"></span></div><details class="more" id="dmMore"><summary class="btn sm" aria-label="Más opciones"><svg class="ic n" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12a1 1 0 102 0 1 1 0 10-2 0zM11 12a1 1 0 102 0 1 1 0 10-2 0zM17 12a1 1 0 102 0 1 1 0 10-2 0"/></svg></summary><div class="mnu mdown" id="dmMenu"></div></details><button type="button" class="btn sm dclose" onclick="closeM('dryerM')" aria-label="Cerrar"><svg class="ic n" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
+<ol class="steps" id="dmSteps" aria-label="Pasos de la carga"></ol>
+<div class="sub" id="dmSub"></div>
 <div id="blkStatus" hidden></div>
 
 <div id="blkStart" hidden>
-<div class="sech">Ingresar cacao por secar</div>
 <div class="fg">
-<div class="field full"><label for="sd">Fecha y hora de ingreso</label><input type="datetime-local" id="sd"></div>
 <div class="field full"><label for="st">Tipo de cacao</label><div class="chips" id="tipoChips"></div><input id="st" placeholder="Elige uno arriba o escribe otro" autocomplete="off" oninput="syncChips('st')"></div>
 <div class="field full"><label for="so">Procedencia</label><div class="chips" id="origChips"></div><input id="so" placeholder="Elige una arriba o escribe finca, zona o productor" autocomplete="off" oninput="syncChips('so')"></div>
-<div class="field"><label for="sp">Productor <small>(opcional)</small></label><input id="sp" autocomplete="off"></div>
-<div class="field"><label for="sf">Finca <small>(opcional)</small></label><input id="sf" autocomplete="off"></div>
 <div class="field"><label for="sq">Cantidad por secar</label><input id="sq" inputmode="decimal" placeholder="0"></div>
 <div class="field"><label for="su">Unidad</label><select id="su"><option value="kg">Kilogramos</option><option value="qq">Quintales</option><option value="t">Toneladas</option></select></div>
 </div>
 <div class="mut" style="margin-top:6px">1 quintal = 45,36 kg</div>
+<details class="dopt" id="startMore"><summary>Más datos (opcional): fecha, productor y finca</summary><div class="fg">
+<div class="field full"><label for="sd">Fecha y hora de ingreso</label><input type="datetime-local" id="sd"></div>
+<div class="field"><label for="sp">Productor</label><input id="sp" autocomplete="off"></div>
+<div class="field"><label for="sf">Finca</label><input id="sf" autocomplete="off"></div>
+</div></details>
 <div class="err" id="sErr"></div>
-<div class="ma"><button class="btn primary" onclick="startCiclo()">Iniciar secado</button></div>
-<div class="mut">Los sacos secos se podrán registrar cuando marques esta carga como seca.</div>
 </div>
 
 <div id="blkDrying" hidden>
-<div class="sech">Temperatura</div>
-<div class="fg">
-<div class="field"><label for="tt">Temperatura (°C)</label><input id="tt" inputmode="decimal" placeholder="Ej. 62,5" autocomplete="off" onkeydown="if(event.key==='Enter')addTemp()"></div>
-<div class="field"><label>&nbsp;</label><button class="btn primary" onclick="addTemp()">Agregar temperatura</button></div>
-</div>
-<div class="mut" style="margin-top:4px">Se guarda con la hora del teléfono. Ahora: <b id="nowClock"></b></div>
-<div class="sech">Volteo</div>
-<div class="fg">
-<div class="field"><label for="tv">Tiempo de volteo (min)</label><input id="tv" inputmode="decimal" placeholder="Ej. 15" autocomplete="off" onkeydown="if(event.key==='Enter')addVolteo()"></div>
-<div class="field"><label>&nbsp;</label><button class="btn primary" onclick="addVolteo()">Agregar volteo</button></div>
-</div>
-<div class="mut" style="margin-top:4px">Se guarda con la hora del teléfono. Déjalo vacío para anotar solo la hora del volteo.</div>
-<div class="sech">Calificación del cacao</div>
-<div class="rdisp"><span id="rdisp">—</span></div><div class="rate" id="rate"></div>
-<div class="field" style="margin-top:8px"><input id="tn" placeholder="Observación (opcional)" aria-label="Observación de la calificación" autocomplete="off"></div>
-<div class="ma" style="justify-content:flex-start"><button class="btn primary" onclick="addCal()">Agregar calificación</button></div>
+<div class="sech">Anotar</div>
+<div class="seg" id="evSeg" role="tablist"><button type="button" role="tab" data-k="temp" onclick="setEvTab('temp')">Temperatura</button><button type="button" role="tab" data-k="vol" onclick="setEvTab('vol')">Volteo</button><button type="button" role="tab" data-k="cal" onclick="setEvTab('cal')">Calificar</button></div>
+<div class="evp" data-k="temp"><div class="evrow"><div class="field"><label for="tt">Temperatura (°C)</label><input id="tt" inputmode="decimal" placeholder="Ej. 62,5" autocomplete="off" onkeydown="if(event.key==='Enter')addTemp()"></div><button class="btn primary" onclick="addTemp()">Guardar</button></div><div class="mut" style="margin-top:6px">Se guarda con la hora del teléfono. Ahora: <b id="nowClock"></b></div></div>
+<div class="evp" data-k="vol" hidden><div class="evrow"><div class="field"><label for="tv">Tiempo de volteo (min)</label><input id="tv" inputmode="decimal" placeholder="Ej. 15" autocomplete="off" onkeydown="if(event.key==='Enter')addVolteo()"></div><button class="btn primary" onclick="addVolteo()">Guardar</button></div><div class="mut" style="margin-top:6px">Déjalo vacío para anotar solo la hora del volteo.</div></div>
+<div class="evp" data-k="cal" hidden><div class="rdisp"><span id="rdisp">—</span></div><div class="rate" id="rate"></div><div class="field" style="margin-top:8px"><input id="tn" placeholder="Observación (opcional)" aria-label="Observación de la calificación" autocomplete="off"></div><div class="ma" style="justify-content:flex-start"><button class="btn primary" onclick="addCal()">Guardar calificación</button></div></div>
 <div class="err" id="eErr"></div>
-<div class="mut" id="airHint"></div><div class="ma"><button class="btn red" id="btnDelCiclo" onclick="delCiclo()">Eliminar esta carga</button><button class="btn" id="btnAir" onclick="startAire()">Iniciar fase de aire</button><button class="btn" id="btnAirX" onclick="cancelAire()" hidden>Cancelar fase de aire</button><button class="btn leaf" id="btnDry" onclick="markDry()">Marcar como seco</button></div>
+<div class="mut dhint" id="airHint"></div>
 </div>
 
-<div id="evBox" hidden><div class="sech">Temperaturas, volteos y calificaciones</div><div id="evList"></div></div>
+<div id="evBox" hidden><div class="sech" id="evT">Registros</div><div id="evList"></div></div>
 
 <div id="blkBag" hidden>
 <div class="sech" id="dmFormT">Registrar sacos secos que salieron</div>
@@ -728,12 +763,9 @@ html[data-t=dark] .dry.st-sec .hub{background:radial-gradient(circle at 35% 30%,
 </div>
 
 <div class="sech" id="dmListT"></div><div id="dmList"></div>
-
-<div id="blkDone" hidden><div class="ma" style="justify-content:flex-start"><button class="btn" id="btnReopen" onclick="reopenCiclo()">Volver a secando</button><button class="btn leaf" onclick="finishCiclo()">Finalizar descarga y liberar secadora</button></div></div>
-
-<div id="pastBox" hidden><div class="sech">Cargas anteriores de esta secadora</div><div id="pastList"></div></div>
-
-<div class="ma"><button class="btn" onclick="closeM('dryerM')">Cerrar</button></div>
+<div id="blkDone" hidden></div>
+<details id="pastBox" class="dopt" hidden><summary>Cargas anteriores (<span id="pastN"></span>)</summary><div id="pastList"></div></details>
+<div class="dfoot" id="dmFoot" hidden></div>
 </div></div>
 
 
@@ -908,7 +940,7 @@ function toggleMenu(e){e.stopPropagation();const p=$('menuPanel'),o=p.hidden;p.h
 document.addEventListener('click',e=>{const p=$('menuPanel');if(p&&!p.hidden&&!p.contains(e.target))closeMenu()});
 document.getElementById('menuPanel').addEventListener('click',e=>{if(e.target.closest('button'))closeMenu()});
 let lastY=0;addEventListener('scroll',()=>{const y=Math.max(0,scrollY);if(Math.abs(y-lastY)<8)return;const n=document.querySelector('nav.tabs');if(n)n.classList.toggle('hide',y>lastY&&y>80);lastY=y},{passive:true});
-const APP_VER='1.13.0';
+const APP_VER='1.14.0';
 let updShown=false;
 async function checkUpdate(){if(updShown||!navigator.onLine)return;try{const r=await fetch(location.pathname+location.search,{cache:'no-store'});if(!r.ok)return;const m=(await r.text()).match(/APP_VER='([^']+)'/);if(m&&m[1]!==APP_VER){updShown=true;const ae=document.activeElement;if(!document.querySelector('.modal.show')&&!(ae&&/INPUT|TEXTAREA|SELECT/.test(ae.tagName))){location.reload();return}const b=document.createElement('div');b.id='updBar';b.innerHTML='<span>Hay una versión nueva de la app</span><button class="btn primary" onclick="location.reload()">Actualizar</button>';document.body.appendChild(b)}}catch(e){}}
 setInterval(checkUpdate,10*60*1000);document.addEventListener('visibilitychange',()=>{if(!document.hidden)checkUpdate()});setTimeout(checkUpdate,8000);let loadT0=0,loadT=null;
@@ -916,9 +948,35 @@ function showLoadMsg(){const m=$('loadMsg');if(m.classList.contains('show')&&!m.
 loadT0=Date.now();loadT=setTimeout(()=>hideLoadMsg(true),5000);
 function hideLoadMsg(force){const m=$('loadMsg');if(!m.classList.contains('show')||m.classList.contains('out'))return;clearTimeout(loadT);const w=force?0:Math.max(0,2500-(Date.now()-loadT0));loadT=setTimeout(()=>{m.classList.add('out');setTimeout(()=>m.classList.remove('show','out'),250)},w)}
 let toastT=null;
-function toast(msg,err){const t=$('toast');t.innerHTML=ic(err?'alert':'check',1)+'<span>'+esc(msg)+'</span>';t.classList.remove('show');void t.offsetWidth;t.classList.toggle('err',!!err);t.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('show'),4500)}
+function toast(msg,err){const t=$('toast');t.style.pointerEvents='';t.innerHTML=ic(err?'alert':'check',1)+'<span>'+esc(msg)+'</span>';t.classList.remove('show');void t.offsetWidth;t.classList.toggle('err',!!err);t.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('show'),4500)}
 window.alert=m=>{m=String(m);toast(m,/no se pudo|permiso|error|incorrect|no válido/i.test(m))};
-function askConfirm(msg,ok,cb){$('dlgBody').textContent=msg;const b=$('dlgBtns');b.innerHTML='';const c=document.createElement('button');c.className='btn';c.textContent='Cancelar';c.onclick=()=>closeM('dlg');const o=document.createElement('button');o.className='btn primary';o.textContent=ok||'Aceptar';o.onclick=()=>{closeM('dlg');cb()};b.append(c,o);openM('dlg')}
+var ASKFIN=null;
+function ask(o){return new Promise(res=>{
+  let done=false;const fin=v=>{if(done)return;done=true;ASKFIN=null;res(v)};
+  const inp=o.input;
+  $('askB').innerHTML='<b class="aqt">'+o.title+'</b>'+(o.body?'<p class="aqb">'+o.body+'</p>':'')+
+    (inp?'<div class="field" style="margin-top:14px"><label for="askIn">'+esc(inp.label||'')+'</label><input id="askIn" autocomplete="off"'+(inp.mode?' inputmode="'+inp.mode+'"':'')+' placeholder="'+esc(inp.placeholder||'')+'"></div>':'')+
+    '<div class="err" id="askErr"></div>';
+  if(inp)$('askIn').value=inp.value==null?'':String(inp.value);
+  const b=$('askBtns');b.innerHTML='';
+  const c=document.createElement('button');c.type='button';c.className='btn';c.textContent=o.cancel||'Cancelar';c.onclick=()=>{closeM('askM');fin(null)};
+  const k=document.createElement('button');k.type='button';k.className='btn '+(o.danger?'danger':'primary');k.textContent=o.ok||'Aceptar';
+  k.onclick=()=>{
+    if(inp){const v=$('askIn').value,e=o.validate?o.validate(v):'';if(e){$('askErr').textContent=e;try{$('askIn').focus()}catch(x){}return}closeM('askM');fin(v)}
+    else{closeM('askM');fin(true)}};
+  b.append(c,k);ASKFIN=()=>fin(null);openM('askM');
+  if(inp){$('askIn').onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();k.click()}};$('askIn').oninput=()=>{$('askErr').textContent=''};setTimeout(()=>{try{$('askIn').focus();$('askIn').select()}catch(x){}},300)}
+  else setTimeout(()=>{try{(o.danger?c:k).focus({preventScroll:true})}catch(x){}},300)
+})}
+function toastUndo(msg,fn){
+  const t=$('toast');clearTimeout(toastT);t.classList.remove('err','show');
+  t.innerHTML=ic('check',1)+'<span>'+esc(msg)+'</span><button type="button" class="tundo">Deshacer</button>';
+  void t.offsetWidth;t.classList.add('show');t.style.pointerEvents='auto';
+  let used=false;t.querySelector('.tundo').onclick=()=>{if(used)return;used=true;t.classList.remove('show');t.style.pointerEvents='';fn()};
+  toastT=setTimeout(()=>{t.classList.remove('show');t.style.pointerEvents=''},5500)
+}
+function askConfirm(msg,ok,cb){ask({title:esc(msg),ok:ok||'Aceptar'}).then(r=>{if(r)cb()})}
+function _oldAskConfirm(msg,ok,cb){$('dlgBody').textContent=msg;const b=$('dlgBtns');b.innerHTML='';const c=document.createElement('button');c.className='btn';c.textContent='Cancelar';c.onclick=()=>closeM('dlg');const o=document.createElement('button');o.className='btn primary';o.textContent=ok||'Aceptar';o.onclick=()=>{closeM('dlg');cb()};b.append(c,o);openM('dlg')}
 function openAbout(){$('dlgBody').innerHTML='<b style="font-family:Barlow Condensed,sans-serif;font-size:24px">Secadoras de cacao</b><br><small>Versión '+APP_VER+'</small><br><br>Aplicación desarrollada por<br><b>Junior Velez</b><br>Telf: 0998611246';const b=$('dlgBtns');b.innerHTML='';const e=document.createElement('button');e.className='btn';e.textContent='Descargar copia de datos';e.onclick=exportBackup;const c=document.createElement('button');c.className='btn primary';c.textContent='Cerrar';c.onclick=()=>closeM('dlg');const th=document.createElement('button');th.className='btn';th.textContent='Tema: '+{auto:'automático',dark:'oscuro',light:'claro'}[THEME];th.onclick=()=>cycleTheme(th);const fb=document.createElement('button');fb.className='btn';fb.textContent=FULL?'Mostrar solo los últimos 12 meses':'Cargar todo el historial';fb.onclick=()=>{FULL=!FULL;closeM('dlg');startSync();toast(FULL?'Cargando todo el historial…':'Mostrando los últimos 12 meses')};b.append(th,fb,e,c);openM('dlg')}
 function exportBackup(){const blob=new Blob([JSON.stringify(db,null,1)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='copia-secadoras-'+iso(new Date())+'.json';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),2000);toast('Copia descargada')}
 function togglePw(){const i=$('apw'),h=i.type==='password';i.type=h?'text':'password';$('eyeBtn').textContent=h?'Ocultar':'Ver'}
@@ -996,8 +1054,8 @@ function addMember(){
   b.commit().then(()=>{$('shEmail').value=''}).catch(fail)
 }
 function setMemberRole(e,role){const b=fdb.batch();b.update(col('miembros').doc(e),{role});b.update(accDoc(e),{role});b.commit().catch(fail)}
-function delMember(e){
-  if(!confirm('¿Quitar el acceso de '+e+'?'))return;
+async function delMember(e){
+  if(!(await ask({title:'¿Quitar el acceso de '+esc(e)+'?',body:'Dejará de ver y editar este espacio de datos.',ok:'Quitar acceso',danger:true})))return;
   const b=fdb.batch();b.delete(col('miembros').doc(e));b.delete(accDoc(e));b.commit().catch(fail)
 }
 
@@ -1056,16 +1114,17 @@ function pickDate(v){if(v){selDate=v;calMonth=v.slice(0,7);render()}}
 function shiftDay(n){const d=parse(selDate);d.setDate(d.getDate()+n);pickDate(iso(d))}
 function goToday(){pickDate(iso(new Date()))}
 function shiftMonth(n){const [y,m]=calMonth.split('-').map(Number);calMonth=iso(new Date(y,m-1+n,1)).slice(0,7);renderCal()}
-const openStack=[];let skipPop=0;
+const openStack=[];let skipPop=0,backN=0,backT=null;
+function queueBack(){backN++;if(backT)return;backT=setTimeout(()=>{const n=backN;backN=0;backT=null;if(!n)return;skipPop++;try{history.go(-n)}catch(e){skipPop--}},0)}
 function openM(id){
   const m=$(id);if(!m)return;m.classList.add('show');document.body.classList.add('lock');
-  if(!openStack.includes(id)){openStack.push(id);try{history.pushState({sheet:id},'')}catch(e){}}
+  if(!openStack.includes(id)){openStack.push(id);if(backN>0){backN--;try{history.replaceState({sheet:id},'')}catch(e){}}else{try{history.pushState({sheet:id},'')}catch(e){}}}
 }
 function closeM(id,fromPop){
   const m=$(id);if(!m)return;m.classList.remove('show');
   if(!document.querySelector('.modal.show'))document.body.classList.remove('lock');
   const i=openStack.indexOf(id);
-  if(i>=0){openStack.splice(i,1);if(!fromPop){skipPop++;try{history.back()}catch(e){skipPop--}}}
+  if(i>=0){openStack.splice(i,1);if(!fromPop)queueBack()}
 }
 
 var NUMPREV={};
@@ -1099,9 +1158,9 @@ const fnum=v=>String(v).replace('.',',');
 function evWho(e){return '<div class="who">'+(e.by?ic('user')+'Por <b>'+nm(e.by)+'</b>':ic('user')+'Autor no registrado')+'</div>'}
 let NM={};const openL=new Set();let FULL=false,prodM='w';
 function nm(e){e=e||'';const n=NM[e.toLowerCase()];return esc(n||(PUBGEN?'Personal de planta':e))}
-function setNombre(target,email){
+async function setNombre(target,email){
   const k=email.toLowerCase(),u=(window.__users||[]).find(x=>x.uid===target),cur=(u&&u.nombre)||NM[k]||'';
-  const n=prompt('Nombre que se mostrará para '+email+' (vacío para quitarlo):',cur);if(n===null)return;
+  const me=target===uid,n=await ask({title:me?'Tu nombre':'Nombre del usuario',body:me?'Así te saludará la app al entrar y así aparecerás en los registros.':'Se mostrará en lugar de '+esc(email)+'.',input:{label:'Nombre',value:cur,placeholder:'Déjalo vacío para quitarlo'},ok:'Guardar'});if(n===null)return;
   const nombre=n.trim();
   const a=fdb.collection('perfiles').doc(target).set({nombre},{merge:true});
   const id=encodeURIComponent(k);
@@ -1211,7 +1270,8 @@ function openDryer(n,date,editId){
   resetForm();if(editEnt)loadEdit(editEnt);
   $('sd').value=isoLocal(new Date());$('st').value='';$('so').value='';$('sq').value='';$('su').value='kg';$('sErr').textContent='';
   $('tt').value='';$('tv').value='';$('tn').value='';$('eErr').textContent='';pickRate(null);
-  refreshDryerModal();openM('dryerM')
+  evAll=false;dmiOpen=false;setEvTab('temp');$('startMore').open=false;$('dmMore').open=false;
+  refreshDryerModal();openM('dryerM');$('dryerM').querySelector('.sheet').scrollTop=0
 }
 function resetForm(){
   $('fd').value=selDate;$('fs').value='';$('fo').value='';$('fn').value='';$('fErr').textContent='';$('foW').hidden=true;$('fw').value='';$('ftot').value='';$('fx').value='';$('fxu').value='lb';
@@ -1256,20 +1316,41 @@ function fillLote(){
   $('fHint').textContent=list.length?'Solo aparecen los lotes que todavía tienen cacao almacenado.':'No hay cacao almacenado: crea un destinatario o lote nuevo.';
   onLote()
 }
+var dmiOpen=false,evAll=false,evTab='temp';
 function cycleSummary(ac){
-  const ent=cycEntries(ac.id),kgS=sum(ent,e=>e.kg),sacos=ent.reduce((a,e)=>a+e.sacks,0),sec=ac.status==='secando',vt=evsOf(ac.id,'volteo');
-  return `<div class="cyc"><span class="chip ${sec?'a':'g'}">${sec?(ac.airAt?'Fase de aire':'Secando'):'Seco: registrando sacos'}</span><div><b>${esc(ac.tipo||'Sin tipo')}</b> de ${esc(ac.origin||'procedencia sin indicar')}</div><div>${fk(ac.kgHumedo)} por secar (${ft(ac.kgHumedo)}) ${!ac.kgEdited?'<button class="btn sm" onclick="editPeso()">Corregir peso</button>':''} ${!ac.infoEdited?`<button class="btn sm" onclick="editInfo('${ac.id}')">Corregir datos</button>`:''}</div>${ac.kgEdited?`<div class="mut">Peso corregido una vez: antes decía ${fk(ac.kgOrig)}${ac.kgEditBy?' (por '+nm(ac.kgEditBy)+')':''}.</div>`:''}<div class="mut">Ingresó el ${tfmt(ac.startAt)}. ${sec?'Lleva '+dur(Date.now()-ac.startAt)+' secando.':'Secó en '+dur(ac.dryAt-ac.startAt)+'.'}</div>${ac.airAt?`<div class="who">${ic('wind')}Fase de aire desde ${tfmt(ac.airAt)} · ${ac.dryAt?'duró '+dur(ac.dryAt-ac.airAt):'lleva '+dur(Date.now()-ac.airAt)}${ac.airBy?' · iniciada por <b>'+nm(ac.airBy)+'</b>':''}</div>`:''}<div class="who">${ic('user')}${ac.by?'Cargada a secar por <b>'+nm(ac.by)+'</b>':'Cargada a secar: autor no registrado'}</div>${!sec&&ac.dryAt?`<div class="who">${ic('user')}${ac.dryBy?'Marcada como seca por <b>'+nm(ac.dryBy)+'</b>':'Marcada como seca: autor no registrado'} · ${tfmt(ac.dryAt)}</div>`:''}${vt.length?`<div class="mut">${vt.length} volteo${vt.length===1?'':'s'}. Último: ${tfmt(vt[vt.length-1].ts)}.</div>`:''}${ent.length?`<div class="mut">Ya salieron ${sacos} sacos secos (${fk(kgS)}). Rendimiento: ${nf.format(r2(kgS/ac.kgHumedo*100))} % del peso ingresado.</div>`:''}</div>`
+  const ent=cycEntries(ac.id),kgS=sum(ent,e=>e.kg),sacos=ent.reduce((a,e)=>a+e.sacks,0),sec=ac.status==='secando',V=evsOf(ac.id,'volteo'),K=evsOf(ac.id,'cal').map(e=>e.value).filter(v=>v!=null),T=evsOf(ac.id,'temp').map(e=>e.value).filter(v=>v!=null);
+  const f=[];
+  if(T.length)f.push('<span><b>'+fnum(T[T.length-1])+' °C</b> última</span>');
+  if(T.length>1)f.push('<span><b>'+fnum(r2(sum(T,x=>x)/T.length))+' °C</b> prom.</span>');
+  f.push('<span><b>'+V.length+'</b> volteo'+(V.length===1?'':'s')+'</span>');
+  if(K.length)f.push('<span><b>'+fnum(r2(sum(K,x=>x)/K.length))+'</b> calif.</span>');
+  if(ent.length)f.push('<span><b>'+sacos+'</b> sacos · '+fk(kgS)+'</span>');
+  const m=[];
+  m.push('<div class="mut">Ingresó el '+tfmt(ac.startAt)+'.'+(ac.productor||ac.finca?' '+esc([ac.productor,ac.finca].filter(Boolean).join(' · '))+'.':'')+'</div>');
+  if(ac.kgEdited)m.push('<div class="mut">Peso corregido una vez: antes decía '+fk(ac.kgOrig)+(ac.kgEditBy?' (por '+nm(ac.kgEditBy)+')':'')+'.</div>');
+  if(ac.airAt)m.push('<div class="who">'+ic('wind')+'Fase de aire desde '+tfmt(ac.airAt)+' · '+(ac.dryAt?'duró '+dur(ac.dryAt-ac.airAt):'lleva '+dur(Date.now()-ac.airAt))+(ac.airBy?' · iniciada por <b>'+nm(ac.airBy)+'</b>':'')+'</div>');
+  m.push('<div class="who">'+ic('user')+(ac.by?'Cargada por <b>'+nm(ac.by)+'</b>':'Cargada: autor no registrado')+'</div>');
+  if(!sec&&ac.dryAt)m.push('<div class="who">'+ic('user')+(ac.dryBy?'Marcada seca por <b>'+nm(ac.dryBy)+'</b>':'Marcada seca: autor no registrado')+' · '+tfmt(ac.dryAt)+'</div>');
+  if(V.length)m.push('<div class="mut">Último volteo: '+tfmt(V[V.length-1].ts)+'.</div>');
+  if(ent.length)m.push('<div class="mut">Rendimiento: '+nf.format(r2(kgS/ac.kgHumedo*100))+' % del peso ingresado.</div>');
+  return '<div class="cyc dcyc"><div class="dcl"><b>'+esc(ac.tipo||'Sin tipo')+'</b> · '+esc(ac.origin||'procedencia sin indicar')+'</div><div class="dcm">'+fk(ac.kgHumedo)+' por secar · '+(sec?'lleva '+dur(Date.now()-ac.startAt):'secó en '+dur(ac.dryAt-ac.startAt))+'</div><div class="lmeta">'+f.join('')+'</div><details class="dmi" ontoggle="dmiOpen=this.open"'+(dmiOpen?' open':'')+'><summary>Más información</summary>'+m.join('')+'</details></div>'
 }
+function setEvTab(k){evTab=k;document.querySelectorAll('#evSeg button').forEach(b=>{const on=b.dataset.k===k;b.classList.toggle('on',on);b.setAttribute('aria-selected',String(on))});document.querySelectorAll('#blkDrying .evp').forEach(p=>p.hidden=p.dataset.k!==k);$('eErr').textContent=''}
 function renderDmList(ac,state){
   const cyc=state==='seco';
   const l=(cyc?cycEntries(ac.id):db.entradas.filter(e=>e.dryer===curDryer&&e.date===selDate)).sort((a,b)=>a.date.localeCompare(b.date)||a.id.localeCompare(b.id));
   $('dmListT').textContent=cyc?'Sacos secos registrados de esta carga':'Sacos secos registrados el '+fshort(selDate);
   $('dmList').innerHTML=l.length?l.map(e=>`<div class="item"><div><b>${e.sacks} sacos</b>: ${fk(e.kg)} (${ft(e.kg)})${modoTxt(e)}<div class="mut">${cyc?esc(fshort(e.date))+'. ':''}${esc(e.tipo?e.tipo+' de ':'')}${esc(e.origin||'procedencia sin indicar')}</div><div class="mut">Destino: ${esc(lname(e.loteId))}</div>${whoLine(e)}</div><div class="acts"><button class="btn sm" onclick="editEntry('${e.id}')">Editar</button><button class="btn sm red" onclick="delEnt('${e.id}')" aria-label="Eliminar">${ic('trash',1)}</button></div></div>`).join(''):'<div class="mut">'+(cyc?'Todavía no registras sacos de esta carga.':'Esta secadora no tiene registros ese día.')+'</div>'
 }
+const STEPS=['Ingreso','Secando','Aire','Descarga'];
 function refreshDryerModal(){
-  const n=curDryer,ac=activeOf(n),state=ac?ac.status:'libre',mine=db.entradas.filter(e=>e.dryer===n),ym=selDate.slice(0,7);
+  const n=curDryer,ac=activeOf(n),state=ac?ac.status:'libre',air=!!(ac&&state==='secando'&&ac.airAt),mine=db.entradas.filter(e=>e.dryer===n),ym=selDate.slice(0,7),ed=canEdit();
+  const step=state==='libre'?0:state==='secando'?(air?2:1):3;
   $('dmT').textContent=dlabel(n);
-  $('dmSub').textContent='Salida seca acumulada: '+fk(sum(mine,e=>e.kg))+' ('+ft(sum(mine,e=>e.kg))+'). Este mes: '+fk(sum(mine.filter(e=>e.date.startsWith(ym)),e=>e.kg))+'.';
+  const ch=$('dmChip');ch.className='chip '+(state==='libre'?'':state==='seco'?'g':air?'b':'a');ch.textContent=state==='libre'?'Libre':state==='seco'?'Seco':air?'Fase de aire':'Secando';
+  $('dmSteps').innerHTML=STEPS.map((t,k)=>`<li class="${k<step?'done':k===step?'cur':''}"${k===step?' aria-current="step"':''}><i></i><span>${t}</span></li>`).join('');
+  $('dmSub').hidden=!!ac;
+  $('dmSub').textContent='Salida seca acumulada: '+fk(sum(mine,e=>e.kg))+'. Este mes: '+fk(sum(mine.filter(e=>e.date.startsWith(ym)),e=>e.kg))+'.';
   const co=(arr,f)=>{const c={};arr.forEach(x=>{const v=f(x);if(v)c[v]=(c[v]||0)+1});return c};
   const oc=co(db.ciclos.concat(db.entradas),x=>x.origin),tc=co(db.ciclos,x=>x.tipo);
   TIPOS_BASE.forEach(t=>{if(!tc[t])tc[t]=0});
@@ -1277,25 +1358,44 @@ function refreshDryerModal(){
   setChips('tipoChips','st',tl);setChips('origChips','so',ol);setChips('foChips','fo',ol);
   $('blkStatus').hidden=!ac;if(ac)$('blkStatus').innerHTML=cycleSummary(ac);
   $('blkStart').hidden=state!=='libre';
-  $('blkDrying').hidden=state!=='secando';$('btnDelCiclo').hidden=!isAdm;
-  {const a=ac&&state==='secando'?ac.airAt:null;$('btnAir').hidden=!!a;$('btnAirX').hidden=!a;$('btnDry').disabled=!a;$('airHint').textContent=a?'En fase de aire (solo ventilación): ya puedes marcar el cacao como seco.':'Antes de marcar como seco, inicia la fase de aire (solo ventilación) y deja pasar el tiempo necesario.'}
-  const evs=ac?evsOf(ac.id):[];
+  $('blkDrying').hidden=state!=='secando';
+  $('airHint').textContent=air?'En fase de aire (solo ventilación). Cuando el cacao esté listo, márcalo como seco.':'Cuando termine el secado con calor, inicia la fase de aire. Después podrás marcarlo como seco.';
+  const evs=ac?evsOf(ac.id).slice().reverse():[],shown=evAll?evs:evs.slice(0,4);
   $('evBox').hidden=!ac||(!evs.length&&state!=='secando');
-  $('evList').innerHTML=evs.length?evGroups(evs,e=>`<div class="item"><div><b>${hfmt(e.ts)}</b> ${evTxt(e)}<div class="mut">${tfmt(e.ts)}</div>${evWho(e)}</div>${state==='secando'?`<div class="acts"><button class="btn sm red" onclick="delEv('${e.id}')" aria-label="Eliminar">${ic('trash',1)}</button></div>`:''}</div>`):EMP('box','Aún sin registros','Anota la primera temperatura, volteo o calificación de esta carga.');
+  $('evT').textContent=evs.length?'Registros ('+evs.length+')':'Registros';
+  $('evList').innerHTML=evs.length?shown.map(e=>`<div class="item evi"><div><b>${hfmt(e.ts)}</b> ${evTxt(e)}<div class="mut">${tfmt(e.ts)}${e.by?' · '+nm(e.by):''}</div></div>${state==='secando'&&ed?`<div class="acts"><button class="btn sm red" onclick="delEv('${e.id}')" aria-label="Eliminar registro">${ic('trash',1)}</button></div>`:''}</div>`).join('')+(evs.length>4?`<button type="button" class="flink" onclick="evAll=!evAll;refreshDryerModal()">${evAll?'Ver menos':'Ver los '+evs.length+' registros ›'}</button>`:''):EMP('pod','Aún sin registros','Anota la primera temperatura, volteo o calificación de esta carga.');
   $('blkBag').hidden=!(state==='seco'||editEnt);
-  $('blkDone').hidden=state!=='seco';
-  if(ac)$('btnReopen').hidden=cycEntries(ac.id).length>0;
+  $('blkDone').hidden=true;
   renderDmList(ac,state);fillLote();
+  const today=db.entradas.filter(e=>e.dryer===n&&e.date===selDate).length;
+  const hideList=state!=='seco'&&!today;$('dmListT').hidden=hideList;$('dmList').hidden=hideList;
   const past=db.ciclos.filter(c=>Number(c.dryer)===Number(n)&&(!ac||c.id!==ac.id)).sort((a,b)=>b.startAt-a.startAt);
-  $('pastBox').hidden=!past.length;
-  $('pastList').innerHTML=past.slice(0,5).map(c=>{const t=cycStats(c);return `<div class="item"><div><b>${esc(c.tipo||'Sin tipo')}</b> de ${esc(c.origin||'sin procedencia')}<div class="mut">${tfmt(c.startAt)}. ${fk(c.kgHumedo)}${t.ent.length?' → '+fk(t.kgS)+' secos':''}</div></div><div class="acts">${(!ac&&c.status==='finalizada'&&!t.ent.length)?`<button class="btn sm" onclick="reabrirDescarga('${c.id}')">Registrar sacos</button>`:''}<button class="btn sm" onclick="openCiclo('${c.id}')">Ver detalle</button></div></div>`}).join('')+(past.length>5?`<div class="ma" style="justify-content:flex-start"><button class="btn sm" onclick="goHist(${n})">Ver las ${past.length} cargas</button></div>`:'')
+  $('pastBox').hidden=!past.length;$('pastN').textContent=past.length;
+  $('pastList').innerHTML=past.slice(0,5).map(c=>{const t=cycStats(c);return `<div class="item"><div><b>${esc(c.tipo||'Sin tipo')}</b> de ${esc(c.origin||'sin procedencia')}<div class="mut">${tfmt(c.startAt)}. ${fk(c.kgHumedo)}${t.ent.length?' → '+fk(t.kgS)+' secos':''}</div></div><div class="acts">${(!ac&&c.status==='finalizada'&&!t.ent.length)?`<button class="btn sm" onclick="reabrirDescarga('${c.id}')">Registrar sacos</button>`:''}<button class="btn sm" onclick="openCiclo('${c.id}')">Ver detalle</button></div></div>`}).join('')+(past.length>5?`<div class="ma" style="justify-content:flex-start"><button class="btn sm" onclick="goHist(${n})">Ver las ${past.length} cargas</button></div>`:'');
+  /* menú ⋯ */
+  const mi=[];
+  if(ac&&ed&&!ac.kgEdited)mi.push(`<button onclick="editPeso()">${ic('edit')}Corregir peso</button>`);
+  if(ac&&ed&&!ac.infoEdited)mi.push(`<button onclick="editInfo('${ac.id}')">${ic('edit')}Corregir datos de la carga</button>`);
+  if(ac&&ed&&state==='seco'&&!cycEntries(ac.id).length)mi.push(`<button onclick="reopenCiclo()">${ic('l')}Volver a secando</button>`);
+  if(past.length)mi.push(`<button onclick="goHist(${n})">${ic('chart')}Historial de esta secadora</button>`);
+  if(ac&&isAdm)mi.push(`<button class="mdanger" onclick="delCiclo()">${ic('trash')}Eliminar esta carga</button>`);
+  $('dmMenu').innerHTML=mi.join('');$('dmMore').hidden=!mi.length;
+  /* botón del siguiente paso, fijo abajo */
+  let fh='';
+  if(ed&&!editEnt){
+    if(state==='libre')fh=`<button class="btn primary" onclick="startCiclo()">Iniciar secado</button>`;
+    else if(state==='secando'&&!air)fh=`<button class="btn primary" onclick="startAire()">${ic('wind')}Iniciar fase de aire</button>`;
+    else if(state==='secando')fh=`<button class="btn" onclick="cancelAire()">Cancelar aire</button><button class="btn leaf" onclick="markDry()">${ic('check')}Marcar como seco</button>`;
+    else if(state==='seco')fh=`<button class="btn leaf" onclick="finishCiclo()">${ic('check')}Finalizar descarga y liberar</button>`;
+  }
+  $('dmFoot').innerHTML=fh;$('dmFoot').hidden=!fh
 }
 /* --- flujo de la carga --- */
 function startCiclo(){
-  const err=m=>{$('sErr').textContent=m};err('');
+  const err=m=>{$('sErr').textContent=m;if(m)setTimeout(()=>{try{$('sErr').scrollIntoView({block:'center',behavior:'smooth'})}catch(e){}},30)};err('');
   const v=$('sd').value,tipo=$('st').value.trim(),origin=$('so').value.trim(),prod=$('sp').value.trim(),finca=$('sf').value.trim(),q=num($('sq').value),u=$('su').value;
   if(activeOf(curDryer))return err('Esta secadora ya tiene una carga en proceso.');
-  if(!v)return err('Indica la fecha y hora de ingreso.');
+  if(!v){$('startMore').open=true;return err('Indica la fecha y hora de ingreso.')}
   if(!tipo)return err('Indica el tipo de cacao.');
   if(!origin)return err('Indica la procedencia.');
   if(!(q>0))return err('Indica cuánto cacao por secar ingresó.');
@@ -1331,15 +1431,17 @@ function addCal(){
   $('tn').value='';pickRate(null)
 }
 function delEv(id){
-  const e=db.eventos.find(x=>x.id===id);
-  if(confirm('¿Eliminar este registro?')){col('sec_eventos').doc(id).delete().catch(fail);if(e)logAct('eliminó un registro de '+(e.type==='temp'?'temperatura':e.type==='volteo'?'volteo':'calificación')+' en '+dlabel(e.dryer),e.dryer)}
+  const e=db.eventos.find(x=>x.id===id);if(!e)return;
+  const {id:_x,...data}=e,lbl=e.type==='temp'?'temperatura':e.type==='volteo'?'volteo':'calificación',msg={temp:'Temperatura eliminada',volteo:'Volteo eliminado',cal:'Calificación eliminada'}[e.type]||'Registro eliminado';
+  col('sec_eventos').doc(id).delete().catch(fail);logAct('eliminó un registro de '+lbl+' en '+dlabel(e.dryer),e.dryer);
+  toastUndo(msg,()=>{col('sec_eventos').doc(id).set(data).then(()=>toast('Registro restaurado')).catch(fail);logAct('restauró un registro de '+lbl+' en '+dlabel(e.dryer),e.dryer)})
 }
-function editPeso(){
+async function editPeso(){
   const ac=activeOf(curDryer);if(!ac)return;
   if(ac.kgEdited)return toast('El peso ya se corrigió una vez y no se puede cambiar de nuevo.',true);
-  const r=prompt('Corregir el peso por secar (en kg).\nSolo se puede corregir UNA vez. Ahora dice: '+fk(ac.kgHumedo),String(ac.kgHumedo).replace('.',','));if(r===null)return;
+  const r=await ask({title:'Corregir el peso por secar',body:'Ahora dice <b>'+fk(ac.kgHumedo)+'</b>. Esta corrección <b>solo se puede hacer una vez</b>.',input:{label:'Peso correcto (kg)',value:fnum(ac.kgHumedo),mode:'decimal'},ok:'Guardar corrección',validate:v=>{const q=r2(num(v));return !(q>0)?'Escribe un peso válido en kg.':q===ac.kgHumedo?'Es el mismo peso que ya tiene.':''}});if(r===null)return;
   const q=r2(num(r));if(!(q>0))return toast('Escribe un peso válido en kg.',true);
-  if(confirm('Cambiar el peso de '+fk(ac.kgHumedo)+' a '+fk(q)+'.\nEsta corrección solo se permite una vez. ¿Confirmas?')){
+  {
     col('sec_ciclos').doc(ac.id).update({kgHumedo:q,kgEdited:true,kgOrig:ac.kgHumedo,kgEditBy:myEmail,kgEditAt:Date.now()}).catch(fail);
     logAct('corrigió el peso de la carga de '+dlabel(ac.dryer)+' de '+fk(ac.kgHumedo)+' a '+fk(q),ac.dryer)}
 }
@@ -1357,13 +1459,13 @@ function editInfo(id){
   const ok=document.createElement('button');ok.className='btn primary';ok.textContent='Guardar';ok.onclick=()=>saveInfo(id);
   b.append(cn,ok);openM('dlg')
 }
-function saveInfo(id){
+async function saveInfo(id){
   const c=db.ciclos.find(x=>x.id===id);if(!c||c.infoEdited)return;
   const tipo=$('ei_t').value.trim(),origin=$('ei_o').value.trim(),productor=$('ei_p').value.trim(),finca=$('ei_f').value.trim();
   if(!tipo)return $('eiErr').textContent='Indica el tipo de cacao.';
   if(!origin)return $('eiErr').textContent='Indica la procedencia.';
   if(tipo===(c.tipo||'')&&origin===(c.origin||'')&&productor===(c.productor||'')&&finca===(c.finca||''))return $('eiErr').textContent='No hay cambios que guardar.';
-  if(!confirm('Esta corrección solo se permite una vez. ¿Confirmas los cambios?'))return;
+  if(!(await ask({title:'¿Guardar la corrección?',body:'Los datos de esta carga <b>solo se pueden corregir una vez</b>.',ok:'Guardar'})))return;
   const b=fdb.batch();
   b.update(col('sec_ciclos').doc(id),{tipo,origin,productor,finca,infoEdited:true,infoOrig:{tipo:c.tipo||'',origin:c.origin||'',productor:c.productor||'',finca:c.finca||''},infoEditBy:myEmail,infoEditAt:Date.now()});
   cycEntries(id).forEach(e=>b.update(col('sec_entradas').doc(e.id),{tipo,origin,productor,finca}));
@@ -1372,47 +1474,47 @@ function saveInfo(id){
   closeM('dlg');
   if($('cycM').classList.contains('show'))setTimeout(()=>openCiclo(id),400)
 }
-function startAire(){
+async function startAire(){
   const ac=activeOf(curDryer);if(!ac||ac.status!=='secando'||ac.airAt)return;
-  if(confirm('¿Iniciar la fase de aire? Desde ahora se contará el tiempo con solo ventilación.')){col('sec_ciclos').doc(ac.id).update({airAt:Date.now(),airBy:myEmail}).catch(fail);logAct('inició la fase de aire en '+dlabel(ac.dryer),ac.dryer)}
+  if(await ask({title:'¿Iniciar la fase de aire?',body:'Desde ahora se contará el tiempo con solo ventilación.',ok:'Iniciar fase de aire'})){col('sec_ciclos').doc(ac.id).update({airAt:Date.now(),airBy:myEmail}).catch(fail);logAct('inició la fase de aire en '+dlabel(ac.dryer),ac.dryer)}
 }
-function cancelAire(){
+async function cancelAire(){
   const ac=activeOf(curDryer);if(!ac||ac.status!=='secando'||!ac.airAt)return;
-  if(confirm('¿Cancelar la fase de aire y volver al secado normal?')){col('sec_ciclos').doc(ac.id).update({airAt:null,airBy:null}).catch(fail);logAct('canceló la fase de aire en '+dlabel(ac.dryer),ac.dryer)}
+  if(await ask({title:'¿Cancelar la fase de aire?',body:'La carga vuelve al secado normal.',ok:'Cancelar fase de aire',cancel:'Seguir en aire'})){col('sec_ciclos').doc(ac.id).update({airAt:null,airBy:null}).catch(fail);logAct('canceló la fase de aire en '+dlabel(ac.dryer),ac.dryer)}
 }
-function markDry(){
+async function markDry(){
   const ac=activeOf(curDryer);if(!ac||ac.status!=='secando')return;
   if(!ac.airAt)return toast('Primero inicia la fase de aire.',true);
-  if(confirm('¿Marcar este cacao como seco? Se habilitará el registro de sacos secos y ya no podrás agregar temperaturas.')){
+  if(await ask({title:'¿Marcar como seco?',body:'Se habilita el registro de sacos secos y <b>ya no podrás agregar temperaturas</b>.',ok:'Marcar como seco'})){
     col('sec_ciclos').doc(ac.id).update({status:'seco',dryAt:Date.now(),dryBy:myEmail}).catch(fail);
     logAct('marcó como seco el cacao de '+dlabel(ac.dryer),ac.dryer)
   }
 }
-function reopenCiclo(){
+async function reopenCiclo(){
   const ac=activeOf(curDryer);if(!ac||ac.status!=='seco'||cycEntries(ac.id).length)return;
-  if(confirm('¿Volver a marcar la carga como “secando”?')){
+  if(await ask({title:'¿Volver a secando?',body:'La carga regresa al secado y podrás anotar temperaturas otra vez.',ok:'Volver a secando'})){
     col('sec_ciclos').doc(ac.id).update({status:'secando',dryAt:null,dryBy:null}).catch(fail);
     logAct('volvió a marcar como “secando” la carga de '+dlabel(ac.dryer),ac.dryer)
   }
 }
-function finishCiclo(){
+async function finishCiclo(){
   const ac=activeOf(curDryer);if(!ac||ac.status!=='seco')return;
   const n=cycEntries(ac.id).length;
-  if(!confirm(n?'¿Finalizar la descarga? La secadora quedará libre para una nueva carga.':'No registraste sacos secos de esta carga. ¿Finalizar de todos modos?'))return;
+  if(!(await ask(n?{title:'¿Finalizar la descarga?',body:'La secadora quedará libre para una nueva carga.',ok:'Finalizar y liberar'}:{title:'No registraste sacos secos',body:'¿Finalizar la descarga de todos modos? La secadora quedará libre.',ok:'Finalizar de todos modos',danger:true})))return;
   editEnt=null;col('sec_ciclos').doc(ac.id).update({status:'finalizada',endAt:Date.now(),endBy:myEmail}).catch(fail);
   logAct('finalizó la descarga y liberó '+dlabel(ac.dryer),ac.dryer)
 }
-function reabrirDescarga(id){
+async function reabrirDescarga(id){
   const c=db.ciclos.find(x=>x.id===id);if(!c||c.status!=='finalizada')return;
   if(activeOf(c.dryer))return alert('Esta secadora ya tiene otra carga en proceso. Finalízala primero para poder reabrir esta.');
   const n=cycEntries(id).length;
-  if(!confirm('¿Reabrir la descarga de esta carga de '+dlabel(c.dryer)+'?\n\nVolverá a la fase de “registrar sacos secos”'+(n?' (ya tiene '+n+' registro'+(n===1?'':'s')+')':' (todavía no tiene sacos registrados)')+'. Cuando termines, pulsa “Finalizar descarga” otra vez.'))return;
+  if(!(await ask({title:'¿Reabrir la descarga?',body:esc(dlabel(c.dryer))+' vuelve a la fase de registrar sacos secos'+(n?' (ya tiene '+n+' registro'+(n===1?'':'s')+')':' (todavía no tiene sacos registrados)')+'. Cuando termines, pulsa «Finalizar descarga» otra vez.',ok:'Reabrir descarga'})))return;
   col('sec_ciclos').doc(id).update({status:'seco',endAt:null,endBy:null}).catch(fail);
   logAct('reabrió la descarga de la carga de '+(c.tipo||'sin tipo')+' de '+dlabel(c.dryer),c.dryer);
   closeM('cycM');openDryer(c.dryer)
 }
 function delCiclo(){const ac=activeOf(curDryer);if(ac)delCicloId(ac.id)}
-function delCicloId(id){
+async function delCicloId(id){
   if(!isAdm)return alert('Solo el administrador puede eliminar cargas.');
   const c=db.ciclos.find(x=>x.id===id);if(!c)return;
   const evs=evsOf(id),ent=cycEntries(id),porLote={};
@@ -1421,8 +1523,8 @@ function delCicloId(id){
     if(stockOf(lid)-porLote[lid]<-0.005)return alert('No se puede eliminar: parte del cacao de esta carga ya se despachó (lote "'+lname(lid)+'"). Edita o elimina primero esos despachos.')
   }
   const kgS=sum(ent,e=>e.kg);
-  const msg='¿Eliminar esta carga de '+dlabel(c.dryer)+' ('+(c.tipo||'sin tipo')+', '+fk(c.kgHumedo)+')?\n\nTambién se eliminarán '+evs.length+' temperatura(s)/calificación(es)'+(ent.length?' y '+ent.length+' registro(s) de sacos secos ('+fk(kgS)+'), que se descontarán del almacenamiento':'')+'.\n\nNo se puede deshacer.';
-  if(!confirm(msg))return;
+  const msg='<b>'+esc(dlabel(c.dryer)+' · '+(c.tipo||'sin tipo')+' · '+fk(c.kgHumedo))+'</b><br>También se eliminarán '+evs.length+' registro'+(evs.length===1?'':'s')+' de temperatura, volteo o calificación'+(ent.length?' y '+ent.length+' registro'+(ent.length===1?'':'s')+' de sacos secos ('+fk(kgS)+'), que se descontarán del almacenamiento':'')+'. <b>No se puede deshacer.</b>';
+  if(!(await ask({title:'¿Eliminar esta carga?',body:msg,ok:'Eliminar carga',danger:true})))return;
   const b=fdb.batch();
   b.delete(col('sec_ciclos').doc(id));
   evs.forEach(e=>b.delete(col('sec_eventos').doc(e.id)));
@@ -1470,10 +1572,10 @@ function saveEnt(){
   toast(_edit?'Cambios guardados':'Sacos guardados');formLote=loteId;editEnt=null;selDate=date;
   resetForm();render()
 }
-function delEnt(id){
+async function delEnt(id){
   const e=db.entradas.find(x=>x.id===id);if(!e)return;
   if(stockOf(e.loteId)-e.kg<-0.005)return alert('No se puede eliminar: ese cacao ya fue despachado (el lote quedaría en negativo). Edita o elimina primero el despacho.');
-  if(!confirm('¿Eliminar este registro de '+e.sacks+' sacos?'))return;
+  if(!(await ask({title:'¿Eliminar este registro?',body:'<b>'+e.sacks+' sacos · '+fk(e.kg)+'</b>. Se descontarán del lote «'+esc(lname(e.loteId))+'».',ok:'Eliminar',danger:true})))return;
   const b=fdb.batch();b.delete(col('sec_entradas').doc(id));
   const otros=db.entradas.some(x=>x.loteId===e.loteId&&x.id!==id),desp=db.despachos.some(x=>x.loteId===e.loteId);
   if(!otros&&!desp)b.delete(col('sec_lotes').doc(e.loteId));
@@ -1573,7 +1675,7 @@ function mvSum(){
   $('mvPrev').textContent=sel.length?'Se moverán '+sc+' sacos ('+fk(kg)+') de '+sel.length+' secadora'+(sel.length===1?'':'s')+'. En este lote quedan '+fk(r2(stockOf(id)-kg))+'.':'Elige qué secadoras mover.'
 }
 function openMoverId(){const b=$('dlgBtns').lastChild;return b&&b._mvId||''}
-function runMover(id){
+async function runMover(id){
   const x=LI[id];if(!x||!canEdit())return;
   const sel=mvSel(),E=db.entradas.filter(e=>e.loteId===id&&sel.includes(Number(e.dryer))),err=m=>{$('mvErr').textContent=m};
   if(!E.length)return err('Elige al menos una secadora.');
@@ -1588,7 +1690,7 @@ function runMover(id){
   }
   if(dest===id)return err('El destino debe ser otro lote.');
   const dn=newLote?newLote.name:lname(dest),dl=sel.map(d=>dlabel(d)).join(', ');
-  if(!confirm('¿Mover '+sc+' sacos ('+fk(kg)+') de '+dl+'\ndesde “'+x.l.name+'” hacia “'+dn+'”?'))return;
+  if(!(await ask({title:'¿Mover '+sc+' sacos?',body:'<b>'+fk(kg)+'</b> de '+esc(dl)+'.<br>Desde «'+esc(x.l.name)+'» hacia «'+esc(dn)+'».',ok:'Mover'})))return;
   const b=fdb.batch(),now=Date.now();
   if(newLote)b.set(col('sec_lotes').doc(dest),newLote);
   E.forEach(e=>b.update(col('sec_entradas').doc(e.id),{loteId:dest,movedFrom:id,loteOrig:e.loteOrig||id,movedAt:now,movedBy:myEmail}));
@@ -1596,9 +1698,9 @@ function runMover(id){
   logAct('movió '+sc+' sacos ('+fk(kg)+') de '+dl+' del lote “'+x.l.name+'” al lote “'+dn+'”');
   closeM('dlg');toast('Se movieron '+fk(kg)+' a “'+dn+'”.')
 }
-function renameLote(id){
+async function renameLote(id){
   const l=db.lotes.find(x=>x.id===id);if(!l)return;
-  const n=prompt('Nuevo nombre del destinatario o lote:',l.name);
+  const n=await ask({title:'Renombrar lote',body:esc(lcode(l)),input:{label:'Nombre del destinatario o lote',value:l.name},ok:'Guardar',validate:v=>!v.trim()?'Escribe un nombre.':v.trim()===l.name?'Es el mismo nombre.':''});
   if(n&&n.trim()){col('sec_lotes').doc(id).update({name:n.trim(),rev:(l.rev||0)+1,upBy:myEmail,upTs:Date.now()}).catch(fail);logAct('renombró el lote “'+l.name+'” a “'+n.trim()+'”')}
 }
 
@@ -1742,19 +1844,19 @@ function saveDisp(){
   logAct((_ed?'editó un despacho de ':'despachó ')+fk(kg)+' del lote “'+lname(id)+'”'+(data.note?' ('+data.note+')':''));
   toast(_ed?'Despacho actualizado':'Despacho registrado');editDisp=null;closeM('dispM')
 }
-function delDisp(id){
+async function delDisp(id){
   if(!isAdm)return alert('Solo el administrador puede eliminar despachos.');
   const d=db.despachos.find(x=>x.id===id);if(!d)return;
-  if(confirm('¿Eliminar este despacho de '+fk(d.kg)+'? El cacao vuelve al almacenamiento.')){col('sec_despachos').doc(id).delete().catch(fail);logAct('eliminó un despacho de '+fk(d.kg)+' del lote “'+lname(d.loteId)+'”')}
+  if(await ask({title:'¿Eliminar este despacho?',body:'<b>'+fk(d.kg)+'</b> del lote «'+esc(lname(d.loteId))+'». El cacao vuelve al almacenamiento.',ok:'Eliminar despacho',danger:true})){col('sec_despachos').doc(id).delete().catch(fail);logAct('eliminó un despacho de '+fk(d.kg)+' del lote “'+lname(d.loteId)+'”')}
 }
 
 document.addEventListener('focusin',e=>{if(e.target.matches&&e.target.matches('.sheet input,.sheet select'))setTimeout(()=>{try{e.target.scrollIntoView({block:'center',behavior:'smooth'})}catch(x){}},350)});
-document.addEventListener('keydown',e=>{if(e.key==='Escape')['dryerM','dayM','dispM','cycM','metaM','fichaM','shareM','usersM'].forEach(id=>{if($(id).classList.contains('show'))closeModalById(id)})});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){const id=openStack[openStack.length-1];if(id){e.preventDefault();closeModalById(id)}}});
 ['dryerM','dayM','dispM','cycM'].forEach(id=>$(id).addEventListener('click',e=>{if(e.target.id===id)closeM(id)}));
 $('rate').innerHTML=['1','2','3','4','5','6','7','8','9','C','0','⌫'].map(k=>`<button type="button" class="rt" aria-label="${k==='C'?'Borrar todo':k==='⌫'?'Borrar último dígito':k}" onclick="kp('${k}')">${k}</button>`).join('');
 setInterval(()=>{const c=$('nowClock');if(c)c.textContent=new Date().toLocaleTimeString('es-EC',{hour12:false})},1000);
 /* ---- cerrar ventanas: deslizar hacia abajo, tocar fuera y botón atrás ---- */
-function closeModalById(id,fromPop){if(id==='shareM'){if(shareUnsub)shareUnsub();shareUnsub=null}closeM(id,fromPop)}
+function closeModalById(id,fromPop){if(id==='askM'&&ASKFIN){const f=ASKFIN;setTimeout(f,0)}if(id==='shareM'){if(shareUnsub)shareUnsub();shareUnsub=null}closeM(id,fromPop)}
 addEventListener('popstate',()=>{
   if(skipPop>0){skipPop--;return}
   const id=openStack[openStack.length-1];if(id)closeModalById(id,true)
@@ -1832,9 +1934,9 @@ function baseUrl(){
   const here=location.href.split(/[?#]/)[0];
   return (/^https?:\/\//.test(here)&&!/^https?:\/\/(localhost|127\.|0\.0\.0\.0|192\.168\.|10\.)/.test(here))?here:''
 }
-function setAppUrl(){
+async function setAppUrl(){
   const cur=baseUrl()||location.href.split(/[?#]/)[0];
-  const v=prompt('Dirección web donde está publicada la app (es la que abrirá el QR). Ejemplo: https://tudominio.com/secadoras/',cur);if(v===null)return false;
+  const v=await ask({title:'Dirección de la app',body:'Es la dirección que abrirá el QR. Ejemplo: https://tudominio.com/secadoras/',input:{label:'Dirección web',value:cur,mode:'url'},ok:'Guardar',validate:x=>/^https?:\/\/\S+$/i.test(x.trim())?'':'Escribe una dirección completa que empiece con https://'});if(v===null)return false;
   const s=v.trim();if(!/^https?:\/\/\S+$/i.test(s)){alert('Escribe una dirección completa que empiece con https://');return false}
   try{localStorage.setItem('appUrl',s)}catch(e){}
   if(fichaId&&$('fichaM').classList.contains('show'))renderFicha();return true
@@ -1986,7 +2088,7 @@ function runPrint(size){
 }
 addEventListener('afterprint',()=>{document.body.classList.remove('pf');const p=$('printArea');if(p)p.innerHTML='';const s=$('pgStyle');if(s)s.remove()});
 async function printFicha(id){
-  if(!ensureBase())return;if(!LI[id])return;if(!(await ensurePublished(LI[id].l)))return;const x=LI[id];if(!x)return;const l=x.l,I=loteInfo(x),code=lcode(l),u=loteUrl(l);
+  if(!(await ensureBase()))return;if(!LI[id])return;if(!(await ensurePublished(LI[id].l)))return;const x=LI[id];if(!x)return;const l=x.l,I=loteInfo(x),code=lcode(l),u=loteUrl(l);
   const R=(t,v)=>`<p><span>${t}</span><b>${v}</b></p>`;
   const pesoIni=fk(x.ing);
   $('printArea').innerHTML=`<div class="pfc"><div class="pfh">${LOGO('#fff','#a9d97f')}<div class="pfh-b"><b>${esc(PLANTA_NOMBRE)}</b><i>${esc(PLANTA_LEMA)}</i></div><div class="pfh-m">PLANTA DE SECADO<br>FICHA DE IDENTIFICACIÓN DE LOTE</div><div class="pfh-t">TRAZABILIDAD<br>CALIDAD<br>SOSTENIBILIDAD</div></div>
@@ -2004,9 +2106,9 @@ async function printFicha(id){
   logAct('imprimió la ficha del lote “'+l.name+'” ('+code+')');runPrint('210mm 148mm')
 }
 async function printSacos(id){
-  if(!ensureBase())return;if(!LI[id])return;if(!(await ensurePublished(LI[id].l)))return;const x=LI[id];if(!x)return;const l=x.l,code=lcode(l);let n=Math.max(1,Math.round(x.stock/SACO));
-  const r=prompt('¿Cuántas etiquetas de saco imprimir? (una por saco, 10 por hoja A4)',n);if(r===null)return;
-  n=Math.round(Number(r));if(!(n>=1&&n<=500))return alert('Escribe un número entre 1 y 500.');
+  if(!(await ensureBase()))return;if(!LI[id])return;if(!(await ensurePublished(LI[id].l)))return;const x=LI[id];if(!x)return;const l=x.l,code=lcode(l);let n=Math.max(1,Math.round(x.stock/SACO));
+  const r=await ask({title:'Etiquetas de sacos',body:'Una etiqueta por saco, 10 por hoja A4.',input:{label:'Cantidad de etiquetas',value:String(n),mode:'numeric'},ok:'Imprimir',validate:v=>{const k=Math.round(Number(v));return k>=1&&k<=500?'':'Escribe un número entre 1 y 500.'}});if(r===null)return;
+  n=Math.round(Number(r));
   const w=n>99?3:2;let h='<div class="plb">';
   for(let i=1;i<=n;i++){const s='S'+String(i).padStart(w,'0');
     h+=`<div class="pl">${qrSvg(loteUrl(l,s),140)}<div class="pl-t"><small>LOTE</small><b>${esc(code)}</b><div class="pl-s">${esc(s)}</div><span>${esc(l.name)}</span>${l.created?'<span>Formación: '+esc(fshort(l.created))+'</span>':''}</div></div>`}
