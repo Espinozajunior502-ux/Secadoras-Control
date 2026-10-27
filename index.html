@@ -530,6 +530,58 @@ html[data-t=dark] .card,html[data-t=dark] .lote,html[data-t=dark] .stat{backgrou
 }
 @media(min-width:1280px){#t-sec{grid-template-columns:minmax(0,1.5fr) minmax(360px,1fr)}}
 @media(min-width:1100px){#resStats{grid-template-columns:repeat(5,minmax(0,1fr))}}
+/* ===== v1.13: pulido estético ===== */
+/* 2) lotes */
+.lt{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}.ltx{min-width:0}
+.lnm{display:block;font-size:18px;line-height:1.2;margin-top:2px}
+.lmeta{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 10px}
+.lmeta span{font-size:13px;font-weight:600;padding:4px 10px;border-radius:999px;background:rgba(120,120,128,.12);color:var(--ink)}
+.lbar{height:6px;border-radius:99px;background:rgba(120,120,128,.18);overflow:hidden}
+.lbar i{display:block;height:100%;background:var(--leaf);border-radius:99px;transition:width .5s cubic-bezier(.23,1,.32,1)}
+.lsm{font-size:13px;margin-top:6px}
+.lacts{align-items:center}.lacts .more{margin-left:auto}
+.more{position:relative}
+.more>summary{list-style:none;min-width:48px;display:inline-flex;align-items:center;justify-content:center;cursor:pointer}
+.more>summary::-webkit-details-marker{display:none}
+.mnu{position:absolute;right:0;bottom:calc(100% + 6px);z-index:20;min-width:220px;background:var(--panel);border:1px solid var(--line);border-radius:16px;box-shadow:0 14px 34px rgba(31,20,14,.22);padding:6px;display:flex;flex-direction:column;animation:sheetup .18s cubic-bezier(.23,1,.32,1)}
+.mnu button{display:flex;align-items:center;text-align:left;padding:10px 12px;border-radius:10px;min-height:46px;font-weight:600;font-size:15px}
+.mnu button:active{background:var(--btn);transform:none}
+/* 3) secadoras */
+.dry.free .disc{background:conic-gradient(var(--leaf) calc(var(--p,0)*1%),rgba(140,127,116,.14) 0);box-shadow:0 1px 2px rgba(59,33,22,.06)}
+.dry.free .hub{background:var(--card);color:var(--mut);box-shadow:inset 0 0 0 2px rgba(140,127,116,.28)}
+.dry.free .hub b{color:var(--stone)}
+.prog{position:absolute;inset:-7px;border-radius:50%;pointer-events:none;background:conic-gradient(var(--amber) calc(var(--t)*1%),rgba(181,101,29,.16) 0);-webkit-mask:radial-gradient(farthest-side,transparent calc(100% - 5px),#000 calc(100% - 5px));mask:radial-gradient(farthest-side,transparent calc(100% - 5px),#000 calc(100% - 5px))}
+.dry.air .prog{background:conic-gradient(#2a7fa8 calc(var(--t)*1%),rgba(42,127,168,.16) 0)}
+/* 4) iconos en líneas de autor */
+.who .ic,.cyc .ic{width:15px;height:15px;margin-right:5px;vertical-align:-2px;opacity:.8}
+/* 6) estados vacíos */
+.empty .ill{width:76px;height:76px;margin:0 0 6px}
+.ill .ib{fill:rgba(181,101,29,.10)}.ill .ip{fill:rgba(181,101,29,.22);stroke:var(--amber);stroke-width:2}
+.ill .ir{fill:none;stroke:var(--amber);stroke-width:1.6;stroke-linecap:round;opacity:.65}
+.ill .is{fill:none;stroke:var(--leaf);stroke-width:2;stroke-linecap:round}.ill .il{fill:var(--leaf);opacity:.8}
+/* 7) confirmaciones */
+#toast{display:flex;align-items:center;gap:10px;padding:12px 18px 12px 14px}
+#toast .ic{width:22px;height:22px;flex:none;margin:0;color:#4ade80;stroke-width:2.6}
+#toast.err .ic{color:#fff}
+#toast.show .ic{animation:tpop .4s cubic-bezier(.23,1,.32,1)}
+@keyframes tpop{from{transform:scale(.3);opacity:0}}
+/* 8) modo oscuro */
+html[data-t=dark]{--floor:#120e0d;--panel:#211b19;--card:#2c2522;--btn:#3a312d;--line:rgba(255,255,255,.09);--amber:#eaa45a;--leaf:#3c9d74;--red:#f08a7a;--mut:#bcb0aa;--stone:#a39488}
+html[data-t=dark] .card,html[data-t=dark] .stat,html[data-t=dark] .daysum{background:var(--panel);box-shadow:0 0 0 1px rgba(255,255,255,.06),0 10px 24px rgba(0,0,0,.35)}
+html[data-t=dark] .lote,html[data-t=dark] .cyc{background:var(--card);box-shadow:0 0 0 1px rgba(255,255,255,.05)}
+html[data-t=dark] .stat.main{background:linear-gradient(160deg,#6e4129,#3f2417)}
+html[data-t=dark] .floor{background-color:#1a1412;background-image:linear-gradient(rgba(255,255,255,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.03) 1px,transparent 1px)}
+html[data-t=dark] .dry .disc{background:conic-gradient(var(--leaf) calc(var(--p,0)*1%),#3a312d 0);box-shadow:0 8px 18px rgba(0,0,0,.35)}
+html[data-t=dark] .dry.free .hub{background:#2c2522;box-shadow:inset 0 0 0 2px rgba(255,255,255,.12)}
+html[data-t=dark] .dry .dkg,html[data-t=dark] .daysum .dt,html[data-t=dark] .daysum .dn b{color:var(--ink)}
+html[data-t=dark] .btn.red{background:rgba(240,138,122,.16);color:#f5a596}
+html[data-t=dark] .chip.a{background:#4a3215;color:#ffd39a}html[data-t=dark] .chip.g{background:#173f33;color:#a8ecd6}
+html[data-t=dark] .lmeta span{background:rgba(255,255,255,.07)}
+html[data-t=dark] .prev{background:#1f3a31;color:#a8ecd6}
+html[data-t=dark] .ld-dry,html[data-t=dark] .ld-kpi div{background:var(--card)}
+html[data-t=dark] .mnu{box-shadow:0 14px 34px rgba(0,0,0,.55)}
+html[data-t=dark] .dry.st-sec .hub{background:radial-gradient(circle at 35% 30%,#e09a50,#a85c18 72%)}
+@media(prefers-reduced-motion:reduce){#toast.show .ic,.mnu{animation:none}.lbar i{transition:none}}
 </style></head>
 <body class="loading">
 <nav class="tabs">
@@ -568,7 +620,7 @@ html[data-t=dark] .card,html[data-t=dark] .lote,html[data-t=dark] .stat{backgrou
 <div class="datebar"><button onclick="shiftDay(-1)" aria-label="Día anterior">◀</button><input type="date" id="selDate" onchange="pickDate(this.value)"><button onclick="shiftDay(1)" aria-label="Día siguiente">▶</button><button onclick="goToday()">Hoy</button></div>
 <div class="daysum" id="daySum"></div>
 <div class="floor" id="floor"></div>
-<p class="mut" style="margin-top:10px">Toca una secadora para ingresar cacao por secar, anotar temperaturas y registrar los sacos secos. Gris = libre, ámbar = secando, azul = fase de aire, verde = seco. El anillo verde compara los sacos secos que salieron cada día.</p>
+<p class="mut" style="margin-top:10px">Toca una secadora para ingresar cacao por secar, anotar temperaturas y registrar los sacos secos. Claro = libre, ámbar = secando, azul = fase de aire, verde = seco. El borde de color muestra cuánto lleva secando frente al promedio de esa secadora.</p>
 <div class="card" id="procCard"><details id="procBox"><summary class="hs ps"><span class="pt">En las secadoras ahora</span><span id="procSum" class="psum"></span><span class="phint">Despliega para ver más detalles</span></summary><div id="resProc"></div></details></div>
 </section>
 
@@ -837,9 +889,10 @@ function renderAccessUI(){
   $('btnVer').hidden=!u||u.emailVerified;
   document.body.classList.toggle('ro',!canEdit())
 }
-const IC={menu:'M4 7h16M4 12h16M4 17h16',grid:'M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z',cal:'M4 6h16v14H4zM4 10h16M8 3v4M16 3v4',chart:'M5 20V10M12 20V4M19 20v-7',l:'M15 5l-7 7 7 7',r:'M9 5l7 7-7 7',share:'M12 4v11M8 8l4-4 4 4M5 14v6h14v-6',users:'M9 11a3 3 0 100-6 3 3 0 000 6zM3 20c0-3.3 2.7-6 6-6s6 2.7 6 6M17 8a3 3 0 010 6M21 20c0-2.5-1.5-4.5-4-5.5',mail:'M3 6h18v12H3zM3 7l9 7 9-7',refresh:'M20 11a8 8 0 10-2.3 5.7M20 4v7h-7',info:'M12 21a9 9 0 100-18 9 9 0 000 18zM12 11v6M12 7.5v.01',out:'M10 4H5v16h5M15 8l4 4-4 4M19 12H9',box:'M3 8l9-5 9 5v8l-9 5-9-5zM3 8l9 5 9-5M12 13v8'};
+const IC={menu:'M4 7h16M4 12h16M4 17h16',grid:'M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z',cal:'M4 6h16v14H4zM4 10h16M8 3v4M16 3v4',chart:'M5 20V10M12 20V4M19 20v-7',l:'M15 5l-7 7 7 7',r:'M9 5l7 7-7 7',share:'M12 4v11M8 8l4-4 4 4M5 14v6h14v-6',users:'M9 11a3 3 0 100-6 3 3 0 000 6zM3 20c0-3.3 2.7-6 6-6s6 2.7 6 6M17 8a3 3 0 010 6M21 20c0-2.5-1.5-4.5-4-5.5',mail:'M3 6h18v12H3zM3 7l9 7 9-7',refresh:'M20 11a8 8 0 10-2.3 5.7M20 4v7h-7',info:'M12 21a9 9 0 100-18 9 9 0 000 18zM12 11v6M12 7.5v.01',out:'M10 4H5v16h5M15 8l4 4-4 4M19 12H9',box:'M3 8l9-5 9 5v8l-9 5-9-5zM3 8l9 5 9-5M12 13v8',user:'M12 12a4 4 0 100-8 4 4 0 000 8zM4 20c0-4 4-6 8-6s8 2 8 6',wind:'M3 8h11a3 3 0 10-3-3M3 12h16a3 3 0 11-3 3M3 16h8',trash:'M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13',check:'M5 12l5 5 9-10',alert:'M12 9v4M12 17h.01M10.3 3.9L2 18a2 2 0 001.7 3h16.6a2 2 0 001.7-3L13.7 3.9a2 2 0 00-3.4 0z',more:'M5 12a1 1 0 102 0 1 1 0 10-2 0zM11 12a1 1 0 102 0 1 1 0 10-2 0zM17 12a1 1 0 102 0 1 1 0 10-2 0',print:'M7 9V3h10v6M7 18H4v-7h16v7h-3M7 14h10v7H7z',qr:'M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h2v2h-2zM18 18h2v2h-2zM14 18h2v2h-2zM18 14h2v2h-2z',move:'M5 12h14M13 6l6 6-6 6',edit:'M4 20h4L19 9l-4-4L4 16zM14 6l4 4'};
 function ic(n,solo){return '<svg class="ic'+(solo?' n':'')+'" viewBox="0 0 24 24" aria-hidden="true"><path d="'+IC[n]+'"/></svg>'}
-function EMP(i,t,h){return '<div class="empty">'+ic(i,1)+'<b>'+t+'</b><span>'+h+'</span></div>'}
+const ILL='<svg class="ill" viewBox="0 0 80 80" aria-hidden="true"><circle class="ib" cx="40" cy="42" r="34"/><path class="ip" d="M40 14c13 7 20 19 20 30 0 13-9 23-20 26-11-3-20-13-20-26 0-11 7-23 20-30z"/><path class="ir" d="M40 17v50M31 21c-4 10-4 32 2 44M49 21c4 10 4 32-2 44"/><path class="is" d="M40 14c0-4 2-7 6-8"/><path class="il" d="M46 6c5-2 10 0 12 4-5 2-10 1-12-4z"/></svg>';
+function EMP(i,t,h){return '<div class="empty">'+ILL+'<b>'+t+'</b><span>'+h+'</span></div>'}
 function decorate(){const P=(sel,n)=>{const b=document.querySelector(sel);if(b)b.insertAdjacentHTML('afterbegin',ic(n))},S=(sel,n)=>{const b=document.querySelector(sel);if(b)b.innerHTML=ic(n,1)};
 S('#btnMenu','menu');P('#tb-sec','grid');P('#tb-alm','box');P('#tb-cal','cal');P('#tb-res','chart');S('[onclick="shiftDay(-1)"]','l');S('[onclick="shiftDay(1)"]','r');S('[onclick="shiftMonth(-1)"]','l');S('[onclick="shiftMonth(1)"]','r');
 P('#btnShare','share');P('#btnUsers','users');P('#btnVer','mail');P('[onclick="refreshAccess()"]','refresh');P('[onclick="openAbout()"]','info');P('[onclick="doLogout()"]','out')}
@@ -855,7 +908,7 @@ function toggleMenu(e){e.stopPropagation();const p=$('menuPanel'),o=p.hidden;p.h
 document.addEventListener('click',e=>{const p=$('menuPanel');if(p&&!p.hidden&&!p.contains(e.target))closeMenu()});
 document.getElementById('menuPanel').addEventListener('click',e=>{if(e.target.closest('button'))closeMenu()});
 let lastY=0;addEventListener('scroll',()=>{const y=Math.max(0,scrollY);if(Math.abs(y-lastY)<8)return;const n=document.querySelector('nav.tabs');if(n)n.classList.toggle('hide',y>lastY&&y>80);lastY=y},{passive:true});
-const APP_VER='1.12.0';
+const APP_VER='1.13.0';
 let updShown=false;
 async function checkUpdate(){if(updShown||!navigator.onLine)return;try{const r=await fetch(location.pathname+location.search,{cache:'no-store'});if(!r.ok)return;const m=(await r.text()).match(/APP_VER='([^']+)'/);if(m&&m[1]!==APP_VER){updShown=true;const ae=document.activeElement;if(!document.querySelector('.modal.show')&&!(ae&&/INPUT|TEXTAREA|SELECT/.test(ae.tagName))){location.reload();return}const b=document.createElement('div');b.id='updBar';b.innerHTML='<span>Hay una versión nueva de la app</span><button class="btn primary" onclick="location.reload()">Actualizar</button>';document.body.appendChild(b)}}catch(e){}}
 setInterval(checkUpdate,10*60*1000);document.addEventListener('visibilitychange',()=>{if(!document.hidden)checkUpdate()});setTimeout(checkUpdate,8000);let loadT0=0,loadT=null;
@@ -863,7 +916,7 @@ function showLoadMsg(){const m=$('loadMsg');if(m.classList.contains('show')&&!m.
 loadT0=Date.now();loadT=setTimeout(()=>hideLoadMsg(true),5000);
 function hideLoadMsg(force){const m=$('loadMsg');if(!m.classList.contains('show')||m.classList.contains('out'))return;clearTimeout(loadT);const w=force?0:Math.max(0,2500-(Date.now()-loadT0));loadT=setTimeout(()=>{m.classList.add('out');setTimeout(()=>m.classList.remove('show','out'),250)},w)}
 let toastT=null;
-function toast(msg,err){const t=$('toast');t.textContent=msg;t.classList.toggle('err',!!err);t.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('show'),4500)}
+function toast(msg,err){const t=$('toast');t.innerHTML=ic(err?'alert':'check',1)+'<span>'+esc(msg)+'</span>';t.classList.remove('show');void t.offsetWidth;t.classList.toggle('err',!!err);t.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('show'),4500)}
 window.alert=m=>{m=String(m);toast(m,/no se pudo|permiso|error|incorrect|no válido/i.test(m))};
 function askConfirm(msg,ok,cb){$('dlgBody').textContent=msg;const b=$('dlgBtns');b.innerHTML='';const c=document.createElement('button');c.className='btn';c.textContent='Cancelar';c.onclick=()=>closeM('dlg');const o=document.createElement('button');o.className='btn primary';o.textContent=ok||'Aceptar';o.onclick=()=>{closeM('dlg');cb()};b.append(c,o);openM('dlg')}
 function openAbout(){$('dlgBody').innerHTML='<b style="font-family:Barlow Condensed,sans-serif;font-size:24px">Secadoras de cacao</b><br><small>Versión '+APP_VER+'</small><br><br>Aplicación desarrollada por<br><b>Junior Velez</b><br>Telf: 0998611246';const b=$('dlgBtns');b.innerHTML='';const e=document.createElement('button');e.className='btn';e.textContent='Descargar copia de datos';e.onclick=exportBackup;const c=document.createElement('button');c.className='btn primary';c.textContent='Cerrar';c.onclick=()=>closeM('dlg');const th=document.createElement('button');th.className='btn';th.textContent='Tema: '+{auto:'automático',dark:'oscuro',light:'claro'}[THEME];th.onclick=()=>cycleTheme(th);const fb=document.createElement('button');fb.className='btn';fb.textContent=FULL?'Mostrar solo los últimos 12 meses':'Cargar todo el historial';fb.onclick=()=>{FULL=!FULL;closeM('dlg');startSync();toast(FULL?'Cargando todo el historial…':'Mostrando los últimos 12 meses')};b.append(th,fb,e,c);openM('dlg')}
@@ -902,7 +955,7 @@ function openShare(){
   if(shareUnsub)shareUnsub();
   shareUnsub=col('miembros').onSnapshot(sn=>{
     const l=sn.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>String(a.email).localeCompare(String(b.email)));
-    $('shList').innerHTML=l.length?l.map(m=>`<div class="shi"><div class="shm">${esc(m.email)}</div><select aria-label="Permiso" onchange="setMemberRole('${esc(m.id)}',this.value)"><option value="lector"${m.role==='lector'?' selected':''}>Solo lectura</option><option value="editor"${m.role==='editor'?' selected':''}>Editor</option></select><button class="btn small red" onclick="delMember('${esc(m.id)}')" aria-label="Quitar acceso">✕</button></div>`).join(''):'<div class="shmut">Todavía no compartes este espacio con nadie.</div>'
+    $('shList').innerHTML=l.length?l.map(m=>`<div class="shi"><div class="shm">${esc(m.email)}</div><select aria-label="Permiso" onchange="setMemberRole('${esc(m.id)}',this.value)"><option value="lector"${m.role==='lector'?' selected':''}>Solo lectura</option><option value="editor"${m.role==='editor'?' selected':''}>Editor</option></select><button class="btn small red" onclick="delMember('${esc(m.id)}')" aria-label="Quitar acceso">${ic('trash',1)}</button></div>`).join(''):'<div class="shmut">Todavía no compartes este espacio con nadie.</div>'
   },e=>{$('shErr').textContent='No se pudo leer la lista: '+(e.code||e.message)});
   openM('shareM')
 }
@@ -998,7 +1051,7 @@ function inStock(extraId){return Object.values(LI).filter(x=>x.stock>0.005||x.l.
 const sum=(arr,f)=>r2(arr.reduce((a,x)=>a+f(x),0));
 
 /* ---------- Pestañas y fecha ---------- */
-function setTab(t){tab=t;['histBox','procBox','prodBox'].forEach(i=>{const h=$(i);if(h)h.open=false});['sec','alm','cal','res'].forEach(x=>{$('t-'+x).hidden=x!==t;$('tb-'+x).classList.toggle('on',x===t);$('tb-'+x).setAttribute('aria-current',x===t?'page':'false')});render()}
+function setTab(t){tab=t;for(const k in NUMPREV)delete NUMPREV[k];['histBox','procBox','prodBox'].forEach(i=>{const h=$(i);if(h)h.open=false});['sec','alm','cal','res'].forEach(x=>{$('t-'+x).hidden=x!==t;$('tb-'+x).classList.toggle('on',x===t);$('tb-'+x).setAttribute('aria-current',x===t?'page':'false')});render()}
 function pickDate(v){if(v){selDate=v;calMonth=v.slice(0,7);render()}}
 function shiftDay(n){const d=parse(selDate);d.setDate(d.getDate()+n);pickDate(iso(d))}
 function goToday(){pickDate(iso(new Date()))}
@@ -1015,9 +1068,22 @@ function closeM(id,fromPop){
   if(i>=0){openStack.splice(i,1);if(!fromPop){skipPop++;try{history.back()}catch(e){skipPop--}}}
 }
 
+var NUMPREV={};
+function animNums(id){
+  const box=$(id);if(!box)return;
+  const red=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+  box.querySelectorAll('.dn b,.stat .v').forEach((el,i)=>{
+    const m=el.textContent.match(/^(-?[\d.]+(?:,\d+)?)(.*)$/);if(!m)return;
+    const dec=(m[1].split(',')[1]||'').length,to=Number(m[1].replace(/\./g,'').replace(',','.')),k=id+i,from=NUMPREV[k];
+    NUMPREV[k]=to;if(red||from===to||isNaN(to))return;
+    const f0=from==null?0:from,suf=m[2],fmt=new Intl.NumberFormat('es-EC',{minimumFractionDigits:dec,maximumFractionDigits:dec}),t0=performance.now(),D=650;
+    const step=now=>{const q=Math.min(1,(now-t0)/D),e=1-Math.pow(1-q,3);el.textContent=fmt.format(f0+(to-f0)*e)+suf;if(q<1)requestAnimationFrame(step)};
+    requestAnimationFrame(step)})
+}
 function render(){
   recalc();qrCheck();
   if(tab==='sec'){renderSec();renderRes();renderResExtra()}else if(tab==='cal')renderCal();else{renderRes();renderResExtra();renderAct()}
+  animNums('daySum');animNums('resStats');animNums('calStats');
   if($('dryerM').classList.contains('show'))refreshDryerModal()
 }
 
@@ -1030,7 +1096,7 @@ const dur=ms=>{const m=Math.max(0,Math.round(ms/60000)),h=Math.floor(m/60);retur
 const isoLocal=d=>iso(d)+'T'+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
 const num=v=>Number(String(v).replace(',','.'));
 const fnum=v=>String(v).replace('.',',');
-function evWho(e){return '<div class="who">'+(e.by?'👤 Por <b>'+nm(e.by)+'</b>':'👤 Autor no registrado')+'</div>'}
+function evWho(e){return '<div class="who">'+(e.by?ic('user')+'Por <b>'+nm(e.by)+'</b>':ic('user')+'Autor no registrado')+'</div>'}
 let NM={};const openL=new Set();let FULL=false,prodM='w';
 function nm(e){e=e||'';const n=NM[e.toLowerCase()];return esc(n||(PUBGEN?'Personal de planta':e))}
 function setNombre(target,email){
@@ -1118,6 +1184,13 @@ function pickRate(v){rateSel=v;$('rdisp').textContent=v===null?'—':v}
 function kp(k){if(k==='C')return pickRate(null);const c=rateSel===null?'':String(rateSel);if(k==='⌫')return pickRate(c.length>1?Number(c.slice(0,-1)):null);const n=c==='0'?k:c+k;if(n.length>4)return;$('eErr').textContent='';pickRate(Number(n))}
 
 /* ---------- Secadoras ---------- */
+function dryProg(ac){
+  const dd=c=>c.dryAt&&c.startAt?c.dryAt-c.startAt:0;
+  let v=db.ciclos.filter(c=>Number(c.dryer)===Number(ac.dryer)).map(dd).filter(x=>x>36e5);
+  if(!v.length)v=db.ciclos.map(dd).filter(x=>x>36e5);
+  const avg=v.length?v.reduce((a,b)=>a+b,0)/v.length:72*36e5;
+  return Math.max(4,Math.min(100,(Date.now()-ac.startAt)/avg*100))
+}
 function renderSec(){
   $('selDate').value=selDate;
   const de=db.entradas.filter(e=>e.date===selDate),per={};
@@ -1128,7 +1201,7 @@ function renderSec(){
   $('floor').innerHTML=LAYOUT.map(row=>'<div class="row">'+row.map(n=>{
     const p=per[n],pct=p?Math.round(p.s/mx*100):0,sm=SMALL.includes(n),ac=activeOf(n);
     const sec=ac&&ac.status==='secando',word=!ac?'libre':sec?'secando':'seco',lt=sec?evsOf(ac.id,'temp').pop():null;
-    return `<button class="dry${sm?' small':''}${ac?(sec?(ac.airAt?' st-sec air':' st-sec'):' st-seco'):''}" style="--p:${pct}" onclick="openDryer(${n})" aria-label="${dlabel(n)}, ${word}${p?', salieron '+p.s+' sacos':''}"><span class="disc"><span class="hub">${ac?(sec?(ac.airAt?FAN:BLD):SKS):''}<b>${dshort(n)}</b><i>${word}</i></span></span><span class="dkg">${p?nf.format(r2(p.kg))+' kg':''}${lt?`<small>${fnum(lt.value)} °C</small>`:''}</span></button>`
+    return `<button class="dry${sm?' small':''}${ac?(sec?(ac.airAt?' st-sec air':' st-sec'):' st-seco'):' free'}" style="--p:${pct}" onclick="openDryer(${n})" aria-label="${dlabel(n)}, ${word}${p?', salieron '+p.s+' sacos':''}"><span class="disc">${sec?`<span class="prog" style="--t:${dryProg(ac).toFixed(0)}"></span>`:''}<span class="hub">${ac?(sec?(ac.airAt?FAN:BLD):SKS):''}<b>${dshort(n)}</b><i>${word}</i></span></span><span class="dkg">${p?nf.format(r2(p.kg))+' kg':''}${lt?`<small>${fnum(lt.value)} °C</small>`:''}</span></button>`
   }).join('')+'</div>').join('')
 }
 
@@ -1175,8 +1248,8 @@ function onLote(){formLote=$('fl').value;$('fn').style.display=formLote==='__new
 function fillLote(){
   const s=$('fl'),list=inStock(editEnt&&editEnt.loteId);
   let h='';
-  if(list.length)h='<option value="">Selecciona…</option>'+list.map(x=>`<option value="${x.l.id}">${esc(x.l.name)} (${ft(x.stock)} almacenadas)</option>`).join('')+'<option value="__new">➕ Crear nuevo destinatario o lote</option>';
-  else h='<option value="__new">➕ Crear nuevo destinatario o lote</option>';
+  if(list.length)h='<option value="">Selecciona…</option>'+list.map(x=>`<option value="${x.l.id}">${esc(x.l.name)} (${ft(x.stock)} almacenadas)</option>`).join('')+'<option value="__new">+ Crear nuevo destinatario o lote</option>';
+  else h='<option value="__new">+ Crear nuevo destinatario o lote</option>';
   s.innerHTML=h;
   const ok=[...s.options].some(o=>o.value===formLote);
   s.value=ok?formLote:(list.length?'':'__new');
@@ -1185,13 +1258,13 @@ function fillLote(){
 }
 function cycleSummary(ac){
   const ent=cycEntries(ac.id),kgS=sum(ent,e=>e.kg),sacos=ent.reduce((a,e)=>a+e.sacks,0),sec=ac.status==='secando',vt=evsOf(ac.id,'volteo');
-  return `<div class="cyc"><span class="chip ${sec?'a':'g'}">${sec?(ac.airAt?'Fase de aire':'Secando'):'Seco: registrando sacos'}</span><div><b>${esc(ac.tipo||'Sin tipo')}</b> de ${esc(ac.origin||'procedencia sin indicar')}</div><div>${fk(ac.kgHumedo)} por secar (${ft(ac.kgHumedo)}) ${!ac.kgEdited?'<button class="btn sm" onclick="editPeso()">Corregir peso</button>':''} ${!ac.infoEdited?`<button class="btn sm" onclick="editInfo('${ac.id}')">Corregir datos</button>`:''}</div>${ac.kgEdited?`<div class="mut">Peso corregido una vez: antes decía ${fk(ac.kgOrig)}${ac.kgEditBy?' (por '+nm(ac.kgEditBy)+')':''}.</div>`:''}<div class="mut">Ingresó el ${tfmt(ac.startAt)}. ${sec?'Lleva '+dur(Date.now()-ac.startAt)+' secando.':'Secó en '+dur(ac.dryAt-ac.startAt)+'.'}</div>${ac.airAt?`<div class="who">💨 Fase de aire desde ${tfmt(ac.airAt)} · ${ac.dryAt?'duró '+dur(ac.dryAt-ac.airAt):'lleva '+dur(Date.now()-ac.airAt)}${ac.airBy?' · iniciada por <b>'+nm(ac.airBy)+'</b>':''}</div>`:''}<div class="who">👤 ${ac.by?'Cargada a secar por <b>'+nm(ac.by)+'</b>':'Cargada a secar: autor no registrado'}</div>${!sec&&ac.dryAt?`<div class="who">👤 ${ac.dryBy?'Marcada como seca por <b>'+nm(ac.dryBy)+'</b>':'Marcada como seca: autor no registrado'} · ${tfmt(ac.dryAt)}</div>`:''}${vt.length?`<div class="mut">${vt.length} volteo${vt.length===1?'':'s'}. Último: ${tfmt(vt[vt.length-1].ts)}.</div>`:''}${ent.length?`<div class="mut">Ya salieron ${sacos} sacos secos (${fk(kgS)}). Rendimiento: ${nf.format(r2(kgS/ac.kgHumedo*100))} % del peso ingresado.</div>`:''}</div>`
+  return `<div class="cyc"><span class="chip ${sec?'a':'g'}">${sec?(ac.airAt?'Fase de aire':'Secando'):'Seco: registrando sacos'}</span><div><b>${esc(ac.tipo||'Sin tipo')}</b> de ${esc(ac.origin||'procedencia sin indicar')}</div><div>${fk(ac.kgHumedo)} por secar (${ft(ac.kgHumedo)}) ${!ac.kgEdited?'<button class="btn sm" onclick="editPeso()">Corregir peso</button>':''} ${!ac.infoEdited?`<button class="btn sm" onclick="editInfo('${ac.id}')">Corregir datos</button>`:''}</div>${ac.kgEdited?`<div class="mut">Peso corregido una vez: antes decía ${fk(ac.kgOrig)}${ac.kgEditBy?' (por '+nm(ac.kgEditBy)+')':''}.</div>`:''}<div class="mut">Ingresó el ${tfmt(ac.startAt)}. ${sec?'Lleva '+dur(Date.now()-ac.startAt)+' secando.':'Secó en '+dur(ac.dryAt-ac.startAt)+'.'}</div>${ac.airAt?`<div class="who">${ic('wind')}Fase de aire desde ${tfmt(ac.airAt)} · ${ac.dryAt?'duró '+dur(ac.dryAt-ac.airAt):'lleva '+dur(Date.now()-ac.airAt)}${ac.airBy?' · iniciada por <b>'+nm(ac.airBy)+'</b>':''}</div>`:''}<div class="who">${ic('user')}${ac.by?'Cargada a secar por <b>'+nm(ac.by)+'</b>':'Cargada a secar: autor no registrado'}</div>${!sec&&ac.dryAt?`<div class="who">${ic('user')}${ac.dryBy?'Marcada como seca por <b>'+nm(ac.dryBy)+'</b>':'Marcada como seca: autor no registrado'} · ${tfmt(ac.dryAt)}</div>`:''}${vt.length?`<div class="mut">${vt.length} volteo${vt.length===1?'':'s'}. Último: ${tfmt(vt[vt.length-1].ts)}.</div>`:''}${ent.length?`<div class="mut">Ya salieron ${sacos} sacos secos (${fk(kgS)}). Rendimiento: ${nf.format(r2(kgS/ac.kgHumedo*100))} % del peso ingresado.</div>`:''}</div>`
 }
 function renderDmList(ac,state){
   const cyc=state==='seco';
   const l=(cyc?cycEntries(ac.id):db.entradas.filter(e=>e.dryer===curDryer&&e.date===selDate)).sort((a,b)=>a.date.localeCompare(b.date)||a.id.localeCompare(b.id));
   $('dmListT').textContent=cyc?'Sacos secos registrados de esta carga':'Sacos secos registrados el '+fshort(selDate);
-  $('dmList').innerHTML=l.length?l.map(e=>`<div class="item"><div><b>${e.sacks} sacos</b>: ${fk(e.kg)} (${ft(e.kg)})${modoTxt(e)}<div class="mut">${cyc?esc(fshort(e.date))+'. ':''}${esc(e.tipo?e.tipo+' de ':'')}${esc(e.origin||'procedencia sin indicar')}</div><div class="mut">Destino: ${esc(lname(e.loteId))}</div>${whoLine(e)}</div><div class="acts"><button class="btn sm" onclick="editEntry('${e.id}')">Editar</button><button class="btn sm red" onclick="delEnt('${e.id}')" aria-label="Eliminar">✕</button></div></div>`).join(''):'<div class="mut">'+(cyc?'Todavía no registras sacos de esta carga.':'Esta secadora no tiene registros ese día.')+'</div>'
+  $('dmList').innerHTML=l.length?l.map(e=>`<div class="item"><div><b>${e.sacks} sacos</b>: ${fk(e.kg)} (${ft(e.kg)})${modoTxt(e)}<div class="mut">${cyc?esc(fshort(e.date))+'. ':''}${esc(e.tipo?e.tipo+' de ':'')}${esc(e.origin||'procedencia sin indicar')}</div><div class="mut">Destino: ${esc(lname(e.loteId))}</div>${whoLine(e)}</div><div class="acts"><button class="btn sm" onclick="editEntry('${e.id}')">Editar</button><button class="btn sm red" onclick="delEnt('${e.id}')" aria-label="Eliminar">${ic('trash',1)}</button></div></div>`).join(''):'<div class="mut">'+(cyc?'Todavía no registras sacos de esta carga.':'Esta secadora no tiene registros ese día.')+'</div>'
 }
 function refreshDryerModal(){
   const n=curDryer,ac=activeOf(n),state=ac?ac.status:'libre',mine=db.entradas.filter(e=>e.dryer===n),ym=selDate.slice(0,7);
@@ -1208,7 +1281,7 @@ function refreshDryerModal(){
   {const a=ac&&state==='secando'?ac.airAt:null;$('btnAir').hidden=!!a;$('btnAirX').hidden=!a;$('btnDry').disabled=!a;$('airHint').textContent=a?'En fase de aire (solo ventilación): ya puedes marcar el cacao como seco.':'Antes de marcar como seco, inicia la fase de aire (solo ventilación) y deja pasar el tiempo necesario.'}
   const evs=ac?evsOf(ac.id):[];
   $('evBox').hidden=!ac||(!evs.length&&state!=='secando');
-  $('evList').innerHTML=evs.length?evGroups(evs,e=>`<div class="item"><div><b>${hfmt(e.ts)}</b> ${evTxt(e)}<div class="mut">${tfmt(e.ts)}</div>${evWho(e)}</div>${state==='secando'?`<div class="acts"><button class="btn sm red" onclick="delEv('${e.id}')" aria-label="Eliminar">✕</button></div>`:''}</div>`):EMP('box','Aún sin registros','Anota la primera temperatura, volteo o calificación de esta carga.');
+  $('evList').innerHTML=evs.length?evGroups(evs,e=>`<div class="item"><div><b>${hfmt(e.ts)}</b> ${evTxt(e)}<div class="mut">${tfmt(e.ts)}</div>${evWho(e)}</div>${state==='secando'?`<div class="acts"><button class="btn sm red" onclick="delEv('${e.id}')" aria-label="Eliminar">${ic('trash',1)}</button></div>`:''}</div>`):EMP('box','Aún sin registros','Anota la primera temperatura, volteo o calificación de esta carga.');
   $('blkBag').hidden=!(state==='seco'||editEnt);
   $('blkDone').hidden=state!=='seco';
   if(ac)$('btnReopen').hidden=cycEntries(ac.id).length>0;
@@ -1229,7 +1302,7 @@ function startCiclo(){
   const kg=r2(u==='t'?q*1000:u==='qq'?q*UQQ:q),d=new Date(v);
   col('sec_ciclos').doc(nid()).set({dryer:curDryer,startAt:d.getTime(),startDate:iso(d),tipo,origin,productor:prod,finca,kgHumedo:kg,status:'secando',dryAt:null,endAt:null,by:myEmail}).catch(fail);
   logAct('inició una carga de '+tipo+' ('+fk(kg)+') en '+dlabel(curDryer),curDryer);
-  $('sq').value='';$('sp').value='';$('sf').value=''
+  $('sq').value='';$('sp').value='';$('sf').value='';toast('Carga iniciada')
 }
 function addTemp(){
   const ac=activeOf(curDryer);if(!ac||ac.status!=='secando')return;
@@ -1237,7 +1310,7 @@ function addTemp(){
   if(!raw||isNaN(t)||t<0||t>200)return $('eErr').textContent='Ingresa una temperatura válida en °C (de 0 a 200).';
   $('eErr').textContent='';
   col('sec_eventos').doc(nid()).set({cycleId:ac.id,dryer:ac.dryer,ts:Date.now(),type:'temp',value:t,by:myEmail}).catch(fail);
-  logAct('registró '+fnum(t)+' °C en '+dlabel(ac.dryer),ac.dryer);
+  logAct('registró '+fnum(t)+' °C en '+dlabel(ac.dryer),ac.dryer);toast('Temperatura guardada');
   $('tt').value=''
 }
 function addVolteo(){
@@ -1246,7 +1319,7 @@ function addVolteo(){
   if(raw&&(isNaN(t)||t<=0||t>1440))return $('eErr').textContent='Ingresa el tiempo de volteo en minutos (o déjalo vacío).';
   $('eErr').textContent='';
   col('sec_eventos').doc(nid()).set({cycleId:ac.id,dryer:ac.dryer,ts:Date.now(),type:'volteo',value:t,by:myEmail}).catch(fail);
-  logAct('registró un volteo'+(t?' de '+fnum(t)+' min':'')+' en '+dlabel(ac.dryer),ac.dryer);
+  logAct('registró un volteo'+(t?' de '+fnum(t)+' min':'')+' en '+dlabel(ac.dryer),ac.dryer);toast('Volteo guardado');
   $('tv').value=''
 }
 function addCal(){
@@ -1254,7 +1327,7 @@ function addCal(){
   if(rateSel===null)return $('eErr').textContent='Escribe la calificación con el teclado.';
   $('eErr').textContent='';
   col('sec_eventos').doc(nid()).set({cycleId:ac.id,dryer:ac.dryer,ts:Date.now(),type:'cal',value:rateSel,note:$('tn').value.trim(),by:myEmail}).catch(fail);
-  logAct('registró calificación '+rateSel+' en '+dlabel(ac.dryer),ac.dryer);
+  logAct('registró calificación '+rateSel+' en '+dlabel(ac.dryer),ac.dryer);toast('Calificación guardada');
   $('tn').value='';pickRate(null)
 }
 function delEv(id){
@@ -1394,7 +1467,7 @@ function saveEnt(){
   b.set(col('sec_entradas').doc(editEnt?editEnt.id:nid()),data);
   b.commit().catch(fail);
   logAct((_edit?'editó el registro de ':'registró ')+nS+' sacos secos ('+fk(kg)+') en '+dlabel(curDryer)+' para '+(newLote?newLote.name:lname(loteId)),curDryer);
-  formLote=loteId;editEnt=null;selDate=date;
+  toast(_edit?'Cambios guardados':'Sacos guardados');formLote=loteId;editEnt=null;selDate=date;
   resetForm();render()
 }
 function delEnt(id){
@@ -1457,10 +1530,11 @@ function renderRes(){
     stat('Salió este mes',ft(mProd),fk(mProd));
   $('resLotes').innerHTML=open.length?open.map(x=>{
     const orig=Object.entries(x.orig).sort((a,b)=>b[1]-a[1]).map(([o,k])=>esc(o)+' '+ft(k)).join(', ');
-    return `<div class="lote"><div class="lcode">${esc(lcode(x.l))}</div><div class="lh"><b>${esc(x.l.name)}</b><span class="big">${ft(x.stock)}</span></div><div class="mut">En almacén: ${fk(x.stock)} (≈ ${Math.round(x.stock/SACO)} sacos)</div><div class="mut"><b>${origN(x)}</b> origen${origN(x)===1?'':'es'} · <b>${db.entradas.filter(e=>e.loteId===x.l.id).reduce((a,e)=>a+e.sacks,0)}</b> sacos ingresados${ubicTxt(x.l)?' · '+esc(ubicTxt(x.l)):''}</div><div class="mut">Ingresó ${fk(x.ing)}. Despachado ${fk(x.desp)}.</div>${movTxt(x.l.id)}<div class="mut">Procedencia: ${orig}</div>${loteDetail(x)}<div class="acts"><button class="btn primary sm" onclick="openFicha('${x.l.id}')">Ver ficha</button><button class="btn sm" onclick="printFicha('${x.l.id}')">Imprimir</button><button class="btn sm" onclick="openFicha('${x.l.id}',{tab:'qr'})">QR</button><button class="btn leaf sm" onclick="openDisp('${x.l.id}')">Despachar</button><button class="btn sm" onclick="openMover('${x.l.id}')">Mover</button><button class="btn sm" onclick="renameLote('${x.l.id}')">Renombrar</button></div></div>`}).join(''):'<div class="mut">No hay cacao en almacenamiento. Se llena cuando registras sacos en una secadora.</div>';
+    const pct=x.ing>0?Math.max(0,Math.min(100,x.stock/x.ing*100)):0,ub=ubicTxt(x.l),no=origN(x);
+    return `<div class="lote"><div class="lt"><div class="ltx"><div class="lcode">${esc(lcode(x.l))}</div><b class="lnm">${esc(x.l.name)}</b></div><span class="big">${ft(x.stock)}</span></div><div class="lmeta"><span>${fk(x.stock)}</span><span>≈ ${Math.round(x.stock/SACO)} sacos</span><span>${no} origen${no===1?'':'es'}</span>${ub?`<span>${esc(ub)}</span>`:''}</div><div class="lbar" title="Queda ${Math.round(pct)} % de lo que ingresó"><i style="width:${pct.toFixed(1)}%"></i></div><div class="mut lsm">Despachado ${fk(x.desp)} de ${fk(x.ing)} · ${orig}</div>${movTxt(x.l.id)}${loteDetail(x)}<div class="acts lacts"><button class="btn primary sm" onclick="openFicha('${x.l.id}')">Ver ficha</button><button class="btn leaf sm" onclick="openDisp('${x.l.id}')">Despachar</button><details class="more"><summary class="btn sm" aria-label="Más acciones">${ic('more',1)}</summary><div class="mnu"><button onclick="printFicha('${x.l.id}')">${ic('print')}Imprimir ficha</button><button onclick="openFicha('${x.l.id}',{tab:'qr'})">${ic('qr')}Código QR</button><button onclick="openMover('${x.l.id}')">${ic('move')}Mover a otro lote</button><button onclick="renameLote('${x.l.id}')">${ic('edit')}Renombrar</button></div></details></div></div>`}).join(''):EMP('pod','No hay cacao en almacenamiento','Se llena cuando registras los sacos secos de una secadora.');
   $('resClosed').innerHTML=closed.length?closed.map(x=>`<div class="item"><div><div class="lcode">${esc(lcode(x.l))}</div><b>${esc(x.l.name)}</b><div class="mut">Ingresó ${fk(x.ing)}, despachado por completo.</div>${loteDetail(x)}<div class="acts" style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap"><button class="btn primary sm" onclick="openFicha('${x.l.id}')">Ver ficha</button><button class="btn sm" onclick="printFicha('${x.l.id}')">Imprimir</button></div></div></div>`).join(''):EMP('box','Aún no hay lotes cerrados','Aparecen cuando un lote se despacha por completo.');
   const ds=[...db.despachos].sort((a,b)=>b.date.localeCompare(a.date)||b.id.localeCompare(a.id)).slice(0,40);
-  $('resDesp').innerHTML=ds.length?ds.map(d=>`<div class="item"><div><b>${esc(lname(d.loteId))}</b>: ${fk(d.kg)} (${ft(d.kg)})<div class="mut">${esc(fshort(d.date))}${d.note?' — '+esc(d.note):''}</div>${whoLine(d,'Despachado')}</div><div class="acts"><button class="btn sm" onclick="openDisp(null,'${d.id}')">Editar</button>${isAdm?`<button class="btn sm red" onclick="delDisp('${d.id}')" aria-label="Eliminar despacho">✕</button>`:''}</div></div>`).join(''):EMP('box','Aún no hay despachos','Registra el primero y aparecerá aquí.');
+  $('resDesp').innerHTML=ds.length?ds.map(d=>`<div class="item"><div><b>${esc(lname(d.loteId))}</b>: ${fk(d.kg)} (${ft(d.kg)})<div class="mut">${esc(fshort(d.date))}${d.note?' — '+esc(d.note):''}</div>${whoLine(d,'Despachado')}</div><div class="acts"><button class="btn sm" onclick="openDisp(null,'${d.id}')">Editar</button>${isAdm?`<button class="btn sm red" onclick="delDisp('${d.id}')" aria-label="Eliminar despacho">${ic('trash',1)}</button>`:''}</div></div>`).join(''):EMP('box','Aún no hay despachos','Registra el primero y aparecerá aquí.');
   const go=groupSum(db.entradas,e=>e.origin||'Sin procedencia',e=>e.kg);
   $('resOrig').innerHTML=go.length?'<table class="t"><tr><th>Procedencia</th><th class="r">Toneladas</th></tr>'+go.map(([o,k])=>`<tr><td>${esc(o)}</td><td class="r">${nf.format(r2(k/1000))}</td></tr>`).join('')+'</table>':EMP('box','Sin datos todavía','Se llenará cuando registres cacao en las secadoras.');
   const gd=groupSum(db.entradas,e=>e.dryer,e=>e.kg).sort((a,b)=>dord(a[0])-dord(b[0]));
@@ -1482,7 +1556,7 @@ function openMover(id){
     `<div class="mut" style="margin:4px 0 8px">Desde <b>${esc(x.l.name)}</b> · en almacén ${fk(x.stock)}</div>`+
     `<label style="${lbl};font-weight:800;border-bottom:1px solid var(--line)"><input type="checkbox" id="mvAll" style="${cb}" onchange="mvAll()"> Todo el lote</label>`+
     gs.map(g=>`<label style="${lbl}"><input type="checkbox" class="mvD" value="${g.d}" style="${cb}" onchange="mvSum()"><span><b>${esc(dlabel(g.d))}</b>: ${g.s} sacos, ${fk(g.kg)}</span></label>`).join('')+
-    `<div class="field full" style="margin-top:8px"><label for="mvTo">Pasar a</label><select id="mvTo" onchange="mvSum()"><option value="">Selecciona…</option>${dest.map(l=>`<option value="${l.id}">${esc(l.name)} · ${esc(lcode(l))} (${fk(stockOf(l.id))})</option>`).join('')}<option value="__new">➕ Lote nuevo…</option></select></div>`+
+    `<div class="field full" style="margin-top:8px"><label for="mvTo">Pasar a</label><select id="mvTo" onchange="mvSum()"><option value="">Selecciona…</option>${dest.map(l=>`<option value="${l.id}">${esc(l.name)} · ${esc(lcode(l))} (${fk(stockOf(l.id))})</option>`).join('')}<option value="__new">+ Lote nuevo…</option></select></div>`+
     `<div class="field full" id="mvNW" hidden><label for="mvNn">Nombre del lote nuevo</label><input id="mvNn" autocomplete="off"></div>`+
     `<div class="prev" id="mvPrev" style="margin-top:8px">Elige qué secadoras mover.</div><div class="err" id="mvErr"></div></div>`;
   const b=$('dlgBtns');b.innerHTML='';
@@ -1585,7 +1659,7 @@ function renderResExtra(){
   const hum=sum(act,c=>c.kgHumedo);
   $('resStats').insertAdjacentHTML('beforeend',stat('Por secar en las secadoras ahora',ft(hum),fk(hum)+' en '+act.length+' secadora'+(act.length===1?'':'s')));
   $('resProc').innerHTML=act.length?act.map(c=>{const t=evsOf(c.id,'temp').pop(),vo=evsOf(c.id,'volteo').pop(),cal=evsOf(c.id,'cal').pop();
-    return `<div class="item pr ${c.status==='secando'?'ps':'pg'}"><div><b>${dlabel(c.dryer)}</b>: ${esc(c.tipo||'Sin tipo')} de ${esc(c.origin||'procedencia sin indicar')}<div class="mut">${fk(c.kgHumedo)} por secar.${c.by?' Cargada por '+nm(c.by)+'.':''}</div><div class="stl">${stChip(c)}<span>${c.status==='secando'?'Lleva '+dur(Date.now()-c.startAt)+' secando':'Ya está seco · registrando sacos'}</span></div>${vo?`<div class="mut">Último volteo: ${hfmt(vo.ts)}${vo.by?' · por <b>'+nm(vo.by)+'</b>':''}</div>`:''}${t?`<div class="mut">Última temperatura: ${fnum(t.value)} °C a las ${hfmt(t.ts)}${t.by?' · por <b>'+nm(t.by)+'</b>':''}</div>`:''}${cal?`<div class="mut">Última calificación: ${calTxt(cal)}${cal.by?' · por <b>'+nm(cal.by)+'</b>':''}</div>`:''}</div><div class="acts"><button class="btn sm" onclick="goDryer(${c.dryer})">Abrir</button><button class="btn sm" onclick="openCiclo('${c.id}')">Detalle</button></div></div>`}).join(''):'<div class="mut">Ninguna secadora tiene carga en proceso.</div>';
+    return `<div class="item pr ${c.status==='secando'?'ps':'pg'}"><div><b>${dlabel(c.dryer)}</b>: ${esc(c.tipo||'Sin tipo')} de ${esc(c.origin||'procedencia sin indicar')}<div class="mut">${fk(c.kgHumedo)} por secar.${c.by?' Cargada por '+nm(c.by)+'.':''}</div><div class="stl">${stChip(c)}<span>${c.status==='secando'?'Lleva '+dur(Date.now()-c.startAt)+' secando':'Ya está seco · registrando sacos'}</span></div>${vo?`<div class="mut">Último volteo: ${hfmt(vo.ts)}${vo.by?' · por <b>'+nm(vo.by)+'</b>':''}</div>`:''}${t?`<div class="mut">Última temperatura: ${fnum(t.value)} °C a las ${hfmt(t.ts)}${t.by?' · por <b>'+nm(t.by)+'</b>':''}</div>`:''}${cal?`<div class="mut">Última calificación: ${calTxt(cal)}${cal.by?' · por <b>'+nm(cal.by)+'</b>':''}</div>`:''}</div><div class="acts"><button class="btn sm" onclick="goDryer(${c.dryer})">Abrir</button><button class="btn sm" onclick="openCiclo('${c.id}')">Detalle</button></div></div>`}).join(''):EMP('pod','Todas las secadoras están libres','Toca una secadora para registrar la primera carga.');
   /* filtros del historial */
   const dryers=LAYOUT.flat().sort((a,b)=>dord(a)-dord(b));
   const meses=[...new Set(db.ciclos.map(c=>(c.startDate||'').slice(0,7)).filter(Boolean))].sort().reverse();
@@ -1595,7 +1669,7 @@ function renderResExtra(){
   const hs=filteredCiclos();
   $('resCiclos').innerHTML=hs.length?`<div class="mut" style="margin-bottom:4px">${hs.length} carga${hs.length===1?'':'s'}</div>`+hs.map(c=>{
     const s=cycStats(c);
-    return `<div class="item"><div><b>${dlabel(c.dryer)}</b>: ${esc(c.tipo||'Sin tipo')} de ${esc(c.origin||'procedencia sin indicar')} ${stChip(c)}<div class="mut">Ingresó ${tfmt(c.startAt)}${c.by?' (por '+nm(c.by)+')':''}${c.dryAt?'. Seco en '+dur(c.dryAt-c.startAt)+(c.dryBy?' (marcado seco por '+nm(c.dryBy)+')':''):''}.</div><div class="mut">${fk(c.kgHumedo)} por secar${s.rend!=null?' → '+fk(s.kgS)+' secos ('+nf.format(s.rend)+' %)':''}.</div>${s.tm.length?`<div class="mut">${s.tm.length} temperatura${s.tm.length===1?'':'s'}: de ${fnum(s.tmin)} a ${fnum(s.tmax)} °C.</div>`:''}${s.cl.length?`<div class="mut">Calificación promedio: ${fnum(s.cavg)} ${s.cmax?' de '+s.cmax:''}.</div>`:''}${s.vt.length?`<div class="mut">${s.vt.length} volteo${s.vt.length===1?'':'s'}.</div>`:''}</div><div class="acts"><button class="btn sm primary" onclick="openCiclo('${c.id}')">Ver detalle</button>${isAdm?`<button class="btn sm red" onclick="delCicloId('${c.id}')">Eliminar</button>`:''}</div></div>`}).join(''):'<div class="mut">No hay cargas con ese filtro.</div>';
+    return `<div class="item"><div><b>${dlabel(c.dryer)}</b>: ${esc(c.tipo||'Sin tipo')} de ${esc(c.origin||'procedencia sin indicar')} ${stChip(c)}<div class="mut">Ingresó ${tfmt(c.startAt)}${c.by?' (por '+nm(c.by)+')':''}${c.dryAt?'. Seco en '+dur(c.dryAt-c.startAt)+(c.dryBy?' (marcado seco por '+nm(c.dryBy)+')':''):''}.</div><div class="mut">${fk(c.kgHumedo)} por secar${s.rend!=null?' → '+fk(s.kgS)+' secos ('+nf.format(s.rend)+' %)':''}.</div>${s.tm.length?`<div class="mut">${s.tm.length} temperatura${s.tm.length===1?'':'s'}: de ${fnum(s.tmin)} a ${fnum(s.tmax)} °C.</div>`:''}${s.cl.length?`<div class="mut">Calificación promedio: ${fnum(s.cavg)} ${s.cmax?' de '+s.cmax:''}.</div>`:''}${s.vt.length?`<div class="mut">${s.vt.length} volteo${s.vt.length===1?'':'s'}.</div>`:''}</div><div class="acts"><button class="btn sm primary" onclick="openCiclo('${c.id}')">Ver detalle</button>${isAdm?`<button class="btn sm red" onclick="delCicloId('${c.id}')">Eliminar</button>`:''}</div></div>`}).join(''):EMP('pod','No hay cargas con ese filtro','Prueba con otra secadora u otro mes.');
   const gt=groupSum(db.entradas,e=>e.tipo||'Sin tipo',e=>e.kg);
   $('resTipo').innerHTML=gt.length?'<table class="t"><tr><th>Tipo</th><th class="r">Toneladas secas</th></tr>'+gt.map(([o,k])=>`<tr><td>${esc(o)}</td><td class="r">${nf.format(r2(k/1000))}</td></tr>`).join('')+'</table>':EMP('box','Sin datos todavía','Se llenará cuando registres cacao en las secadoras.')
 }
@@ -1666,7 +1740,7 @@ function saveDisp(){
   if(_ed){data.by=editDisp.by||'';data.ts=editDisp.ts||0;data.upBy=myEmail;data.upTs=Date.now()}else{data.by=myEmail;data.ts=Date.now()}
   col('sec_despachos').doc(editDisp?editDisp.id:nid()).set(data).catch(fail);
   logAct((_ed?'editó un despacho de ':'despachó ')+fk(kg)+' del lote “'+lname(id)+'”'+(data.note?' ('+data.note+')':''));
-  editDisp=null;closeM('dispM')
+  toast(_ed?'Despacho actualizado':'Despacho registrado');editDisp=null;closeM('dispM')
 }
 function delDisp(id){
   if(!isAdm)return alert('Solo el administrador puede eliminar despachos.');
@@ -1888,7 +1962,7 @@ function saveMeta(){
   const hs=$('mtH').value.trim(),h=hs?num(hs):'';
   if(hs&&!(h>=0&&h<=100))return $('mtErr').textContent='La humedad debe estar entre 0 y 100 %.';
   col('sec_lotes').doc(metaId).update({bodega:$('mtB').value.trim(),zona:$('mtZ').value.trim(),rack:$('mtR').value.trim(),hum:h,prev:$('mtP').value.trim(),ubic:'',rev:(l.rev||0)+1,upBy:myEmail,upTs:Date.now()}).catch(fail);
-  logAct('actualizó los datos del lote “'+l.name+'” ('+lcode(l)+')');closeM('metaM')
+  logAct('actualizó los datos del lote “'+l.name+'” ('+lcode(l)+')');closeM('metaM');toast('Datos del lote guardados')
 }
 const C128=["212222","222122","222221","121223","121322","131222","122213","122312","132212","221213","221312","231212","112232","122132","122231","113222","123122","123221","223211","221132","221231","213212","223112","312131","311222","321122","321221","312212","322112","322211","212123","212321","232121","111323","131123","131321","112313","132113","132311","211313","231113","231311","112133","112331","132131","113123","113321","133121","313121","211331","231131","213113","213311","213131","311123","311321","331121","312113","312311","332111","314111","221411","431111","111224","111422","121124","121421","141122","141221","112214","112412","122114","122411","142112","142211","241211","221114","413111","241112","134111","111242","121142","121241","114212","124112","124211","411212","421112","421211","212141","214121","412121","111143","111341","131141","114113","114311","411113","411311","113141","114131","311141","411131","211412","211214","211232","2331112"];
 function code128(txt){
@@ -2020,6 +2094,7 @@ function initPublic(){
   }catch(e){pubMsg('No se pudo cargar la ficha.')}
 }
 
+document.addEventListener('click',e=>{document.querySelectorAll('details.more[open]').forEach(d=>{if(!d.contains(e.target)||e.target.closest('.mnu button'))d.open=false})});
 applyTheme();decorate();pickLdMsg();if(PUBF)initPublic();else{initFirebase();render()}
 </script>
 </body></html>
