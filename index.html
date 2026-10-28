@@ -626,6 +626,12 @@ body.ro #dmFoot{display:none!important}
 html[data-t=dark] .chip.b{background:#173a4a;color:#9fd6ef}
 html[data-t=dark] .dhint{background:rgba(108,184,216,.12)}
 body.lock #toast{top:calc(env(safe-area-inset-top) + 12px);bottom:auto;transform:translate(-50%,-20px)}body.lock #toast.show{transform:translate(-50%,0)}
+.stepper{display:flex;gap:8px;align-items:stretch}
+.stepper input{flex:1;min-width:0;text-align:center;font-size:20px!important;font-weight:700}
+.stepper button{flex:none;width:56px;min-height:48px;border-radius:14px;background:var(--btn);font-size:24px;font-weight:700;color:var(--ink)}
+#mvMode{margin:2px 0 10px}
+.prev.bad{background:#f8e1dc;color:#8a2c1c}
+html[data-t=dark] .prev.bad{background:rgba(240,138,122,.16);color:#f5b3a6}
 </style></head>
 <body class="loading">
 <nav class="tabs">
@@ -940,7 +946,7 @@ function toggleMenu(e){e.stopPropagation();const p=$('menuPanel'),o=p.hidden;p.h
 document.addEventListener('click',e=>{const p=$('menuPanel');if(p&&!p.hidden&&!p.contains(e.target))closeMenu()});
 document.getElementById('menuPanel').addEventListener('click',e=>{if(e.target.closest('button'))closeMenu()});
 let lastY=0;addEventListener('scroll',()=>{const y=Math.max(0,scrollY);if(Math.abs(y-lastY)<8)return;const n=document.querySelector('nav.tabs');if(n)n.classList.toggle('hide',y>lastY&&y>80);lastY=y},{passive:true});
-const APP_VER='1.14.0';
+const APP_VER='1.15.0';
 let updShown=false;
 async function checkUpdate(){if(updShown||!navigator.onLine)return;try{const r=await fetch(location.pathname+location.search,{cache:'no-store'});if(!r.ok)return;const m=(await r.text()).match(/APP_VER='([^']+)'/);if(m&&m[1]!==APP_VER){updShown=true;const ae=document.activeElement;if(!document.querySelector('.modal.show')&&!(ae&&/INPUT|TEXTAREA|SELECT/.test(ae.tagName))){location.reload();return}const b=document.createElement('div');b.id='updBar';b.innerHTML='<span>Hay una versión nueva de la app</span><button class="btn primary" onclick="location.reload()">Actualizar</button>';document.body.appendChild(b)}}catch(e){}}
 setInterval(checkUpdate,10*60*1000);document.addEventListener('visibilitychange',()=>{if(!document.hidden)checkUpdate()});setTimeout(checkUpdate,8000);let loadT0=0,loadT=null;
@@ -1646,8 +1652,9 @@ function movTxt(id){
   const rec=sum(db.entradas.filter(e=>e.loteId===id&&e.movedFrom&&e.movedFrom!==id),e=>e.kg),env=sum(db.entradas.filter(e=>e.movedFrom===id&&e.loteId!==id),e=>e.kg);
   return (rec>0?`<div class="mut">Recibido de otros lotes: ${fk(rec)}.</div>`:'')+(env>0?`<div class="mut">Enviado a otros lotes: ${fk(env)}.</div>`:'')
 }
+var MVM='d';
 function openMover(id){
-  if(!canEdit())return;
+  if(!canEdit())return;MVM='d';
   const x=LI[id];if(!x)return;
   const G={};db.entradas.filter(e=>e.loteId===id).forEach(e=>{const d=Number(e.dryer),g=G[d]||(G[d]={d,kg:0,s:0});g.kg+=e.kg;g.s+=e.sacks});
   const gs=Object.values(G).sort((a,b)=>dord(a.d)-dord(b.d));
@@ -1656,8 +1663,11 @@ function openMover(id){
   const dest=db.lotes.filter(l=>l.id!==id).sort((a,b)=>a.name.localeCompare(b.name));
   $('dlgBody').innerHTML=`<div style="text-align:left"><b style="font-family:Barlow Condensed,sans-serif;font-size:22px">Mover cacao a otro lote</b>`+
     `<div class="mut" style="margin:4px 0 8px">Desde <b>${esc(x.l.name)}</b> · en almacén ${fk(x.stock)}</div>`+
+    `<div class="seg" id="mvMode"><button type="button" class="on" data-m="d" onclick="mvSetMode('d')">Por secadoras</button><button type="button" data-m="s" onclick="mvSetMode('s')">Por sacos</button></div><div id="mvByD">`+
     `<label style="${lbl};font-weight:800;border-bottom:1px solid var(--line)"><input type="checkbox" id="mvAll" style="${cb}" onchange="mvAll()"> Todo el lote</label>`+
-    gs.map(g=>`<label style="${lbl}"><input type="checkbox" class="mvD" value="${g.d}" style="${cb}" onchange="mvSum()"><span><b>${esc(dlabel(g.d))}</b>: ${g.s} sacos, ${fk(g.kg)}</span></label>`).join('')+
+    gs.map(g=>`<label style="${lbl}"><input type="checkbox" class="mvD" value="${g.d}" style="${cb}" onchange="mvSum()"><span><b>${esc(dlabel(g.d))}</b>: ${g.s} sacos, ${fk(g.kg)}</span></label>`).join('')+`</div>`+
+    `<div id="mvByS" hidden><div class="field full"><label for="mvSrc">Sacar de</label><select id="mvSrc" onchange="mvSum()"><option value="all">Cualquier secadora (primero lo más antiguo)</option>${gs.map(g=>`<option value="${g.d}">${esc(dlabel(g.d))} · ${g.s} sacos</option>`).join('')}</select></div>`+
+    `<div class="field full" style="margin-top:10px"><label for="mvN">Número de sacos a mover</label><div class="stepper"><button type="button" onclick="mvStep(-1)" aria-label="Un saco menos">−</button><input id="mvN" inputmode="numeric" value="1" oninput="mvSum()" aria-label="Número de sacos"><button type="button" onclick="mvStep(1)" aria-label="Un saco más">+</button></div></div></div>`+
     `<div class="field full" style="margin-top:8px"><label for="mvTo">Pasar a</label><select id="mvTo" onchange="mvSum()"><option value="">Selecciona…</option>${dest.map(l=>`<option value="${l.id}">${esc(l.name)} · ${esc(lcode(l))} (${fk(stockOf(l.id))})</option>`).join('')}<option value="__new">+ Lote nuevo…</option></select></div>`+
     `<div class="field full" id="mvNW" hidden><label for="mvNn">Nombre del lote nuevo</label><input id="mvNn" autocomplete="off"></div>`+
     `<div class="prev" id="mvPrev" style="margin-top:8px">Elige qué secadoras mover.</div><div class="err" id="mvErr"></div></div>`;
@@ -1666,21 +1676,48 @@ function openMover(id){
   const ok=document.createElement('button');ok.className='btn primary';ok.textContent='Mover';ok.onclick=()=>runMover(id);ok._mvId=id;
   b.append(cn,ok);openM('dlg')
 }
+function mvSetMode(m){MVM=m;document.querySelectorAll('#mvMode button').forEach(b=>b.classList.toggle('on',b.dataset.m===m));$('mvByD').hidden=m!=='d';$('mvByS').hidden=m!=='s';mvSum()}
+function mvStep(d){const i=$('mvN');i.value=Math.max(1,(Math.round(num(i.value))||0)+d);mvSum()}
+/* plan para mover N sacos: usa los registros más antiguos primero y separa uno si hace falta */
+function mvPlanS(id){
+  const n=Math.round(num($('mvN').value)),src=$('mvSrc').value;
+  const E=db.entradas.filter(e=>e.loteId===id&&(src==='all'||Number(e.dryer)===Number(src))).sort((a,b)=>a.date.localeCompare(b.date)||(a.ts||0)-(b.ts||0)||a.id.localeCompare(b.id));
+  const tot=E.reduce((a,e)=>a+e.sacks,0),de=src==='all'?'en este lote':'de '+dlabel(src)+' en este lote';
+  if(!(n>=1))return {err:'Escribe cuántos sacos quieres mover.',tot};
+  if(n>tot)return {err:'Solo hay '+tot+' saco'+(tot===1?'':'s')+' '+de+'.',tot};
+  let left=n;const parts=[];
+  for(const e of E){
+    if(!left)break;
+    if(e.sacks<=left){parts.push({e,k:e.sacks,kg:e.kg,whole:true});left-=e.sacks;continue}
+    const full=e.sacks-(e.extraKg>0?1:0),w=e.modo==='bas'||!(e.kgSaco>0)?e.kg/e.sacks:e.kgSaco,k=Math.min(left,full);
+    if(k<=0)continue;
+    parts.push({e,k,kg:r2(k*w),whole:false});left-=k
+  }
+  if(left>0)return {err:'Ese número obligaría a partir un saco incompleto. Prueba con '+(n-left)+' sacos.',tot};
+  const kg=r2(parts.reduce((a,p)=>a+p.kg,0)),st=stockOf(id);
+  if(kg>st+0.005)return {err:'En almacén solo quedan '+fk(st)+' (≈ '+Math.floor(st/SACO)+' sacos), porque este lote ya tuvo despachos. Mueve menos sacos.',tot};
+  return {parts,sc:n,kg,tot,split:parts.some(p=>!p.whole)}
+}
 function mvSel(){return [...document.querySelectorAll('.mvD:checked')].map(c=>Number(c.value))}
 function mvAll(){const on=$('mvAll').checked;document.querySelectorAll('.mvD').forEach(c=>c.checked=on);mvSum()}
 function mvSum(){
   const all=document.querySelectorAll('.mvD'),sel=mvSel();$('mvAll').checked=all.length>0&&sel.length===all.length;
   $('mvNW').hidden=$('mvTo').value!=='__new';$('mvErr').textContent='';
+  if(MVM==='s'){const id=openMoverId(),P=mvPlanS(id);$('mvPrev').classList.toggle('bad',!!P.err);
+    $('mvPrev').textContent=P.err?P.err:'Se moverán '+P.sc+' de '+P.tot+' sacos ('+fk(P.kg)+'). En este lote quedan '+fk(r2(stockOf(id)-P.kg))+'.';return}
+  $('mvPrev').classList.remove('bad');
   const id=openMoverId();const E=db.entradas.filter(e=>e.loteId===id&&sel.includes(Number(e.dryer))),kg=r2(sum(E,e=>e.kg)),sc=E.reduce((a,e)=>a+e.sacks,0);
   $('mvPrev').textContent=sel.length?'Se moverán '+sc+' sacos ('+fk(kg)+') de '+sel.length+' secadora'+(sel.length===1?'':'s')+'. En este lote quedan '+fk(r2(stockOf(id)-kg))+'.':'Elige qué secadoras mover.'
 }
 function openMoverId(){const b=$('dlgBtns').lastChild;return b&&b._mvId||''}
 async function runMover(id){
   const x=LI[id];if(!x||!canEdit())return;
-  const sel=mvSel(),E=db.entradas.filter(e=>e.loteId===id&&sel.includes(Number(e.dryer))),err=m=>{$('mvErr').textContent=m};
-  if(!E.length)return err('Elige al menos una secadora.');
+  const err=m=>{$('mvErr').textContent=m},bySacks=MVM==='s';
+  let sel=mvSel(),E=db.entradas.filter(e=>e.loteId===id&&sel.includes(Number(e.dryer))),P=null;
+  if(bySacks){P=mvPlanS(id);if(P.err)return err(P.err);E=P.parts.map(q=>q.e);sel=[...new Set(E.map(e=>Number(e.dryer)))]}
+  else if(!E.length)return err('Elige al menos una secadora.');
   const to=$('mvTo').value;if(!to)return err('Elige el lote de destino.');
-  const kg=r2(sum(E,e=>e.kg)),sc=E.reduce((a,e)=>a+e.sacks,0);
+  const kg=bySacks?P.kg:r2(sum(E,e=>e.kg)),sc=bySacks?P.sc:E.reduce((a,e)=>a+e.sacks,0);
   if(r2(x.stock-kg)<-0.005)return err('No se puede: este lote ya tuvo despachos y en almacén solo quedan '+fk(x.stock)+'. Mueve menos o ajusta el despacho.');
   let dest=to,newLote=null;
   if(to==='__new'){
@@ -1690,10 +1727,16 @@ async function runMover(id){
   }
   if(dest===id)return err('El destino debe ser otro lote.');
   const dn=newLote?newLote.name:lname(dest),dl=sel.map(d=>dlabel(d)).join(', ');
-  if(!(await ask({title:'¿Mover '+sc+' sacos?',body:'<b>'+fk(kg)+'</b> de '+esc(dl)+'.<br>Desde «'+esc(x.l.name)+'» hacia «'+esc(dn)+'».',ok:'Mover'})))return;
+  if(!(await ask({title:'¿Mover '+sc+' sacos?',body:'<b>'+fk(kg)+'</b> de '+esc(dl)+'.<br>Desde «'+esc(x.l.name)+'» hacia «'+esc(dn)+'».'+(P&&P.split?'<br>Se separará un registro de sacos en dos para conservar su origen.':''),ok:'Mover'})))return;
   const b=fdb.batch(),now=Date.now();
   if(newLote)b.set(col('sec_lotes').doc(dest),newLote);
-  E.forEach(e=>b.update(col('sec_entradas').doc(e.id),{loteId:dest,movedFrom:id,loteOrig:e.loteOrig||id,movedAt:now,movedBy:myEmail}));
+  const mv=e=>({loteId:dest,movedFrom:id,loteOrig:e.loteOrig||id,movedAt:now,movedBy:myEmail});
+  if(bySacks)P.parts.forEach(q=>{const e=q.e;
+    if(q.whole){b.update(col('sec_entradas').doc(e.id),mv(e));return}
+    const {id:_i,...d}=e;
+    b.update(col('sec_entradas').doc(e.id),{sacks:e.sacks-q.k,kg:r2(e.kg-q.kg)});
+    b.set(col('sec_entradas').doc(nid()),{...d,sacks:q.k,kg:q.kg,extraKg:0,splitFrom:e.id,...mv(e)})});
+  else E.forEach(e=>b.update(col('sec_entradas').doc(e.id),mv(e)));
   b.commit().catch(fail);
   logAct('movió '+sc+' sacos ('+fk(kg)+') de '+dl+' del lote “'+x.l.name+'” al lote “'+dn+'”');
   closeM('dlg');toast('Se movieron '+fk(kg)+' a “'+dn+'”.')
